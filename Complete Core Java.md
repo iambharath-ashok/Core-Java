@@ -17,7 +17,7 @@ Core Java
 			
 			JVM - Java Virtual Machine
 
-				-	In Java, Compiled code will be run on the JVM and directly on the OS
+				-	In Java, Compiled code will be run on the JVM and not directly on the OS liek C, C++ langs
 			
 			
 			API - Application Programming Interface
