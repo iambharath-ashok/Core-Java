@@ -1,8 +1,8 @@
-Core Java
+# Core Java
 
 
 
-1.	JDK
+##  1.	JDK
 
 	-	Install JDK - Java Developement Kit
 	-	JDK comes with Compiler and JRE
