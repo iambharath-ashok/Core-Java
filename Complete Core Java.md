@@ -1151,7 +1151,7 @@ Core Java
 			1.	By extending Thread class
 			2.	By implementing Runnable Interface
 			
-		-	Thread class needs to provide an implementation by defining run method
+		-	Implementation Thread class needs to provide an implementation by defining a method
 		
 		
 			class Thread1 extends Thread {
@@ -1178,12 +1178,136 @@ Core Java
 	
 	
 		-	join() method is used to make sure that thread on which join is invoked will complete its execution and enter to dead state
-		-	join() method make sure that other threads will not start executing below lines until join() invoked thread enters dead state
+			
+			-	Until that JVM will make sure that other threads will not able to execute the below line of code
 		
-	4.	
+		-	join() method make sure that other threads will not start executing below lines until join() invoked thread enters dead state
+		-	join() is a instance method	
+		
+				public class ThreadJoinDemo {
+
+					static int sum, num;
+
+					public static void main(String[] args) throws InterruptedException {
+						System.out.println("Sum of first N numbers ");
+						System.out.println("Enter the Number");
+						Scanner s = new Scanner(System.in);
+
+						ThreadJoinDemo.num = s.nextInt();
+						
+						SumThread st = new SumThread(ThreadJoinDemo.num);
+						st.start();
+						
+						MultiplyThread mt = new MultiplyThread(ThreadJoinDemo.num);
+						mt.start();
+						
+						st.join();
+						mt.join();
+						
+						System.out.println("===========Sum of "+ThreadJoinDemo.num +" is : "+st.sumResult);
+						System.out.println("=============Multi of "+ThreadJoinDemo.num +" is : "+mt.mulResult);
+						System.out.println("==================Main method ended====================");
+					}
+				}
+				
+				public class SumThread extends Thread {
+					int num;
+					int sumResult;
+					SumThread(int num) {
+						this.num = num;
+					}
+					public void run()  {
+						Thread currentThread = Thread.currentThread();
+						currentThread.setName("Sum Thread");
+						currentThread.setPriority(MIN_PRIORITY);
+						System.out.println(Thread.currentThread().getName() + " Caluculating Sum. ");
+
+						for (int i = 0; i < num; i++) {
+							sumResult += i;
+							System.out.println("Caluculating Sum of "+ i+ " is "+ sumResult);
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+				
+				public class MultiplyThread extends Thread {
+					int num;
+					int mulResult = 1;
+					MultiplyThread(int num) {
+						this.num = num;
+					}
+					public void run()  {
+						Thread currentThread = Thread.currentThread();
+						currentThread.setName("Multiplication Thread");
+						currentThread.setPriority(MIN_PRIORITY);
+						System.out.println(Thread.currentThread().getName() + " Caluculating Multiplication. ");
 
 
+						for (int i = 1; i <= num; i++) {
+							mulResult *= i*;
+							System.out.println("Caluculating Multiplication of "+ i+ " is "+ mulResult);
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
 
+		
+		
+	4.	Thread Identity
+	
+		-	Each thread will by default will have some names like Thread-0, Thread-1, Thread-2
+		-	We can change the threads explicitly 
+		
+		
+				Thread currentThread = Thread.getCurrentThread();
+				currentThread.setName("Some Name");
+
+
+	5.	Thread Priority
+	
+		-	Thread Priority is used to set priority in which certain threads needs to execute in the Priority
+		-	1 is the Min Priority and 10 is the Highest Priority
+		
+	
+	6.	Runnable Interface
+	
+		-	RunnableInterface is a functional interface from Java 8
+		-	RunnableInterface has only one method run 
+		####  -	We can use LambdaExperssion , Method Reference, Anonymous Inner Class as impl to Runnable reference
+	
+	
+		class RunnableThread1 implements Runnable {
+			
+			@Override
+			public void run() {
+			
+			}
+		
+		}
+		
+		class Test {
+		
+			void main() {
+				
+				RunnableThread1 rt = new RunnableThread1(); // Impl runnable interface
+				
+				RunnableThread1 rt = () -> {
+					
+				}; // LambdaExperssion
+				
+				RunnableThread1 rt = RunnableThread1::run;
+							
+				##### Thread t = new Thread(rt); // We needs to create new Thread and pass RunnableInterface Impl as param to Thread
+			}
+		}
 
 
 
