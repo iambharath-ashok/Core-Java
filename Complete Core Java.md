@@ -1,8 +1,8 @@
-# Core Java
+Core Java
 
 
 
-##  1.	JDK
+1.	JDK
 
 	-	Install JDK - Java Developement Kit
 	-	JDK comes with Compiler and JRE
@@ -17,7 +17,7 @@
 			
 			JVM - Java Virtual Machine
 
-				-	In Java, Compiled code will be run on the JVM and not directly on the OS liek C, C++ langs
+				-	In Java, Compiled code will be run on the JVM and directly on the OS
 			
 			
 			API - Application Programming Interface
@@ -1182,7 +1182,7 @@
 			-	Until that JVM will make sure that other threads will not able to execute the below line of code
 		
 		-	join() method make sure that other threads will not start executing below lines until join() invoked thread enters dead state
-		-	join() is a instance method	
+		-	join() is a instance method	 from java.lang.Thread Class
 		
 				public class ThreadJoinDemo {
 
@@ -1259,9 +1259,7 @@
 					}
 				}
 
-		
-		
-	4.	Thread Identity
+ 	4.	Thread Identity
 	
 		-	Each thread will by default will have some names like Thread-0, Thread-1, Thread-2
 		-	We can change the threads explicitly 
@@ -1269,7 +1267,6 @@
 		
 				Thread currentThread = Thread.getCurrentThread();
 				currentThread.setName("Some Name");
-
 
 	5.	Thread Priority
 	
@@ -1285,37 +1282,291 @@
 	
 	
 		class RunnableThread1 implements Runnable {
-			
 			@Override
 			public void run() {
-			
 			}
-		
-		}
+		 }
 		
 		class Test {
-		
 			void main() {
-				
 				RunnableThread1 rt = new RunnableThread1(); // Impl runnable interface
-				
 				RunnableThread1 rt = () -> {
-					
 				}; // LambdaExperssion
-				
 				RunnableThread1 rt = RunnableThread1::run;
-							
 				##### Thread t = new Thread(rt); // We needs to create new Thread and pass RunnableInterface Impl as param to Thread
 			}
 		}
 
+	7.	yield() method
+	
+		-	yield() methods will yield for another Thread
+		-	yield means letting another thread to continue execution 
+		-	yield() is a static method in Thread class
+		-	once control come to run() method of Thread it will yield so that main will complete execution first
+			
+			class Thread1 implements Runnable {
+				@Override
+				public void run() {
+					for(int i=0;i<=100;i++){
+						System.out.println(Thread.currentThread().getName());
+						Thread.yield();
+					}
+				}
+			}
+			
+			public class TestYield {
+			
+				main() {
+					
+					Runnable r = new Thread1();
+					Thread t = new Thread(r);
+					t.start();
+					
+					for(int i=0;i<=100;i++){
+						System.out.println(Thread.currentThread().getName());
+					}
+				}
+			}
 
 
+	8.	interrupt() method
+	
+		-	interrupt() method is used to interrupt or kill the thread
+		-	interrupt will stop thread immediately 
+		-	Code below interrupt() call will continue to execute
+		-	interrupt() method is from java.lang.Thread Class
+		
+		
+		Code Snippet :
+			
+			class Thread1 implements Runnable {
+				public void run() {
+					for(int i=0; i<10;i++) {
+						System.out.println("Executing Thread " + Thread.currentThread().getName());
+						try{
+							Thread.sleep(10000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+					}
+				}
+			}
+			
+			public class TestInterrupt {
+							main() {
+					Runnable r = new Thread1();
+					Thread t = new Thread(r);
+					t.start();
+					
+					t.interrupt(); // Interrupting Thread by called interrupt on the thread instance
+					
+					System.out.println("Main Method has ended");
+				}
+			}
 
 
+	9.	Synchronization
+
+		-	When multiple Threads working on same object simultaneously ... there might me chances that each others data got corrupted
+			
+			-	Thread dirty reading 
+			
+		-	Synchronization 
+			
+			-	Is used to make sure that only Thread can execute that particular method at a time
+			-	Only one Thread holding the lock at a time
+			-	Method marked with synchronize will be accessed by only one thread at  time
+			-	First Thread that access the method will acquire a lock on the object
+			-	Acquiring and releasing Lock will handled by JVM
+			-	Other threads trying to acquire lock will go to waiting state
+			-	Synchronization is done at object level and not at method level
+			
+		-	Locks
+
+			-	synchronized instance method
+			-	static method
+			-	instance
+			-	static synchronized method
+		
+		
+		Code Snippet :
+			
+			class Booking {
+				
+				Payment p;
+			
+				Booking() {}
+				
+				public synchronize void bookTicket(String name) {
+					System.out.println("Booking for user "+ name);
+					p.makePayment();
+					Thread.sleep(4000);
+				}
+			}
+		
+			class AndroidUser implements Runnable {
+				Booking booking;
+				AndroidUser(Booking booking) {
+					this.booking = booking;
+				}
+				public void run() {
+					this.booking.bookTicket("RailwayAdmin");
+				}
+			}
+			
+			class RailwayAdmin implements Runnable {
+				Booking booking;
+				RailwayAdmin(Booking booking) {
+					this.booking = booking;
+				}
+				public void run() {
+					this.booking.bookTicket("RailwayAdmin");
+				}
+			}
+			
+		
+			public class TestSynchronize {
+				main() {
+					Booking booking = new Booking();
+					
+					Runnable user1 = new AndroidUser(booking);
+					Runnable user2 = new RailwayAdmin(booking);
+					Runnable user3 = new RailwayAdmin(booking);
+					
+					Thread t1 = new Thread(user1);
+					Thread t2 = new Thread(user2);
+					Thread t3 = new Thread(user3);
+					
+					t1.start();
+					t2.start();
+					t3.start();
+				}
+			}
+			
+	10.	Class Level Lock
 
 
-
+		-	If thread want to execute static synchronized method it will first gets a Class Level Lock
+		-	Once Thread has Class Level Lock then ... all other threads can't execute static synchronized methods
+		
+		- 	But other threads can still execute instance and static non-synchronized methods and synchronized instance methods
+		
+	
+	11.	Synchronized Block
+	
+		-	Synchronized block is used when we want few lines of code to synchronize instead of making whole method as synchronize
+		-	Multiple threads can enter the method but only one thread can execute synchronized block at a time
+		-	synchronized block will increase the performance
+		
+		
+		Types of Synchronized Blocks
+			
+			-	synchronized blocks can be defined in 3 ways
+			
+			method() {
+				
+				synchronize(this) {} // Instance Level Lock
+				
+				synchronize(any other object){} // Object Level Lock
+				
+				synchronize(Booking.class) {} // Class level lock
+				
+			}
+		
+	12.	InterThread Communication
+	
+	
+		-	wait(), notify(), notifyAll() all method used for InterThread Communication
+		-	above methods are available from java.lang.Object class and available to all the class
+		
+		-	Invoking wait() method from Main Thread will make Main Thread to wait for Child thread to complete its execution
+		-	Child Thread once complete its execution should notify the Main Thread to continue its execution
+			
+			-	Child Thread will notify main thread using notify() method
+				
+			
+			class SumThread implements Runnable {
+				int sum;
+				public void run() {
+					synchronize {
+						for (int i=0; i < 100; i++) {
+							sum+=i;
+						}
+						this.notify();
+					}
+				}
+			}
+		
+			public class ThreadCommunicationTest {
+				main() {
+					SumThread st = new SumThread();
+					st.start();
+					synchronize{
+						try{
+							st.wait();
+							System.out.println("Notified Main Thread");
+							System.out.println("Sum of numbers is "+ st.sum);
+						} catch(InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		
+		
+			Execution Flow of above program :
+			
+			
+				1.	Main Thread will be created by JVM
+				2.	Main Thread will create a Child Thread and start the child Thread
+				3.	Main thread will gets a lock on the instance an SumThread st and invokes wait() method on the Main Thread
+				4.	So that main thread will go for waiting state
+				5.	Child Thread in the mean time will get a lock on its own object 
+				6.	Will calculate sum and notifies Main Thread by invoking notify() method
+				7.	notify() will release the lock and invokes the waiting thread
+				7.	Main Thread will get notified and continue its rest of the execution
+				
+				
+				Note: 
+					
+					-	wait(), notify(), notifyAll() methods should be executed in synchronized context 
+					-	Otherwise we will get IllegalMonitarStateException
+				
+				
+				
+				
+				
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 			
 
