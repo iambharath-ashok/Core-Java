@@ -442,307 +442,304 @@ Output:
 
 Code Snippet : 	
 	1.  Integer
-		
-	```java	
+	---------------------
 		int i = 10;
 		Integer integer = Integer.valueOf(i); //Boxing
 		i = integer; //Un-Boxing
 		i = integer.intValue(); //Un-Boxing
-	````
-	2.	Short 
-
-	```java
+		
+	2.  Short 
+	---------------------
 		short s = 200;
 		Short sh1 = Short.valueOf(s); // Short short = Short.vauleOf(s); ---> Gives Compilation Error ... since short is a reserved keyword
 		s = shortValue.shortValue();
-	````java
-			
+	
 	3.	String and Primitives
-
+	--------------------------
 		long l = 20000000;
 		String longString = Long.toString(l); // primitive to String
 		l = longString.parseLong(longString); // String to Primitive
 		
 		
 	4.	Wrapper Class Constructors
-
+	---------------------------
 		-	Each Wrapper classes provided overloaded constructors
 		-	One takes the primitive type and another as string as the argument to Wrapper class constructor
 		
-			Ex: 
-				
-				double d = 2999.553;
-				Double dd = new Double(d);
-				
-				String s = "67584493.4232";
-				Double dString = new Double(s);
+		Ex: 
+
+			double d = 2999.553;
+			Double dd = new Double(d);
+
+			String s = "67584493.4232";
+			Double dString = new Double(s);
 			
 ----------------------------------------------------------------------------			
 			
-##	9.	Operators and Assignments
+## 9.	Operators and Assignments
 
-	1.	Unary Operators	- ++, --
-	
-		-	works on single operand
-		-	Increment (++) and  Decrement (--)
-		
-			-	y = x++ - PostIncrement
-			-	y = ++x - PreIncrement
-		
-			-	y = x-- - PostDecryment
-			-	y = --x - PreDecryment
-		
-			
-	2.	Arithmetic Operators
+1.	Unary Operators	- ++, --
 
-		- 	Binary operators multi , +, -, /, % 
-		
-		
-	3.  String concatination - + 
+	-	works on single operand
+	-	Increment (++) and  Decrement (--)
 
-		-	Only operator that overloaded in Java is the + 
-		-	When used + operator with integer then it adds the numbers
-		-	When used + operator with String it will appends the strings
-		
-			Ex:
-				
-				int i = 30 + 43 = 73 
-				String newString = abc + xyz = abcxyz
-				
-				
-	4.	Relational Operators - <= , < , >, =>
-	
-		
-		-	Comparison Operators <= , < , >, => 
-			-	Will be uses only on Primitive types
-			
-		-	Equality Operators ==, !=
-		
-			-	Will used for both Primitives and Objects 
-			-	If we used equality operators for Objects types then if verifies whether both objects are referring to same memory locations
-			
-				String s = "someString";
-				String s2 = "someString";
-				
-				s1 == s2 // true
-				
-					##### Equality operator "==" checks whether both references points to same memory locations
-					
-					
-	5.	Bitwise Operators - &, | , ^
+		-	y = x++ - PostIncrement
+		-	y = ++x - PreIncrement
 
-		-	&, |, ^ are the Bitwise operators
-		
-		
-		- 	& --> returns true if both arguments are true
-		-	| --> returns false if either one of the arguments are true
-		-	^ --> returns true if both are arguments are different
-		
-			
-			
-			Code Snippet :
-			
-						System.out.println(true & true);// true
-						System.out.println(true & false); //false
-						System.out.println(true | false);// true
-						System.out.println(false | false);// false
-						
-						
-						System.out.println(true ^ true);//false
-						System.out.println(false ^ false);//false
+		-	y = x-- - PostDecryment
+		-	y = --x - PreDecryment
 
-						System.out.println(false ^ true);//true
-						
-						
-						System.out.println(4 & 5);//4 100 & 101 = 100
-						System.out.println(4 | 5);//5 100 | 101 = 101
-						System.out.println(4 ^ 5);//1 100 ^ 101 = 001 
-						
-						
-	6.	Short Circuit Operators	- &&, ||
-	
-		-	&&, || are the Short Circuit Operators
-		-	Main advantage of Short Circuit Operators are they increase the performance
-		-	Second argument is optional
-		
-			-	If either one of the operand values matches the criteria then it not evaluates the whole expression
-			
-		
-	7.	Assignment Operators - =
-		
-		-	Used to assign the values and reference of objects 
-		
-	8.	Ternary Operators ? :
 
-		-	Test Expression ? value 1 : value 2
+2.	Arithmetic Operators
+
+	- 	Binary operators multi , +, -, /, % 
+
+
+3.  String concatination - + 
+
+	-	Only operator that overloaded in Java is the + 
+	-	When used + operator with integer then it adds the numbers
+	-	When used + operator with String it will appends the strings
+
+		Ex:
+
+			int i = 30 + 43 = 73 
+			String newString = abc + xyz = abcxyz
+
+
+4.	Relational Operators - <= , < , >, =>
+
+
+	-	Comparison Operators <= , < , >, => 
+		-	Will be uses only on Primitive types
+
+	-	Equality Operators ==, !=
+
+		-	Will used for both Primitives and Objects 
+		-	If we used equality operators for Objects types then if verifies whether both objects are referring to same memory locations
+
+			String s = "someString";
+			String s2 = "someString";
+
+			s1 == s2 // true
+
+				##### Equality operator "==" checks whether both references points to same memory locations
+
+
+5.	Bitwise Operators - &, | , ^
+
+	-	&, |, ^ are the Bitwise operators
+
+
+	- 	& --> returns true if both arguments are true
+	-	| --> returns false if either one of the arguments are true
+	-	^ --> returns true if both are arguments are different
+
+
+
+		Code Snippet :
+
+					System.out.println(true & true);// true
+					System.out.println(true & false); //false
+					System.out.println(true | false);// true
+					System.out.println(false | false);// false
+
+
+					System.out.println(true ^ true);//false
+					System.out.println(false ^ false);//false
+
+					System.out.println(false ^ true);//true
+
+
+					System.out.println(4 & 5);//4 100 & 101 = 100
+					System.out.println(4 | 5);//5 100 | 101 = 101
+					System.out.println(4 ^ 5);//1 100 ^ 101 = 001 
+
+
+6.	Short Circuit Operators	- &&, ||
+
+	-	&&, || are the Short Circuit Operators
+	-	Main advantage of Short Circuit Operators are they increase the performance
+	-	Second argument is optional
+
+		-	If either one of the operand values matches the criteria then it not evaluates the whole expression
+
+
+7.	Assignment Operators - =
+
+	-	Used to assign the values and reference of objects 
+
+8.	Ternary Operators ? :
+
+	-	Test Expression ? value 1 : value 2
 
 ----------------------------------------------------------------------------
 		
 	
-##	9.	Flow Control Statement
+## 9.	Flow Control Statement
 
 
-		1.	Selection Statements
-			
-			-	if-else
-			-	switch
-		
-		2.	Iteration Statements
-		
-			-	while
-			- 	do-while
-			- 	for
-			-	for-each
-			
-		3.	Transfer Statements
-			
-			-	break
-			- 	continue
-			-	return
-			-	try-catch-finally
-			- 	assert
-			
-			
-			#### Labelled Blocks and Break
+1.	Selection Statements
+
+	-	if-else
+	-	switch
+
+2.	Iteration Statements
+
+	-	while
+	- 	do-while
+	- 	for
+	-	for-each
+
+3.	Transfer Statements
+
+	-	break
+	- 	continue
+	-	return
+	-	try-catch-finally
+	- 	assert
 			
 			
-				-	main() {
-				
-						l1 : {
-						
-							System.out.println("Block Begins");
-							
-							if(x == 20) {
-								break l1; // Comes out of the l1 block 
-								//	break can be used switch and looping blocks
-							}
-						}
-					}
+#### Labelled Blocks and Break
+			
+			
+-	main() {
+
+		l1 : {
+
+			System.out.println("Block Begins");
+
+			if(x == 20) {
+				break l1; // Comes out of the l1 block 
+				//	break can be used switch and looping blocks
+			}
+		}
+	}
 					
 ----------------------------------------------------------------------------
 
 
-##	10. Access Modifiers
+## 10. Access Modifiers
 
-	-	Applicable for - Class, Methods, Constructors, Variables
-	-	Private, Protected, Package, Public
-	-	Access modifiers can't be used with blocks ... because blocks are executed by JVM 
-	-	If no access specifier is specified then its by default will package level
+-	Applicable for - Class, Methods, Constructors, Variables
+-	Private, Protected, Package, Public
+-	Access modifiers can't be used with blocks ... because blocks are executed by JVM 
+-	If no access specifier is specified then its by default will package level
+
 	
-	
-		-	Classes
-			
-			-	Classes can only have Public and Package
-			-	Classes can't mark with private ... because application or any other class can't access the private class
-			-	Protected is used in inheritance ... used with methods and variables
-		
-		
-			
-		package p1;									
+-	Classes
 
-			class A {
-				private int a;
-						int b;
-				protected int c;
-				public int d;
+	-	Classes can only have Public and Package
+	-	Classes can't mark with private ... because application or any other class can't access the private class
+	-	Protected is used in inheritance ... used with methods and variables
+
+
+```java
+	package p1;									
+
+		class A {
+			private int a;
+					int b;
+			protected int c;
+			public int d;
+		}
+
+	package p1;
+
+		class B {
+
+			main() {
+				A a = new A();
+				a.a; // Not possible // error
+				a.b;// possible
+				a.c; //possible
+				a.d;// possible
 			}
-			
-		package p1;
+		}
 
-			class B {
-				
-				main() {
-					A a = new A();
-					a.a; // Not possible // error
-					a.b;// possible
-					a.c; //possible
-					a.d;// possible
-				}
+	package p2;
+
+		class C extends A {
+
+			main() {
+				A a = new A();
+				a.a; //Not possible //private error
+				a.b; //Not possible // package level error
+				a.c; //Not possible // protected error
+				a.d;// possible
+
+				C c = new C();
+				c.a; // Not Possible
+				c.b; //Not possible
+				c.c; // Possible --> inherited to C and able to access
+				c.d; // Possible 
 			}
-			
-		package p2;
+		}
+````
 
-			class C extends A {
-			
-				main() {
-					A a = new A();
-					a.a; //Not possible //private error
-					a.b; //Not possible // package level error
-					a.c; //Not possible // protected error
-					a.d;// possible
-					
-					C c = new C();
-					c.a; // Not Possible
-					c.b; //Not possible
-					c.c; // Possible --> inherited to C and able to access
-					c.d; // Possible 
-				}
-			}
-			
-			
-			
-		-	Private 
 
-			-	Can be accessed by only with in the class
-		
-		-	Package or default
-		
-			-	Can be accessed within the class and in its package
-			
-		-	Protected
-		 
-			-	Can be accessed in class and package and inherited class
-			-	Can't be access to the protected member of the parent class by creating the Parent Object
-			
-			##### Can only accessed in the inherited class by creating the child class instance
-			
-		-	public 
-		
-			-	available publicly 
+-	Private 
+
+	-	Can be accessed by only with in the class
+
+-	Package or default
+
+	-	Can be accessed within the class and in its package
+
+-	Protected
+
+	-	Can be accessed in class and package and inherited class
+	-	Can't be access to the protected member of the parent class by creating the Parent Object
+
+##### Can only accessed in the inherited class by creating the child class instance
+
+-	public 
+
+-	available publicly 
 		
 	
 ----------------------------------------------------------------------------	
 	
-##	10. Packages
+## 10. Packages
 
 	
-	-	Packages are the folders used to place the related java files together
-	-	Packages can have sub packages 
+-	Packages are the folders used to place the related java files together
+-	Packages can have sub packages 
 	
 	
 ----------------------------------------------------------------------------
 
 
-##	11. Event Management Use Case
+## 11. Event Management Use Case
 
-	-	Entities
-	
-		-	Organizer
-		-	Event
-		-	Participants
-		-	Venue
+-	Entities
+
+	-	Organizer
+	-	Event
+	-	Participants
+	-	Venue
 
 ----------------------------------------------------------------------------		
 	
 ## 12. Inheritance
 
 		
-	1.	Single Inheritance
-	2.	Multi-Level Inheritance
-	3.	Hierarchical Inheritance
-	4.	Method Overloading
-	5.	Super Keyword
-	6.	super() method
-	7.	Constructor Chaining
+1.	Single Inheritance
+2.	Multi-Level Inheritance
+3.	Hierarchical Inheritance
+4.	Method Overloading
+5.	Super Keyword
+6.	super() method
+7.	Constructor Chaining
 	
 		
-		1.	Single Inheritance 
-		
-			-	Child Class Inheriting from Single Parent Class
-			-	toString and hashCode methods are inherited from object class
-			-	SingleInheritance Class inherits from java.lang.Object Class
-			
-			
+	1.	Single Inheritance 
+
+		-	Child Class Inheriting from Single Parent Class
+		-	toString and hashCode methods are inherited from object class
+		-	SingleInheritance Class inherits from java.lang.Object Class
+
+		```java	
 			public class SingleInheritance {
 				void method1() {
 					System.out.print("Method 1");
@@ -754,11 +751,11 @@ Code Snippet :
 					si.hashCode();
 				}
 			}
-			
-		2.	Multi-Level Inheritance
-			
-			-	Inheritance by multiple level
-			
+		````	
+	2.	Multi-Level Inheritance
+
+		-	Inheritance by multiple level
+		```java	
 			public class Parent {
 				Parent() {
 					System.out.println("Parent Constructor " + this);
@@ -782,23 +779,23 @@ Code Snippet :
 					c.childMethod();
 				}
 			}
-			
-		3.	Memory Allocation and Inheritance
-			
-			-	Two instances are created - one for parent and child 
-			-	Both Child and Parent Instances share the same memory location
-			
-			#### Output for the above Program :
-				*Parent Constructor* com.bharath.inheritance.*Child@71be98f5*
-				*Child Constructor* com.bharath.inheritance.*Child@71be98f5*
-				Parent Method
-				Child Method
+		````	
+	3.	Memory Allocation and Inheritance
 
-		4.	Hierarchical Inheritance
-		
+		-	Two instances are created - one for parent and child 
+		-	Both Child and Parent Instances share the same memory location
 			
-			-	Inheritance by Hierarchy and at several level
-			
+#### Output for the above Program :
+
+	*Parent Constructor* com.bharath.inheritance.*Child@71be98f5*
+	*Child Constructor* com.bharath.inheritance.*Child@71be98f5*
+	Parent Method
+	Child Method
+
+	4.	Hierarchical Inheritance
+	
+		-	Inheritance by Hierarchy and at several level
+			```java
 				public class Vehicle {
 					String fuel() {
 						return "petrol";
@@ -818,15 +815,15 @@ Code Snippet :
 						return "Disel";
 					}
 				}
-				
-		5.	Method Overriding
+			````	
+	5.	Method Overriding
 
-			-	fuel method has been overridden in the above examples
-			
-		6.	super Keyword 
+		-	fuel method has been overridden in the above examples
 
-			-	super keyword is used to access the parent class members
-			
+	6.	super Keyword 
+
+		-	super keyword is used to access the parent class members
+		```java	
 			public class Child extends Parent {
 				Child() {
 					System.out.println("Child Constructor "+this);
@@ -837,15 +834,15 @@ Code Snippet :
 				}
 			}
 
-		
-		7.	super() method
-		
-			-	super() is used in the constructor of child class to invoke the parent class constructor explicitly
-			-	super() can also be used for constructor chaining
+		````
+	7.	super() method
+
+		-	super() is used in the constructor of child class to invoke the parent class constructor explicitly
+		-	super() can also be used for constructor chaining
 			
 			
-		8.	Constructor Chaining
-		
+	8.	Constructor Chaining
+		```java
 			public class JDK6 {
 				JDK6() {
 					super();
@@ -864,7 +861,7 @@ Code Snippet :
 					System.out.println("JDK8");
 				}
 			}
-
+		````	
 
 ----------------------------------------------------------------------------
 
