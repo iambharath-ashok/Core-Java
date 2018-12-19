@@ -79,13 +79,14 @@
 -	Binding together properties and methods together
 -	In Java we achieve encapsulation using class
 
-		Ex:	 class
-			{ 
+		Ex:	
+			```java
+			class { 
 				fields
 				methods
 				blocks
-			}
-
+			 }
+			```
 
 ### 2.	Inheritance 
 
@@ -93,14 +94,14 @@
 -	New object will inherit the properties and functionalities from existing object and can provide the new functionalities
 -	IS- A and Reusability is a terms used to represent inheritance
 
-	Ex 
+Ex :
 
-		Vehicle -> Car and Bus 
-				Car -> Audi and BWM
-				Bus -> Benz and Volvo
+	Vehicle -> Car and Bus 
+			Car -> Audi and BWM
+			Bus -> Benz and Volvo
 
-##### -	In Java inheritance will done using extends keyword 
-##### - Advn of Inheritance is code reusability			
+##### In Java inheritance will done using extends keyword 
+#####  Advn of Inheritance is code reusability			
 
 ### 3.	Abstraction 
 
