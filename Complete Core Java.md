@@ -33,7 +33,7 @@ Core Java
 			-	Compiler converts .java source file to .class byte code
 			-	Byte code is a binary file and understood by JVM and will be run on the JVM
 			
-		
+----------------------------------------------------------------------------		
 			
 ## 2.	Java Platform Independent
 
@@ -48,7 +48,7 @@ Core Java
 		
 		
 		#### Java is a platform independent language ... once compiled it can be run on any OS
-
+----------------------------------------------------------------------------
 		
 ## 3. Object Oriented Programming
 
@@ -64,7 +64,7 @@ Core Java
 
 			-	Advantage -> Easy to map real world problems
 			
-
+----------------------------------------------------------------------------
 
 ##  4.	Principles of Object Oriented Programming
 
@@ -126,7 +126,7 @@ Core Java
 			
 			##### Polymorphism is achieved using method overloading and overriding 
 		
-		
+----------------------------------------------------------------------------		
 				
 ##  5.	Building blocks of Java
 
@@ -135,7 +135,7 @@ Core Java
 		-	Properties
 		-	Methods
 		-	Blocks
-			
+----------------------------------------------------------------------------			
 			
 ##	6.	Static Members and their Execution Control Flow
 
@@ -182,6 +182,7 @@ Core Java
 			-	Static Variables are initialized at the time of class loading at first time
 			-	Only one copy of Static variable is created per class
 			
+----------------------------------------------------------------------------
 			
 ##	6.	Non-Static Members and their Execution Control Flow
 			
@@ -295,7 +296,8 @@ Core Java
 					com.bharath.nonstatic.ExperimentalClass@71be98f5
 					Main method : com.bharath.nonstatic.ExperimentalClass@71be98f5
 					Method 1: com.bharath.nonstatic.ExperimentalClass@71be98f5
-	
+
+----------------------------------------------------------------------------					
 			
 ##	6.	Static vs Non-Static Members
 
@@ -313,6 +315,10 @@ Core Java
 			-	Accessed via Instance name
 			-	Blocks are executed at the time of object creation
 			-	Memory is allocated and initialized at the time of Object creation
+
+			
+----------------------------------------------------------------------------
+
 
 ##	7.	Data Type
 
@@ -407,7 +413,7 @@ Core Java
 						byte b = (byte) 128; // Output -127 
 											//byte b = 129---> Compilation Error can't convert from int to byte
 	
-
+----------------------------------------------------------------------------
 
 ##	8.	Wrapper Classes with  AutoBoxing and unboxing
 	
@@ -467,7 +473,7 @@ Core Java
 				String s = "67584493.4232";
 				Double dString = new Double(s);
 			
-			
+----------------------------------------------------------------------------			
 			
 ##	9.	Operators and Assignments
 
@@ -565,6 +571,8 @@ Core Java
 	8.	Ternary Operators ? :
 
 		-	Test Expression ? value 1 : value 2
+
+----------------------------------------------------------------------------
 		
 	
 ##	9.	Flow Control Statement
@@ -606,7 +614,8 @@ Core Java
 							}
 						}
 					}
-
+					
+----------------------------------------------------------------------------
 
 
 ##	10. Access Modifiers
@@ -688,7 +697,7 @@ Core Java
 			-	available publicly 
 		
 	
-	
+----------------------------------------------------------------------------	
 	
 ##	10. Packages
 
@@ -696,6 +705,10 @@ Core Java
 	-	Packages are the folders used to place the related java files together
 	-	Packages can have sub packages 
 	
+	
+----------------------------------------------------------------------------
+
+
 ##	11. Event Management Use Case
 
 	-	Entities
@@ -704,7 +717,8 @@ Core Java
 		-	Event
 		-	Participants
 		-	Venue
-	
+
+----------------------------------------------------------------------------		
 	
 ## 12. Inheritance
 
@@ -846,8 +860,11 @@ Core Java
 					System.out.println("JDK8");
 				}
 			}
-		
-			
+
+
+----------------------------------------------------------------------------
+
+
 ## 13. Abstraction
 
 	
@@ -937,7 +954,7 @@ Core Java
 				-	Serializable
 				-	Randoms access
 				
-					
+----------------------------------------------------------------------------					
 	
 ## 14. Polymorphism
 
@@ -995,7 +1012,7 @@ Core Java
 						macBook.start();
 						macBook.stop();
 						
-				
+----------------------------------------------------------------------------				
 				
 ## 15. Encapsulation
 
@@ -1026,7 +1043,7 @@ Core Java
 			}
 		}
 			
-	
+----------------------------------------------------------------------------	
 	
 ## 16. Exceptions
 
@@ -1135,12 +1152,8 @@ Core Java
 				-	all the resource closing statements
 				
 			-	try-catch-finally can be used handled both compile and runtime exceptions
-			
 
-
-
-
-
+----------------------------------------------------------------------------
 
 ## Threads
 
@@ -1533,26 +1546,160 @@ Core Java
 					-	wait(), notify(), notifyAll() methods should be executed in synchronized context 
 					-	Otherwise we will get IllegalMonitarStateException
 				
+----------------------------------------------------------------------------				
+				
+## Executor Service
+
+
+	1. Limitations of using Threads in real-time Scenarios and managing thread life-cycle by ourselfs
+	
+	
+		1.	Time Consuming
+		2.	Poor Resource Management
+		3.	Application is not Robust
+		
+	
+	2. Java Executor Framework
+
+	-	Executor Framework Introduced in Java 1.5 overcomes traditional approach of creating and using Threads
+	-	Executor Provides a Pool of Thread called - Thread Pool
+	-	Once we submit task ... one of the Thread from Thread pool will pickup the task ... executes and Thread goes back to Thread pool instead of dying ... so that Threads can be reused in Future
+	-	Executor Framework will manage the life-cycle of the of Thread
+		
+		
+		Steps to ExecutorService 
+		
+			1.	Create a instance of ExecutorService with specific type of Thread Pool
+			2.	Create a Thread and needs to perform actual Task
+			3.	Assign Thread task to ExecutorMethod
+			
+				Executor e = ExecutorService.newCachedThreadPool();
+				Runnable task = new CheckProcessor();
+				e.execute(task);
+				
+		Advantages of ExecutorService:
+		
+			1.	Time Consuming
+				
+				-	No more Time-Consuming because we have pool of Threads waiting to process the Incoming tasks
+			
+			2.	Poor Resource Management
+				
+				-	We can limit the Number of Threads that can be created by providing the upper bound
+				-	Based on the volume we can use the number of Threads
+				-	No excess Threads will created ... so that system may not crash
+				
+			3.	More Robust
+				
+				-	System will not crash and as there is a limit on the Number of Threads that can be created
+				-	100 Threads can handle millions of Transactions
+				
+			
+		
+		
+		
+	3.	Code Snippet for ExecutorService of CheckProcessor Use Case
+		
+		
+					class ChechProcessor implements Runnable {
+					
+						String name;
+						ChechProcessor(String name) {
+							this.name = name;
+						}
+						public void run() {
+						
+							System.out.println(name + " Check Processor has began processing the check");
+							
+							try{
+								Thread.sleep(3000);
+							} catch(InterruptedException e){
+							}
+							
+							System.out.println(name+ " Check Processor Has Completed execution")
+							
+						}
+					}
+					
+					public class ExecutorTest {
+					
+						main() {
+						
+							CheckProcessor[] checkProcessors = { new CheckProcessor("ATM"), new CheckProcessor("Bank"), new CheckProcessor("Mobile"), new CheckProcessor("Web")};
+						
+							ExecutorService es =  ExecutorService.newFixedThreadPool(2);
+							
+							for(CheckProcessor checkProcessor : checkProcessors) {
+								es.submit(checkProcessor);
+							}
+							
+							es.shutdown();
+						}
+					}
+		
+	4.	Callable and Future
+		
+		1. Callable Interface
+		
+			-	Callable and Future are two features or interfaces in Executor Framework that powerful and useful
+			
+				Runnable interface can't return any value - return type is void
+				
+				To return value of task we need to use Callabe<V> interface
+					
+				
+				Runnable - void run()
+				
+				Callable<V> -	V call()
 				
 				
-				
-				
+			-	Callable interface is a Generic interface we can provide what type of value we want to return
+			-	We need provide an implementation for Callable call method and needs to submit that Callable task to ExecutorService
+			-	ExecutorService will return a Future instance  containing value
+			
+		2.	Future Interface
+			
+			-	Future Instance will returned by Executor Service
+			-	Future Interface will methods using which we can extract the values
 		
 		
+		3. Code Snippet and Output
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+			class SumProcessor implements Callable<Integer> {
+				int num = 0;
+				SumProcessor(int num) {
+					this.num = num;
+				}
+				public Integer call() {
+					System.out.println(Thread.currentThread().getName() + " is Calculation sum of " + this.num);
+					int sum =0;
+					for (int i = 0; i <=this.num; i++) {
+						sum += i;
+					}
+					return sum;
+				}
+			}
+
+			public class CallabelSumProcessorTest {
+				public static void main(String[] args) {
+					SumProcessor [] callables = {new SumProcessor(20), new SumProcessor(100), new SumProcessor(60), new SumProcessor(10)};
+					ExecutorService es = Executors.newFixedThreadPool(2);
+					for(SumProcessor sp : callables) {
+						Future<Integer> future = es.submit(sp);
+						try {
+							Integer integer = future.get();
+							System.out.println("Sum of "+sp.num +" is  "+integer);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							e.printStackTrace();
+						}
+					}
+					es.shutdown();
+				}
+			}
+
+----------------------------------------------------------------------------			
 		
 		
 		
