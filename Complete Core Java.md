@@ -1,6 +1,4 @@
 # Complete Core Java
-	- By Bharath Ashok 
-
 
 
 ## 1.	JDK
@@ -441,28 +439,30 @@ Output:
 2.	Un-boxing ->	Converting Object type to primitive type
 
 Code Snippet : 	
+
+--------------------------
 	1.  Integer
-	---------------------
 		int i = 10;
 		Integer integer = Integer.valueOf(i); //Boxing
 		i = integer; //Un-Boxing
 		i = integer.intValue(); //Un-Boxing
 		
+--------------------------		
 	2.  Short 
-	---------------------
 		short s = 200;
 		Short sh1 = Short.valueOf(s); // Short short = Short.vauleOf(s); ---> Gives Compilation Error ... since short is a reserved keyword
 		s = shortValue.shortValue();
-	
+		
+--------------------------
 	3.	String and Primitives
-	--------------------------
+
 		long l = 20000000;
 		String longString = Long.toString(l); // primitive to String
 		l = longString.parseLong(longString); // String to Primitive
 		
-		
+---------------------------		
 	4.	Wrapper Class Constructors
-	---------------------------
+	
 		-	Each Wrapper classes provided overloaded constructors
 		-	One takes the primitive type and another as string as the argument to Wrapper class constructor
 		
@@ -602,20 +602,17 @@ Code Snippet :
 			
 #### Labelled Blocks and Break
 			
-			
--	main() {
-
+```java			
+	main() {
 		l1 : {
-
 			System.out.println("Block Begins");
-
 			if(x == 20) {
 				break l1; // Comes out of the l1 block 
 				//	break can be used switch and looping blocks
 			}
 		}
 	}
-					
+````					
 ----------------------------------------------------------------------------
 
 
