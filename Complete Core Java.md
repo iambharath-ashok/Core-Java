@@ -1701,7 +1701,55 @@ Core Java
 
 ----------------------------------------------------------------------------			
 		
+## Garbage Collection
+	
+	
+1.	In Java, each threads will have its own Stack Space and Heap Space
+2.	In Stack space local primitive types are stored 
+3.	In Heap Space ... objects are allocated memory and reference from Stack Space will point to that Memory on the Heap Space
+	
+###	Garbage Collection is a process in which JVM will automatically clears them memory for unreachable objects from the Heap Space
+	
+-	Garbage Collection is done by Garbage Collector
+-	Garbage Collector is a daemon thread that runs within JVM in background
+-	We cant force Garbage Collector to Clean the Heap Space 
+-	We can only request Garbage Collector to Clean Heap Space by calling System.gc() method
+
+
+#### Code Snippet For Garbage Collector 
 		
+	public class GarbageCollectorTest {
+
+		GarbageCollectorTest() {
+			System.out.println("Creating Instance through Constructor");
+		}
+
+		public static void main(String[] args) {
+
+			for (int i = 0; i < 200000; i++) {
+				new GarbageCollectorTest();
+				new GarbageCollectorTest();
+			}
+		}
+
+		@Override
+		protected void finalize() {
+
+			System.out.println("Executing Finalize Method");
+			System.gc();
+		}
+	}
+
+## Inner Classes
+
+				
+1.	Static Inner Classes with Static Members
+2.	Static Inner Classes with Non-static Members
+3.	Non-Static Inner Classes
+4.	Accessing Outer Class Members
+5.	Local Inner Class 
+6.	Anonymous Inner Class
+7.	Anonymous Runnable Class
 		
 		
 		
