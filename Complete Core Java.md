@@ -280,17 +280,17 @@ Output:
 				
 Code Snippet:
 
-	```java
-		ExperimentalClass() {
-			System.out.println(Constructor: "+ this);
-		}
+```java
+	ExperimentalClass() {
+		System.out.println(Constructor: "+ this);
+	}
 
-		public static void main(String[] args) {
-			ExperimentalClass experimentalClass = new ExperimentalClass();
-			System.out.println("Main method : " + experimentalClass);
-			experimentalClass.method1();
-		}
-	````
+	public static void main(String[] args) {
+		ExperimentalClass experimentalClass = new ExperimentalClass();
+		System.out.println("Main method : " + experimentalClass);
+		experimentalClass.method1();
+	}
+````
 
 Output:
 
