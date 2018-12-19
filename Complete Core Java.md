@@ -454,26 +454,26 @@ Code Snippet :
 		s = shortValue.shortValue();
 		
 --------------------------
-	3.	String and Primitives
+	3.  String and Primitives
 
 		long l = 20000000;
 		String longString = Long.toString(l); // primitive to String
 		l = longString.parseLong(longString); // String to Primitive
 		
 ---------------------------		
-	4.	Wrapper Class Constructors
+	4.  Wrapper Class Constructors
 	
-		-	Each Wrapper classes provided overloaded constructors
-		-	One takes the primitive type and another as string as the argument to Wrapper class constructor
+	-	Each Wrapper classes provided overloaded constructors
+	-	One takes the primitive type and another as string as the argument to Wrapper class constructor
 		
-		Ex: 
+	Ex: 
 
-			double d = 2999.553;
-			Double dd = new Double(d);
+		double d = 2999.553;
+		Double dd = new Double(d);
 
-			String s = "67584493.4232";
-			Double dString = new Double(s);
-			
+		String s = "67584493.4232";
+		Double dString = new Double(s);
+
 ----------------------------------------------------------------------------			
 			
 ## 9.	Operators and Assignments
@@ -729,136 +729,146 @@ Code Snippet :
 6.	super() method
 7.	Constructor Chaining
 	
-		
-	1.	Single Inheritance 
 
-		-	Child Class Inheriting from Single Parent Class
-		-	toString and hashCode methods are inherited from object class
-		-	SingleInheritance Class inherits from java.lang.Object Class
+1.  Single Inheritance 
 
-		```java	
-			public class SingleInheritance {
-				void method1() {
-					System.out.print("Method 1");
-				}
-				public static void main(String[] args) {
-					SingleInheritance si = new SingleInheritance();
-					si.method1();
-					si.toString();
-					si.hashCode();
-				}
-			}
-		````	
-	2.	Multi-Level Inheritance
+	-  Child Class Inheriting from Single Parent Class
+	-  toString and hashCode methods are inherited from object class
+	-  SingleInheritance Class inherits from java.lang.Object Class
 
-		-	Inheritance by multiple level
-		```java	
-			public class Parent {
-				Parent() {
-					System.out.println("Parent Constructor " + this);
-				}
-				void parentMethod() {
-					System.out.println("Parent Method");
-				}
+	```java	
+		public class SingleInheritance {
+			void method1() {
+				System.out.print("Method 1");
 			}
-			public class Child extends Parent {
-				Child() {
-					System.out.println("Child Constructor "+this);
-				}
-				void childMethod() {
-					System.out.println("Child Method");
-				}
+			public static void main(String[] args) {
+				SingleInheritance si = new SingleInheritance();
+				si.method1();
+				si.toString();
+				si.hashCode();
 			}
-			public class InheritanceTest {
-				public static void main(String[] args) {
-					Child c = new Child();
-					c.parentMethod();
-					c.childMethod();
-				}
-			}
-		````	
-	3.	Memory Allocation and Inheritance
+		}
+	````	
+2.  Multi-Level Inheritance
 
-		-	Two instances are created - one for parent and child 
-		-	Both Child and Parent Instances share the same memory location
+	-  Inheritance by multiple level
+
+	```java	
+		public class Parent {
+			Parent() {
+				System.out.println("Parent Constructor " + this);
+			}
+			void parentMethod() {
+				System.out.println("Parent Method");
+			}
+		}
+		public class Child extends Parent {
+			Child() {
+				System.out.println("Child Constructor "+this);
+			}
+			void childMethod() {
+				System.out.println("Child Method");
+			}
+		}
+		public class InheritanceTest {
+			public static void main(String[] args) {
+				Child c = new Child();
+				c.parentMethod();
+				c.childMethod();
+			}
+		}
+	````	
+	
+3.  Memory Allocation and Inheritance
+
+	-  Two instances are created - one for parent and child 
+	-  Both Child and Parent Instances share the same memory location
 			
 #### Output for the above Program :
 
-	*Parent Constructor* com.bharath.inheritance.*Child@71be98f5*
-	*Child Constructor* com.bharath.inheritance.*Child@71be98f5*
-	Parent Method
-	Child Method
+		*Parent Constructor* com.bharath.inheritance.*Child@71be98f5*
+		*Child Constructor* com.bharath.inheritance.*Child@71be98f5*
+		Parent Method
+		Child Method
 
-	4.	Hierarchical Inheritance
+4.  Hierarchical Inheritance
 	
-		-	Inheritance by Hierarchy and at several level
-			```java
-				public class Vehicle {
-					String fuel() {
-						return "petrol";
-					}
-				}
-				public class Bike extends Vehicle {
+	-  Inheritance by Hierarchy and at several level
 
-				}
-				public class Bus extends Vehicle {
-					@Override
-					String fuel() {
-						return "CNG";
-					}
-				}
-				public class Car extends Vehicle{
-					String fuel(){
-						return "Disel";
-					}
-				}
-			````	
-	5.	Method Overriding
-
-		-	fuel method has been overridden in the above examples
-
-	6.	super Keyword 
-
-		-	super keyword is used to access the parent class members
-		```java	
-			public class Child extends Parent {
-				Child() {
-					System.out.println("Child Constructor "+this);
-				}
-				void childMethod() {
-					*super.parentMethod();*
-					System.out.println("Child Method");
-				}
+	```java
+	
+		public class Vehicle {
+			String fuel() {
+				return "petrol";
 			}
+		}
+		public class Bike extends Vehicle {
 
-		````
-	7.	super() method
+		}
+		public class Bus extends Vehicle {
+			@Override
+			String fuel() {
+				return "CNG";
+			}
+		}
+		public class Car extends Vehicle{
+			String fuel(){
+				return "Disel";
+			}
+		}
+		
+	````	
+5.  Method Overriding
 
-		-	super() is used in the constructor of child class to invoke the parent class constructor explicitly
-		-	super() can also be used for constructor chaining
+	-  fuel method has been overridden in the above examples
+
+6.  super Keyword 
+
+	-  super keyword is used to access the parent class members
+	
+	```java	
+	
+		public class Child extends Parent {
+			Child() {
+				System.out.println("Child Constructor "+this);
+			}
+			void childMethod() {
+				*super.parentMethod();*
+				System.out.println("Child Method");
+			}
+		}
+
+	````
+7.  super() method
+
+	-  super() is used in the constructor of child class to invoke the parent class constructor explicitly
+	-  super() can also be used for constructor chaining
+
 			
-			
-	8.	Constructor Chaining
-		```java
-			public class JDK6 {
-				JDK6() {
-					super();
-					System.out.println("JDK6");
-				}
+8.  Constructor Chaining
+		
+	```java
+	
+		public class JDK6 {
+			JDK6() {
+				super();
+				System.out.println("JDK6");
 			}
-			public class JDK7 extends JDK6 {
-				JDK7() {
-					super();
-					System.out.println("JDK7");
-				}
+		}
+		public class JDK7 extends JDK6 {
+			JDK7() {
+				super();
+				System.out.println("JDK7");
 			}
-			public class JDK8 extends JDK7 {
-				JDK8(){
-					super();
-					System.out.println("JDK8");
-				}
+		}
+		public class JDK8 extends JDK7 {
+			JDK8(){
+				super();
+				System.out.println("JDK8");
 			}
-		````	
+		}
+		
+	````	
 
 ----------------------------------------------------------------------------
 
@@ -866,91 +876,91 @@ Code Snippet :
 ## 13. Abstraction
 
 	
-		-	Abstraction is a process of hiding the implementation details of the object from the object thats using that object
-		-	Using Object should know how to use the object's functionality and should not worry about its implementation
+-	Abstraction is a process of hiding the implementation details of the object from the object thats using that object
+-	Using Object should know how to use the object's functionality and should not worry about its implementation
 	
-		1. Abstract Class
-		
-			-	In Java, Abstraction is achieved through Abstract class and Interface
-			-	Abstract is partial abstraction and interface is complete abstract
-			
-			-	We cant create an instance of Abstract Class
-			
-			-	Abstract class can have main method and will be to run the Abstract class main method
-			
-			####	Abstract class is mainly used to achieve the Runtime Polymorphism and loose coupling
-			####	abstract keyword can't used with static and final as combination... compiler will give the error
-				
-				Code Snippet: 
-				
-						public abstract class AbstractClass {
-							public abstract void method();
-							public String method1() {
-								return "value";
-							}
-							public static void main(String... args) {
-								System.out.println("Inside Main Method");
-							}
-						}
-				
-				Output:
-				
-					-	Inside Main Method
-				
-		2.	Interface
+1. Abstract Class
 
-			-	Interface in Java is used to achieve loose coupling and runtime polymorphism
-			-	Interface is a specification or an idea that represents the functionalities
-				
-			
-		3.	Interface Vs Abstract Class
-		
-			
-			Interface 
-				-	methods are by default public abstract
-				-	variable are by default public static final
-				-	Interface can have only abstract and default methods
-				
-					-	default methods in interface will have concrete implementation
-					
-				-	From Java 8, multiple inheritance with interface is not supported if two interface has same default method signature
-				-	Or if child interface or class doesn't provide its own impl at its level
-				- 	Interface in java cant have constructor and hence cant create an instance of an interface
-				
-			Abstract Class
-				
-				-	Abstract class is marked with abstract keyword
-				-	abstract methods needs to be marked with abstract keyword
-				-	Abstract class can have both concrete and abstract methods
-				-	Abstract class can have constructors
-				-	Abstract can have main method and can run as java program
-				
-				
-		4.	final Keyword
+	-	In Java, Abstraction is achieved through Abstract class and Interface
+	-	Abstract is partial abstraction and interface is complete abstract
 
-			-	final keyword can be used at Class, Method and Variables level
-			
-				1.	final Class 
-					-	Class marked with final cant be inherited
-					
-				2.	final Variables 
-				
-					-	Variables can be initialized at only once and at beginning
-					
-				3.	final Methods
-				
-					-	final Methods can't be inherited and overridden
-						
-				
-			
-		5.	Marker Interface
+	-	We cant create an instance of Abstract Class
 
-			-	Marker Interface are the interface that doesn't have any methods
-			-	By implementing marker interface classes will have special ability 
-			
-				-	Cloneable 
-				-	Serializable
-				-	Randoms access
+	-	Abstract class can have main method and will be to run the Abstract class main method
+
+	####	Abstract class is mainly used to achieve the Runtime Polymorphism and loose coupling
+	####	abstract keyword can't used with static and final as combination... compiler will give the error
+
+		Code Snippet: 
+
+				public abstract class AbstractClass {
+					public abstract void method();
+					public String method1() {
+						return "value";
+					}
+					public static void main(String... args) {
+						System.out.println("Inside Main Method");
+					}
+				}
+
+		Output:
+
+			-	Inside Main Method
+
+2.	Interface
+
+	-	Interface in Java is used to achieve loose coupling and runtime polymorphism
+	-	Interface is a specification or an idea that represents the functionalities
+
+
+3.	Interface Vs Abstract Class
+
+
+	Interface 
+		-	methods are by default public abstract
+		-	variable are by default public static final
+		-	Interface can have only abstract and default methods
+
+			-	default methods in interface will have concrete implementation
+
+		-	From Java 8, multiple inheritance with interface is not supported if two interface has same default method signature
+		-	Or if child interface or class doesn't provide its own impl at its level
+		- 	Interface in java cant have constructor and hence cant create an instance of an interface
+
+	Abstract Class
+
+		-	Abstract class is marked with abstract keyword
+		-	abstract methods needs to be marked with abstract keyword
+		-	Abstract class can have both concrete and abstract methods
+		-	Abstract class can have constructors
+		-	Abstract can have main method and can run as java program
+
+
+4.	final Keyword
+
+	-	final keyword can be used at Class, Method and Variables level
+
+		1.	final Class 
+			-	Class marked with final cant be inherited
+
+		2.	final Variables 
+
+			-	Variables can be initialized at only once and at beginning
+
+		3.	final Methods
+
+			-	final Methods can't be inherited and overridden
+
+
+
+5.	Marker Interface
+
+	-	Marker Interface are the interface that doesn't have any methods
+	-	By implementing marker interface classes will have special ability 
+
+		-	Cloneable 
+		-	Serializable
+		-	Randoms access
 				
 ----------------------------------------------------------------------------					
 	
