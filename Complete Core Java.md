@@ -424,16 +424,16 @@ Output:
 	-	Each primitive type in Java has corresponding Wrapper class
 		
 		
-			Primitive Type 			|			   Wrapper Class
-		   -------------------------------------|------------------------------------------
-			 byte				|				Byte
-			 short				|				Short
-			 int				|				Integer
-			 long				|				Long
-			 float				|				Float
-			 double				|				Double
-			 char				|				Character
-			 boolean				|			Boolean
+			Primitive Type 						   Wrapper Class
+		   -------------------------------------------------------------------------------
+			 byte								Byte
+			 short								Short
+			 int								Integer
+			 long								Long
+			 float								Float
+			 double								Double
+			 char								Character
+			 boolean							Boolean
 			
 			
 1.	Boxing 	-> Converting primitive type to Object type
