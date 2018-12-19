@@ -1,37 +1,36 @@
-Core Java
+# Complete Core Java
 
 
 
-1.	JDK
+## 1.	JDK
 
-	-	Install JDK - Java Developement Kit
-	-	JDK comes with Compiler and JRE
-		
-		JRE - Java Runtime Environment
-		
-			-	JRE contains JVM and API 
-			-	JVM uses JIT Compiler - Just In Time compiler to run the application efficiently 
-			-	JRE provides runtime environment for compiled code or byte code to run
-			-	JRE is like a duplicate OS or Virtual Machine
-			-	JRE interprets the bytecode and converts it to the machine code for the underlying OS
-			
-			JVM - Java Virtual Machine
+-	JDK Stands for Java Developement Kit
+-	JDK comes with Compiler and JRE
+	### JRE - Java Runtime Environment
 
-				-	In Java, Compiled code will be run on the JVM and directly on the OS
-			
-			
-			API - Application Programming Interface
-			
-				-	Predefined and can use without knowing much background or how its been implemented
-				-	Reading and writing files
-					
-					-	Java IO Library
-				
-		
-		Compiler
-		
-			-	Compiler converts .java source file to .class byte code
-			-	Byte code is a binary file and understood by JVM and will be run on the JVM
+	-	JRE contains JVM and API 
+	-	JVM uses JIT Compiler - Just In Time compiler to run the application efficiently 
+	-	JRE provides runtime environment for compiled code or byte code to run
+	-	JRE is like a duplicate OS or Virtual Machine
+	-	JRE interprets the bytecode and converts it to the machine code for the underlying OS
+
+		#### JVM - Java Virtual Machine
+
+		-	In Java, Compiled code will be run on the JVM and directly on the OS
+
+
+		#### API - Application Programming Interface
+
+		-	Predefined and can use without knowing much background or how its been implemented
+		-	Reading and writing files
+
+			-	Java IO Library
+
+
+	### Compiler
+
+	-	Compiler converts .java source file to .class byte code
+	-	Byte code is a binary file and understood by JVM and will be run on the JVM
 			
 ----------------------------------------------------------------------------		
 			
