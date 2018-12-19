@@ -46,7 +46,7 @@
 		-	JVM uses JIT Compiler to translate the byte code to machine code
 		
 		
-		#### Java is a platform independent language ... once compiled it can be run on any OS
+#### Java is a platform independent language ... once compiled it can be run on any OS
 ----------------------------------------------------------------------------
 		
 ## 3. Object Oriented Programming
