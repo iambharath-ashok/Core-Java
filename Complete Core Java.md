@@ -280,15 +280,15 @@ Output:
 Code Snippet:
 
 	```java
-	ExperimentalClass() {
-		System.out.println(Constructor: "+ this);
-	}
+		ExperimentalClass() {
+			System.out.println(Constructor: "+ this);
+		}
 
-	public static void main(String[] args) {
-		ExperimentalClass experimentalClass = new ExperimentalClass();
-		System.out.println("Main method : " + experimentalClass);
-		experimentalClass.method1();
-	}
+		public static void main(String[] args) {
+			ExperimentalClass experimentalClass = new ExperimentalClass();
+			System.out.println("Main method : " + experimentalClass);
+			experimentalClass.method1();
+		}
 	````
 
 Output:
@@ -300,159 +300,161 @@ Output:
 
 ----------------------------------------------------------------------------					
 			
-##	6.	Static vs Non-Static Members
+## 6.	Static vs Non-Static Members
 
 	
-		Static 
-		
-			-	Belongs to Classes
-			-	Accessed using Class name
-			-	Static blocks are executed at the time of Class loading
-			-	Memory is allocated and initialized at the time of class loading
-			
-		Non-Static
-			
-			-	Belongs to Instances
-			-	Accessed via Instance name
-			-	Blocks are executed at the time of object creation
-			-	Memory is allocated and initialized at the time of Object creation
+### Static 
+
+-	Belongs to Classes
+-	Accessed using Class name
+-	Static blocks are executed at the time of Class loading
+-	Memory is allocated and initialized at the time of class loading
+
+### Non-Static
+
+-	Belongs to Instances
+-	Accessed via Instance name
+-	Blocks are executed at the time of object creation
+-	Memory is allocated and initialized at the time of Object creation
 
 			
 ----------------------------------------------------------------------------
 
 
-##	7.	Data Type
+## 7.	Data Type
 
 	
-		1. Primitive Data Types
-		
-			-	byte
-				
-				-	1 byte = 8 bits = 1 1 1 1 1 1 1 1
-				-	2^8 = 256 = 256/2 = -128 to +127
-					
-				- 	
-					byte b= 120;
-					byte a = 12;
-					
-					int i = a + b;
-				
-				- 	Always assign the bytes sum to int			
-					
-			-	short
-				
-				-	2 bytes
-			-	int 
-			
-				-	4 bytes
-			- 	long
-			
-				-	8 bytes
-				
-			-	boolean
-			
-				-	2 bit
-			
-			- 	float
-			
-				-	4 bytes
-				
-			-	double
-				
-				- 	8 bytes
-			
-			-	char
-				
-				-	2 bytes
+1. Primitive Data Types
+
+	-	byte
+
+		-	1 byte = 8 bits = 1 1 1 1 1 1 1 1
+		-	2^8 = 256 = 256/2 = -128 to +127
+
+		- 	
+			byte b= 120;
+			byte a = 12;
+
+			int i = a + b;
+
+		- 	Always assign the bytes sum to int			
+
+	-	short
+
+		-	2 bytes
+	-	int 
+
+		-	4 bytes
+	- 	long
+
+		-	8 bytes
+
+	-	boolean
+
+		-	2 bit
+
+	- 	float
+
+		-	4 bytes
+
+	-	double
+
+		- 	8 bytes
+
+	-	char
+
+		-	2 bytes
 
 
 
 
-		2.	Type Casting
-		
-			
-			1.	Primitive Type Casting 
-								
-				-	Implicit Up-casting
-					
-					-	Assigning lower data type to higher data type
-					-	Lower -> Higher
-					-	Will be handled implicitly by Compiler
-					-	Ex: 
-							1.	Byte to Int
-							2.	Int to Long 
-					
-				-	Explicit down-casting
-					
-					-	Assigning higher Data type to lower data type
-					-	Higher -> Lower
-					-	Needs to handled by Developer manually - by casting
-					-	Ex:
-						
-							1.	Int to Byte
-							2. 	Long to Int
-							
-								static int i = (int) 99999999l;
+2.	Type Casting
 
-			2.	Reference (Object) Type-casting
-			
-				
-				- Implicate Up-casting
-					
-					-	Assigning Child class instance to parent class reference
-					-	Child -> Parent
-				
-				-	Explicit Down-casting
-					
-					-	Parent class instance to Child Class
-					-	Parent -> Child
-					-	Down-casting needs to done explicitly
-					
-					-	Ex:
 
-						int i = (int)999999l;
-						byte b = (byte) 128; // Output -127 
-											//byte b = 129---> Compilation Error can't convert from int to byte
+	1.	Primitive Type Casting 
+
+		-	Implicit Up-casting
+
+			-	Assigning lower data type to higher data type
+			-	Lower -> Higher
+			-	Will be handled implicitly by Compiler
+			-	Ex: 
+					1.	Byte to Int
+					2.	Int to Long 
+
+		-	Explicit down-casting
+
+			-	Assigning higher Data type to lower data type
+			-	Higher -> Lower
+			-	Needs to handled by Developer manually - by casting
+			-	Ex:
+
+					1.	Int to Byte
+					2. 	Long to Int
+
+						static int i = (int) 99999999l;
+
+	2.	Reference (Object) Type-casting
+
+
+		- Implicate Up-casting
+
+			-	Assigning Child class instance to parent class reference
+			-	Child -> Parent
+
+		-	Explicit Down-casting
+
+			-	Parent class instance to Child Class
+			-	Parent -> Child
+			-	Down-casting needs to done explicitly
+
+			-	Ex:
+
+				int i = (int)999999l;
+				byte b = (byte) 128; // Output -127 
+				//byte b = 129---> Compilation Error can't convert from int to byte
 	
 ----------------------------------------------------------------------------
 
-##	8.	Wrapper Classes with  AutoBoxing and unboxing
+## 8.	Wrapper Classes with  AutoBoxing and unboxing
 	
-	-	Wrapper Classes are used to convert primitive types to Object types
-	-	Wrapper Classes are mainly required when we are working with Collection API	
-	
+-	Wrapper Classes are used to convert primitive types to Object types
+-	Wrapper Classes are mainly required when we are working with Collection API	
+
+	-	Each primitive type in Java has corresponding Wrapper class
 		
-		-	Each primitive type in Java has corresponding Wrapper class
 		
+			Primitive Type 			|			   Wrapper Class
+		   -------------------------------------|------------------------------------------
+			 byte				|				Byte
+			 short				|				Short
+			 int				|				Integer
+			 long				|				Long
+			 float				|				Float
+			 double				|				Double
+			 char				|				Character
+			 boolean				|			Boolean
+			
+			
+1.	Boxing 	-> Converting primitive type to Object type
+2.	Un-boxing ->	Converting Object type to primitive type
+
+Code Snippet : 	
+	1.  Integer
 		
-		Primitive Type 						Wrapper Class
-			byte								Byte
-			short								Short
-			int									Integer
-			long								Long
-			float								Float
-			double								Double
-			char								Character
-			boolean								Boolean
-			
-			
-	1.	Boxing 	-> Converting primitive type to Object type
-	2.	Un-boxing ->	Converting Object type to primitive type
-		
-		Code Snippet : 	
-			1.  Integer
-			
-				int i = 10;
-				Integer integer = Integer.valueOf(i); //Boxing
-				i = integer; //Un-Boxing
-				i = integer.intValue(); //Un-Boxing
-				
-			2.	Short 
-			
-				short s = 200;
-				Short sh1 = Short.valueOf(s); // Short short = Short.vauleOf(s); ---> Gives Compilation Error ... since short is a reserved keyword
-				s = shortValue.shortValue();
-			
+	```java	
+		int i = 10;
+		Integer integer = Integer.valueOf(i); //Boxing
+		i = integer; //Un-Boxing
+		i = integer.intValue(); //Un-Boxing
+	````
+	2.	Short 
+
+	```java
+		short s = 200;
+		Short sh1 = Short.valueOf(s); // Short short = Short.vauleOf(s); ---> Gives Compilation Error ... since short is a reserved keyword
+		s = shortValue.shortValue();
+	````java
 			
 	3.	String and Primitives
 
