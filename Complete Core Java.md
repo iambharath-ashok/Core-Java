@@ -80,13 +80,13 @@
 -	In Java we achieve encapsulation using class
 
 		Ex:	
-			```java
+			
 			class { 
 				fields
 				methods
 				blocks
 			 }
-			```
+			
 
 ### 2.	Inheritance 
 
@@ -184,118 +184,119 @@ Ex :
 			
 ----------------------------------------------------------------------------
 			
-##	6.	Non-Static Members and their Execution Control Flow
+## 6.	Non-Static Members and their Execution Control Flow
 			
 			
-	1.	Non-static Variables
-	2.	Non-static Methods
-	3.	Non-static blocks
-	4.	Constructor
+1.	Non-static Variables
+2.	Non-static Methods
+3.	Non-static blocks
+4.	Constructor
 	
-		- 	Instance blocks will get executed whenever a new instance will be created
-		-	Instance block will get executed before the constructor
+	- 	Instance blocks will get executed whenever a new instance will be created
+	-	Instance block will get executed before the constructor
 		
-		
-				public class NonStaticMembers {
-	
-					private NonStaticMembers() {
-						System.out.println("Insid Constructor");
-					}
-					
-					{
-						System.out.println("Inside Instance Block");
-					}
-					
-					public static void main(String[] args) {
-						System.out.println("Inside Main Method");
-						System.out.println(staticInt);
-						System.out.println(new NonStaticMembers().nonStaticInt);
-						
-						for(int i=0 ; i<5; i++ ) {
-							new NonStaticMembers();
-						}
-					}
-					
-					private int nonStaticInt;
-					private static int staticInt;
+	```java
+		public class NonStaticMembers {
 
+			private NonStaticMembers() {
+				System.out.println("Insid Constructor");
+			}
+
+			{
+				System.out.println("Inside Instance Block");
+			}
+
+			public static void main(String[] args) {
+				System.out.println("Inside Main Method");
+				System.out.println(staticInt);
+				System.out.println(new NonStaticMembers().nonStaticInt);
+
+				for(int i=0 ; i<5; i++ ) {
+					new NonStaticMembers();
 				}
-				
-			Output:
+			}
+
+			private int nonStaticInt;
+			private static int staticInt;
+
+		}
+	````		
+	
+Output:
+
+	Inside Main Method
+	0
+	Inside Instance Block
+	Insid Constructor
+	0
+	Inside Instance Block
+	Insid Constructor
+	Inside Instance Block
+	Insid Constructor
+	Inside Instance Block
+	Insid Constructor
+	Inside Instance Block
+	Insid Constructor
+
+
+##### Difference b/w Static and Non-static Blocks
+
+1. 	Static block will gets executed only once per the class - while loading class to memory
+2.	Non-static block will gets executed every time a new object will gets created
 			
-				Inside Main Method
-				0
-				Inside Instance Block
-				Insid Constructor
-				0
-				Inside Instance Block
-				Insid Constructor
-				Inside Instance Block
-				Insid Constructor
-				Inside Instance Block
-				Insid Constructor
-				Inside Instance Block
-				Insid Constructor
 
-
-		##### Difference b/w Static and Non-static Blocks
+	-	Object reference in static block
 		
-			1. 	Static block will gets executed only once per the class - while loading class to memory
-			2.	Non-static block will gets executed every time a new object will gets created
-			
-		
-		
-		
-		-	Object reference in static block
-			
-					class SimpleClass {
-						
-					}
-					public class ObjectReferenceInStaticBlock {
+		```java
+			class SimpleClass {
 
-						private SimpleClass scInstance;
-						private static SimpleClass scStatic;
-						
-						public static void main(String[] args) {
-						}
-						
-						static {
-							SimpleClass sc = new SimpleClass();
-							//scInstance = new SimpleClass();  // gives compilation error
-							scStatic = new SimpleClass();
-							System.out.println(sc);
-						}
-					}
+			}
+			public class ObjectReferenceInStaticBlock {
 
+				private SimpleClass scInstance;
+				private static SimpleClass scStatic;
+
+				public static void main(String[] args) {
+				}
+
+				static {
+					SimpleClass sc = new SimpleClass();
+					//scInstance = new SimpleClass();  // gives compilation error
+					scStatic = new SimpleClass();
+					System.out.println(sc);
+				}
+			}
+		````	
 		
-		#### this keyword
+#### this keyword
 
 
-			-	this keyword is used to refer to the current object that is being invoking
-			-	this keyword points to current object address
-			-	When we invoke Constructor using new operator then Object address will be assigned to this keyword
-			
+-	this keyword is used to refer to the current object that is being invoking
+-	this keyword points to current object address
+-	When we invoke Constructor using new operator then Object address will be assigned to this keyword
+
 				
 				
-				Code Snippet:
-				
-					ExperimentalClass() {
-						System.out.println(Constructor: "+ this);
-					}
-					
-					public static void main(String[] args) {
-						ExperimentalClass experimentalClass = new ExperimentalClass();
-						System.out.println("Main method : " + experimentalClass);
-						experimentalClass.method1();
-					}
-			
-			
-				Output:
-				
-					Constructor: com.bharath.nonstatic.ExperimentalClass@71be98f5
-					com.bharath.nonstatic.ExperimentalClass@71be98f5
-					Main method : com.bharath.nonstatic.ExperimentalClass@71be98f5
-					Method 1: com.bharath.nonstatic.ExperimentalClass@71be98f5
+Code Snippet:
+
+	```java
+	ExperimentalClass() {
+		System.out.println(Constructor: "+ this);
+	}
+
+	public static void main(String[] args) {
+		ExperimentalClass experimentalClass = new ExperimentalClass();
+		System.out.println("Main method : " + experimentalClass);
+		experimentalClass.method1();
+	}
+	````
+
+Output:
+
+	Constructor: com.bharath.nonstatic.ExperimentalClass@71be98f5
+	com.bharath.nonstatic.ExperimentalClass@71be98f5
+	Main method : com.bharath.nonstatic.ExperimentalClass@71be98f5
+	Method 1: com.bharath.nonstatic.ExperimentalClass@71be98f5
 
 ----------------------------------------------------------------------------					
 			
