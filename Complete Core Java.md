@@ -36,14 +36,14 @@
 			
 ## 2.	Java Platform Independent
 
-		-	We can't run c program compiled on Windows on Mac OS
-		-	In java .java file will be coverted to .class file which is a intermediate file by compiler
-		-	Bytecode is not a machine code for particular OS 
-		-	Bytecode can be interpreted by Linux JVM for Linux OS .... Windows JVM will interpret the byte code to Windows OS
-	 	
-		
-		-	Platform independent will comes from this additional step
-		-	JVM uses JIT Compiler to translate the byte code to machine code
+-	We can't run c program compiled on Windows  to run on Mac OS
+-	In java .java file will be coverted to .class file which is a intermediate file by compiler called Bytecode
+-	Bytecode is not a machine code for particular OS 
+-	Bytecode can be interpreted by Linux JVM for Linux OS .... Windows JVM will interpret the bytecode to Windows OS
+
+
+-	Platform independent will comes from this additional step
+-	JVM uses JIT Compiler to translate the Bytecode to machine code
 		
 		
 #### Java is a platform independent language ... once compiled it can be run on any OS
@@ -52,134 +52,134 @@
 ## 3. Object Oriented Programming
 
 	
-		-	Each object has properties and behavior
-		-	Properties are represented by fields 
-		-	Behavior is represented by methods or functions
-		
-			-	Objects will communicate with each other through methods
-			-	Information is exchanged through variables or fields and properties
-			
-		### Java is object oriented programming language
+-	Each object has properties and behavior
+-	Properties are represented by fields 
+-	Behavior is represented by methods or functions
 
-			-	Advantage -> Easy to map real world problems
+	-	Objects will communicate with each other through methods
+	-	Information is exchanged through variables or fields and properties
+			
+### Java is a object oriented programming language
+
+-	Advantage -> Easy to map real world problems
 			
 ----------------------------------------------------------------------------
 
 ##  4.	Principles of Object Oriented Programming
 
-		1.	Encapsulation
-		2.	Abstraction
-		3.	Polymorphism
-		4.	Inheritance
+1.	Encapsulation
+2.	Abstraction
+3.	Polymorphism
+4.	Inheritance
 		
 		
-		### 1. Encapsulation
-		
-			-	Encapsulation is about protecting properties and functionalities from other objects
-			-	Binding together properties and methods together
-			-	In Java we achieve encapsulation using class
-			
-				Ex: Class
-					{ 
-						fields
-						methods
-					}
-			
-					
-		### 2.	Inheritance 
-			
-			-	Inheritance is a process creating a new object using an existing object
-			-	New object will inherit the properties and functionalities from existing object and can provide the new functionalities
-			-	IS- A and Reusability is a terms used to represent inheritance
-			
-			Ex 
-			
-				Vehicle -> Car and Bus 
-						Car -> Audi and BWM
-						Bus -> Benz and Volvo
-			
-			##### -	In Java inheritance will done using extends keyword 
-			##### - Advn of Inheritance is code reusability			
-			
-		### 3.	Abstraction 
-			
-			-	Abstraction is a principle of hiding the unnecessary details of the object from another object 
-			-	And showing only essential features in-order to communicate with that object
-			
-			
-			##### In Java we achieve abstraction using an interface
-			
-			
-			Ex: 
-			
-				-	We just focus on how to use the functionalities or objects 
-				-	We dont needs to care how this has been implemented
-					
-					TV, Car, Laptop, Pen, Paper,CellPhone
-					
-					
-					
-		### 4.	Polymorphism
-		
-			-	Polymorphism is showing different behaviors at point-in time
-			
-			##### Polymorphism is achieved using method overloading and overriding 
-		
+### 1. Encapsulation
+
+-	Encapsulation is about protecting properties and functionalities from other objects
+-	Binding together properties and methods together
+-	In Java we achieve encapsulation using class
+
+		Ex:	 class
+			{ 
+				fields
+				methods
+				blocks
+			}
+
+
+### 2.	Inheritance 
+
+-	Inheritance is a process creating a new object using an existing object
+-	New object will inherit the properties and functionalities from existing object and can provide the new functionalities
+-	IS- A and Reusability is a terms used to represent inheritance
+
+	Ex 
+
+		Vehicle -> Car and Bus 
+				Car -> Audi and BWM
+				Bus -> Benz and Volvo
+
+##### -	In Java inheritance will done using extends keyword 
+##### - Advn of Inheritance is code reusability			
+
+### 3.	Abstraction 
+
+-	Abstraction is a principle of hiding the unnecessary details of the object from another object 
+-	And showing only essential features in-order to communicate with that object
+
+
+##### In Java we achieve abstraction using an interface
+
+
+	Ex: 
+
+		-	We just focus on how to use the functionalities or objects 
+		-	We dont needs to care how this has been implemented
+
+			TV, Car, Laptop, Pen, Paper,CellPhone
+
+
+
+### 4.	Polymorphism
+
+-	Polymorphism is showing different behaviors at point-in time
+
+##### Polymorphism is achieved using method overloading and overriding 
+
 ----------------------------------------------------------------------------		
 				
 ##  5.	Building blocks of Java
 
-	
-		-	Class
-		-	Properties
-		-	Methods
-		-	Blocks
+-	Class
+-	Properties
+-	Methods
+-	Blocks
 ----------------------------------------------------------------------------			
 			
-##	6.	Static Members and their Execution Control Flow
+## 6.	Static Members and their Execution Control Flow
 
 		
-		-	Static - 	Class Level
-		-	Non Static -	Object Level
+-	Static - 	Class Level
+-	Non Static -	Object Level
 		
 	
-		1. Static Blocks
-			
-			-	Static Blocks will be executed before main method 
-			-	Static Blocks will executed at the time of loading the class to memory
-			
-			-	Static blocks will be used to initialize the variables
-			-	Static blocks will be Executed from top to bottom and order is imp
-			
-			Code Snippet:
-			
-			```java
-				private static void method1(String name) {
-					System.out.println("Static Method 1 calling from" + name);
-				}
+1. Static Blocks
 
-				static {
-					System.out.println("Static Block1");
-					method1("Block 1");
-				}
-				
-				public static void main(String[] args) {
-					System.out.println("Main method");
-					method1("Main Method");
-				}
+	-	Static Blocks will be executed before main method 
+	-	Static Blocks will executed at the time of loading the class to memory
+
+	-	Static blocks will be used to initialize the variables
+	-	Static blocks will be Executed from top to bottom and order is imp
+
+	Code Snippet:
+
+	```java
+		private static void method1(String name) {
+			System.out.println("Static Method 1 calling from" + name);
+		}
+
+		static {
+			System.out.println("Static Block1");
+			method1("Block 1");
+		}
+
+		public static void main(String[] args) {
+			System.out.println("Main method");
+			method1("Main Method");
+		}
 
 
-				static {
-					System.out.println("Static Block2");
-					method1("Block 2");
-				}
-			```
-		
-		
-		2.	Static Variables 
-		
-			-	Static Variables are initialized at the time of class loading at first time
-			-	Only one copy of Static variable is created per class
+		static {
+			System.out.println("Static Block2");
+			method1("Block 2");
+		}
+	```
+
+
+2.	Static Variables 
+
+	-	Static Variables are initialized at the time of class loading at first time
+	-	Only one copy of Static variable is created per class
 			
 ----------------------------------------------------------------------------
 			
