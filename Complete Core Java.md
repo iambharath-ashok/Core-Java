@@ -729,7 +729,7 @@ Code Snippet :
 6.	super() method
 7.	Constructor Chaining
 	
-
+----------------------------------------------------------------------------
 1.  Single Inheritance 
 
 	-  Child Class Inheriting from Single Parent Class
@@ -778,12 +778,12 @@ Code Snippet :
 			}
 		}
 	````	
-	
+
 3.  Memory Allocation and Inheritance
 
 	-  Two instances are created - one for parent and child 
 	-  Both Child and Parent Instances share the same memory location
-			
+
 #### Output for the above Program :
 
 		*Parent Constructor* com.bharath.inheritance.*Child@71be98f5*
@@ -792,11 +792,11 @@ Code Snippet :
 		Child Method
 
 4.  Hierarchical Inheritance
-	
+
 	-  Inheritance by Hierarchy and at several level
 
 	```java
-	
+
 		public class Vehicle {
 			String fuel() {
 				return "petrol";
@@ -816,7 +816,7 @@ Code Snippet :
 				return "Disel";
 			}
 		}
-		
+
 	````	
 5.  Method Overriding
 
@@ -825,9 +825,9 @@ Code Snippet :
 6.  super Keyword 
 
 	-  super keyword is used to access the parent class members
-	
+
 	```java	
-	
+
 		public class Child extends Parent {
 			Child() {
 				System.out.println("Child Constructor "+this);
@@ -844,11 +844,11 @@ Code Snippet :
 	-  super() is used in the constructor of child class to invoke the parent class constructor explicitly
 	-  super() can also be used for constructor chaining
 
-			
+
 8.  Constructor Chaining
-		
+
 	```java
-	
+
 		public class JDK6 {
 			JDK6() {
 				super();
@@ -867,7 +867,7 @@ Code Snippet :
 				System.out.println("JDK8");
 			}
 		}
-		
+
 	````	
 
 ----------------------------------------------------------------------------
