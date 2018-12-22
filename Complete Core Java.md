@@ -1747,6 +1747,7 @@ Code Snippet :
 			System.gc();
 		}
 	}
+----------------------------------------------------------------------------
 
 ## Inner Classes
 
@@ -1758,37 +1759,546 @@ Code Snippet :
 5.	Local Inner Class 
 6.	Anonymous Inner Class
 7.	Anonymous Runnable Class
+
+		
+	---------------------------
+	-	In java we can define 4 types of inner class
+
+		1.	Instance Inner Class
+		2.	Static Inner Class
+		3.	Local Inner Class
+		4.	Anonymous Inner class - declared and defined at same place
 		
 		
+----------------------------------------------------------------------------		
 		
-		
-		
-		
-		
-		
-		
-		
-		
+## String Handling
+
+
+### 1.	Different ways to create String 
+
+-	An  object of String can be created in 2 ways
+-	String and Wrapper class has overridden Object class toString method  ... so that it will print the object content not the object address with has code value
+
+	1.	Assigning String Literal
+	2.	Using new operator with String Overloaded Constructors
 		
 
+			```java
 			
+					String s1 = "Bharath";// Will be created String constant pool
+					
+					String s2 = new String("Bharath"); // Will be created in Heap Area
+									
+					char [] chars = { 'a', 'b', 'c' }; 
+					String s3 = new String(chars); // Will be created in Heap Area
+					
+					byte [] bytes = { 63, 64, 65 };
+					String s4 = new String(bytes); // Will be created in Heap Area
+			`````
+			
+	3.	String Pooling
+	
+		-	String pool is a special area on the Heap Area
+		-	Reuse String values in the application 
+		
+
+			-	String is immutable
+			
+				-	Whenever we tries to assign a new value to String reference it will not reuse existing memory or doesn't remove the previous value
+				-	Instead it will create a new String with another memory location and make reference point to that location
+				
+			-	String is Thread Safe
+			
+				-	When Thread wants to change the value it will be created with new location 
+				-  	No dirty reads will made as each thread will point to two different string values
+				
+			-----------------------
+			Advantages of String Immutability is :
+			
+				1.	Performance 
+				
+					-	JVM will reuse the existing constants from the String Constant pool
+				
+				2.	Thread Safe
+				
+					-	Multiple Threads can work with String 
+					-	Threads updating value will point new different location
+					
+		-	String Pool Proof
+
+
+			public class StringPooling {
+				main() {
+					String a = "xyz";
+					String b = "xyz";
+					String c = "xyz";
+					String d = new String("xyz");
+					
+					System.out.println(a.hashCode());
+					System.out.println(b.hashCode());
+					System.out.println(c.hashCode());
+					
+					System.out.println(System.identityHashCode(a));
+					System.out.println(System.identityHashCode(c));
+					System.out.println(System.identityHashCode(d));
+					System.out.println(System.identityHashCode(e));
+				}
+			}
+			
+			Output :
+				45689
+				45689
+				45689
+				
+	4.	String Comparison and Object Comparison
+		
+		
+			-	== operator will check for object memory location
+			-	equals method in String checks for String content
+			-	== operation on objects uses Object Class equals() method - Object Class equals() method compares Objects with == operator as its implementation
+	
+	5. String Class Methods
+	
+	
+		- Instance Methods
+		
+			1.	length() - 	Number of Character in String
+			2.	indexOf('Characther') - Returns Position of that character in the string
+			3.	charAt(3) - Returns the character at that location
+			4. 	substring(Beginning Index, Ending Index) - substring(2) or substring(2, 6)
+			5.	split(" ") - Split the sentence with delimiter and returns String Array
+			6.	replace('Character To Be Replaced','Newly Replacing Char') - Replaces existing Chars in the String with new Chars
+			7. 	toUpperCase()
+			8.	toLowerCase()
+			
+			
+		String Class doesn't have append method as it's a immutable 
+	
+	
+	6.	StringBuffer and StringBuilder
+	
+		-	StringBuffer is mutable -  We can change the values of StringBuffer
+		-	When we append the another String or StringBuffer to StringBuffer
+		-	Initial capacity of StringBuffer is 16 chars
+		
+			StringBuffer sb = new StringBuffer();
+				
+			sb.append("All Power is with in You");
+			sb.append("You can do Anything or Everything");
+			
+			sb.reverse(); // Reverses the given String
+			 
+			sb.capacity();  
+			sb.charAt(10);
+			
+			sb.insert();
+			
+			sb.delete('Starting Index','Ending Index')
+					
+
+
+	7. StringBuffer vs StringBuilder
+		
+		1.	Similarities
+		
+			-	Both StringBuffer and StringBuilder is mutable
+			
+		2.	StringBuffer 
+		
+			-	StringBuffer is thread Safe - multiple threads can work on this without any issues
+			-	StringBuffer is less efficient and consume more time than StringBuilder
+			-	StringBuffer should be used -> when we need mutable and working with Multiple Threads
+			
+		3.	StringBuilder
+		
+			-	StringBuilder is not Thread Safe - Multiple Threads can't work on StringBuilder
+			-	StringBuilder is faster than StringBuffer
+			-	StringBuilder should be used -> when we need mutable and working with Single Thread
+			
+	
+
+----------------------------------------------------------------------------		
+		
+## IO Streams
+
+	
+-	Stream is a logical handler of DATA from Input Source to Output Source
+-	Input Source is used to Read Data and Output Source is used to Write Data
+-	Server will use Output Stream to send data and Browser will will use Input Stream to receive the Data
+
+	
+### Java Supports 4 Types of Streams
+
+1. 	Byte Streams
+
+-	Reads and write 1 byte at a time
+-	Byte Streams are used to read and write binary data
+
+2.	Character Streams
+	
+-	Character streams uses Unicode to write and read data
+-	Character Streams Reads and Writes 1 character at a time
+-	Character are represented in Unicode in Java
+-	Character Streams will read and write 2 bytes at a time
+-	Using unicode we can read and write any language in Java
+-	Character Streams will be used when we needs deals to Textual information
+
+3.	Buffered Streams
+
+-	Buffered Streams are wrapper for Byte and Character Streams 
+-	Buffered Streams allows to read more data at a time
+-	Using Buffered Streams we can read and write lines of data instead of one byte or character at a time
+	
+	
+4.	Object Streams
+	
+-	Objects Streams allows us to read and write Objects to File or Network Streams
+-	Objects Streams writing Objects to File or Network is called Serialization 
+-	Objects Streams reading Objects from File or Network is called De-serialization
+
+	
+####	java.io package
+
+-	All the Streams will fall under java.io package
+-	InputStream and OuputStream are used for dealing with ByteStream
+-	FileOutputStream and FileInputStream is implementation of OutputStream and InputStream
+-	Reader and Writer are used to dealing with CharacterStream
+-	FileWriter and FileReader are the Implementation of Reader and Writer
+-	File is a Handler class used to deal with files and folders
+-	Classes of java.io package throws a checked exception IOException and FileNotFoundException
+	
+	
+									java.io 
+									
+				InputStream(AC)				Reader(AC) 		  		File - Handler Class used to handle Files and folders
+				OuputStream(AC) 			Writer(AC)
+				FileInputStream				FileReader
+				FileOutputStream			FileWriter
+
+		
+
+	1.	FileInputStream	
+		
+		-	Reads 1 Byte at a time
+	
+			try {
+				FileInputStream inputStream = new FileInputStream(new File("/FilePath"));
+			
+				int data =0; // 
+				
+				while((data = inputStream.read())!= -1) {
+					System.out.print((char)data);
+				}
+			} catch(FileNotFoundException){}
+			catch(IOException) {}
+			finally {
+				try{
+					inputStream.close();
+				}catch(IOException){}
+			}	
+
+	2. 	FileOutputStream  - copying file using FileOutputStream
+	
+		-	Writes 1 Byte at a time
+		-	FileOutputStream and FileInputStream is used for Reading and Writing Binary Files 
+		
+		
+			try {
+				FileInputStream inputStream = new FileInputStream(new File("/FilePath"));
+				FileOutputStream outputStream = new FileOutputStream(new File("/FilePath"));
+			
+				int data =0; // 
+				
+				while((data = inputStream.read())!= -1) {
+					System.out.print((char)data);
+					outputStream.write(data);
+				}
+			} catch(FileNotFoundException){}
+			catch(IOException) {}
+			finally {
+				try{
+					inputStream.close();
+					outputStream.close();
+				}catch(IOException){}
+			}	
 
 
 
+	3.	FileReader and FileWriter 
+		
+		-	FileReader and FileWriter will used and good for reading and writing textual data
+		
+			try {
+				FileReader fileReader = new FileReader("/FilePath");
+				FileWriter fileWriter = new FileWriter("/FilePath");
+			
+				int data =0; // 
+				
+				while((data = fileReader.read())!= -1) {
+					System.out.print((char)data);
+					fileWriter.write(data);
+				}
+			} catch(FileNotFoundException){}
+			catch(IOException) {}
+			finally {
+				try{
+					fileReader.close();
+					fileWriter.close();
+				}catch(IOException){}
+			}	
+
+
+	4.	StringTokenizer - A Utility Class
+	
+		-	StringTokenizer is a utility Class to work with String or Handling String Lines
+		-	StringTokenizer is mainly used when reading data from Input Streams 
+		-	StringTokenizer has overloaded constructor that can be used to split and manipulate the strings
+		
+		
+		Code Snippet 
+		
+			class StringTokenizerTest {
+				main() {
+					String string = "You all the power within you";
+					
+					StringTokenizer st = new StringTokenizer(string);
+					
+					while(st.hasMoreTokens()) {
+						System.out.println(st.nextToken());
+					}
+				}
+			}
+			
+		-	StringTokenizer("String");
+		-	StringTokenizer("String", "Delimeter");
+		-	StringTokenizer("String", "Delimeter","booleanValue");		
+			
+	
+	
+	5.	Try With Resources
+	
+		-	Try with Resources has been introduced in Java 7
+		-	Try with Resources handles auto-closable - Resources that can be AutoClosable 
+		-	To use with Try-Resources, resource class should implements AutoClosable interface
+		-	Finally Block is optional in Try-Resources 
+			
+		Code Snippet 
+			
+		
+			try(FileReader fileReader = new FileReader("/FilePath");
+					FileWriter fileWriter = new FileWriter("/FilePath");){
+					
+					int data =0; // 
+					
+					while((data = fileReader.read())!= -1) {
+						System.out.print((char)data);
+						fileWriter.write(data);
+					}
+			
+			}catch(FileNotFoundException) {	}
+			catch(IOException) {}
+		
+		
+	6.	Serialization and Deserialization
+
+		-	Serialization is a process of writing Object to Stream
+		-	Streams can be File or Network
+		-	For an object to be serialize it should implement Serializable Interface
+		-	Serializable is a Marker Interface that doesn't have any methods .... but JVM treat that differently by adding additional capabilities
+		-	Serializable tells JVM that Objects from this class be Serializable
+		-	Transient Keyword is used that mark or make few critical fields to be not part of Serialization and written to OutputStream
+	
+	
+	7.	ObjectInputStream and ObjectOutputStream
+	
+		
+		-	ObjectInputStream is used to Read the Serialized data from file to Object - Deserialization
+		-	ObjectOutputStream is used to Write Data to File or Stream - Serialization
+		
+		
+				
+		Code Snippet :
+		
+			class Hosting implements Serializable {
+				int id;
+				String name;
+				Long websites;
+				transient String domainName;
+
+				public Hosting(int id, String name, Long websites, String domainName) {
+					super();
+					this.id = id;
+					this.name = name;
+					this.websites = websites;
+					this.domainName = domainName;
+				}
+				@Override
+				public String toString() {
+					return "Hosting [id=" + id + ", name=" + name + ", websites=" + websites + "]";
+				}
+			}
+
+			public class Serialization {
+
+				public static void main(String[] args) {
+					try (FileOutputStream fos = new FileOutputStream(
+							"C:\\Bharath_Courses\\Java\\CoreJava\\IOStreams\\HostingDetails.ser");
+							ObjectOutputStream oos = new ObjectOutputStream(fos);) {
+						oos.writeObject(new Hosting(1, "aws.amazon.com", 90000l, "iambharath.guru"));
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			
+			public class Deserialization {
+				public static void main(String[] args) {
+					try (FileInputStream fis = new FileInputStream(
+							"C:\\\\Bharath_Courses\\\\Java\\\\CoreJava\\\\IOStreams\\\\HostingDetails.ser");
+							ObjectInputStream ois = new ObjectInputStream(fis);) {
+						Hosting hosting = (Hosting) ois.readObject();
+						System.out.println(hosting);
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+		
+
+		Output :
+				
+			Hosting [id=1, name=aws.amazon.com, websites=90000]
+	
+		
+		
+
+----------------------------------------------------------------------------		
+		
+## Arrays
+
+-	Array is a Data Structure that hold similar type of elements or homogeneous elements
+-	Array in Java can hold Primitive or an Objects type of same kind
+-	Object Class Array can hold different kind of elements --> Object[]
+-	In Java, Arrays are static .... ie Arrays size can't be grown at runtime --> to overcome that problem we can use Collection Types
+-	Once Array is initialized with some size ... we cant increase the size at runtime
+-	Accessing elements is very easy and fast ... but inserting and deleting operations will be slow
+
+
+----------------------------------------------------------------------------		
+		
+## Object Class Methods
+
+### hashCode() 
+
+-	Collection classes like HashMap and HashSet will internally use hashCode() to store and retrieve objects from a particular buckets 
+- 	JVM by default will use some integer value as the hashCode value
+-	We can use our own hashcode value by providing implementation to hashCode() method
+-	hashCode() method returns int value
+
+
+	Code Snippet of Providing Custom hashCode() Impl :
+	
+		class Passenger {
+			private String firstName;
+			private String lastName;
+			private int id;
+			
+			public int hashCode() {
+			
+				return this.id + this.firstName.length() + this.lastName.length();
+			}
+		
+		}
+
+
+### equals()
+
+-	equals is a Object class method inherited all the child class
+-	Object class equals() method uses ==(Object Address of HashCode value) operator to check whether two Objects are equals are not
+-	For custom Object we need override equals() method and provide implementation for it
 
 
 
+	Code Snippet of equals() method
+	
+	
+			class Passenger {
+
+				String firstName;
+				String lastName;
+				int id;
+
+				public Passenger(String firstName, String lastName, int id) {
+					super();
+					this.firstName = firstName;
+					this.lastName = lastName;
+					this.id = id;
+				}
+
+				public int hashCode() {
+					System.out.println("Hash Code has been invoked");
+					return this.id + this.firstName.length() + this.lastName.length();
+				}
+				
+				public boolean equals(Passenger p) {
+					return this.firstName.equals(p.firstName) && this.lastName.equals(p.lastName) && this.id == p.id;
+				}
+			}
+
+			public class HashCodeVerifier {
+
+				public static void main(String[] args) {
+					
+					Passenger p1  = new Passenger("BHarath", "AShok",1);
+					Passenger p2  = new Passenger("BHarath", "Ashok",1);
+					
+					System.out.println(p1.equals(p2));
+				}
+			}
+
+### Contract b/w equals() and hashCode()
+
+-	For given two objects
+
+	1.	If equals() method returns true then their hashCode values must be same
+	2.	If equals() method returns false then hashCode value may or may not be same
+	3.	If hashCode value is True then equals() method may or may return true
+	
+-	Whenever we implement equals() method and returns true then we need to make sure that hashcode values will be same
+-	Override both equals and hashCode method
+		
+		
+		
+----------------------------------------------------------------------------		
+		
+## Collections and Generics
 
 
+###	Collection Framework
 
-
-
-
-
-
-
-
-
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 
 
