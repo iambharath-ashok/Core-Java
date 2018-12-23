@@ -2285,41 +2285,431 @@ Code Snippet :
 
 ###	Collection Framework
 
+
+### Main Interfaces of Collection API
+
+	1.	Most interface and classes of CollectionAPI are from java.util package
+	2.	java.util.Collection is One of the Parent Interface of Iterable Collection API 
+	3.	Collection Interface extends Iterable Interface ---> Data Structure that can be Iterable with Iterator
+	3.	java.util.List, Set, Queue are the child interface of Collection Interface
+	4.	Java Collections are dynamic, Collections size can grow dynamically at runtime
+	 
+	 
+	1. List 
+		
+		-	List is a Data Structure allows duplicates and maintains order of insertion
+		-	List Implementations
+			
+			1.	ArrayList
+			2.	LinkedList
+			3.  Vector
+	
+				-	Vector is legacy class
+				-	All the methods on the vector class are synchronized
+			
+
+	2.	Set
+		
+		-	Set is a Data Structure that doesn't allows duplicates
+		-	Set Implementations
+			
+			1.	HashSet 
+				
+				1.	LinkedHashSet -	 Maintains the order of insertion
+			
+			2.	SortedSet
+
+				1.	NavigableSet
+					
+					1.	TreeSet	-	Elements will be sorted in some order
+					
+	3.	Queue 
+
+		-	Queue is FIFO Data Structure 
+		
+		1. Queue 
+		
+			1.	Priority Queue
+			2.	LinkedList
+			
+	4.	Map
+	
+		-  	Map is Parent Interface in Collection API
+		-	Map is a key value pair Data Structure
+		
+		1. Map Implementations
+		
+			1.	HashMap
+				
+				1. LinkedHashMap
+				
+			2.	SortedMap
+				
+				1.	NavigableMap
+				
+					1.	TreeMap - Sorting on elements will performed
+			
+		
+			3.	HashTable - Thread Safe 
+			
+				-	All the methods on the HashTable are Thread Safe
+				-	Due to Synchronized methods performance will be slower than HashMap
+				-	HashTable is legacy classes
 		
 		
 		
 		
+#### List Interface and its Implementations
+
+1.	List 
+
+	-	List(I) interface extends Collection(I) Interface
+	-	List Interface some utility methods like sort(), subList(), toArray(), listIterator(), iterator()
+
+2.	ArrayList
+	
+	-	Initial capacity will 10 
+	-	Faster access and read 
+	-	Slow for deleting and inserting at middle
+	
+		list.add('index', item to be insert);
+		list.add(3, 100); // Inserting at middle
+		
+		list.set(3,200); // Replacing an Item
+
+		list.get(5); // Retrieving based on the Index
+		list.remove(5); // Deleting an Item
+
+3.	LinkedList
+
+	-	LinkedList is Ordered Collection in which elements are stored in form of Nodes
+	-	A Node has three fields data, Next and Previous
+	-	Each Node knows about Next and Previous Node
+	-	Insertion and deletions at middle of List are very fast but consumes more memory than ArrayList
+	-	Index based search will be slower
+	
+---------------------------------------------------------
+	 	
+#### Set Interface and its Implementations
+
+	
+1.	Set 
+
+	-	Set is Data Structure where duplicates are not allowed
 		
 		
+2.	HashSet
+
+	-	null is allowed but only once
+	-	Duplicated are not allowed 
+	-	No order of insertion is maintained
+	
+3.	LinkedHashSet
+
+	-	Maintains order of Insertion
+	-	Duplicates will be removed and null values are allowed --> only one null value
 		
 		
+4.	TreeSet 
+	
+	-	TreeSet implements Sorted and Navigable set
+	-	TreeSet sorts the elements in some order either natural, reverse or custom order based on Comparable and Comparator
+	-	Null Values are not at allowed --> Throws NullPointerException
+	-	Removes Duplicates and maintains Some Order on the Elements
+	-	TreeSet Elements should either implement Comparable or Provide Comparator Interface as impl for TreeSet Constructor
+	
+	
+	
+---------------------------------------------------------
+	 	
+#### Iterable Interface
+	
+	
+-	Iterable is an interface  and has only one method iterator() that returns an Iterator Implementation Interface
+-	Collection Implementations like List, Set, Queue will return a iterator instance according to their structure and Implementation
+
+
+	Code Snippet : 
+	
+		Set<Integer> setInteger = new HashSet<>();
+		
+		setInteger.add(1);
+		setInteger.add(2);
 		
 		
+		Iterator<Integer> iterator = setInteger.iterator();
+		
+		while(iterator.hasNext()) {
+			System.out.println(iterator.next());
+			iterator.remove();
+		}
+
+
+---------------------------------------------------------
+	 	
+#### Iterator
+
+-	Iterator is an interface that its implementation instance is used to traverse the Collection Implementation items
+-	Iterator provides methods hasNext(), next(), remove() to traverse the elements 
+-	Collection Implementation classes like ArrayList, HashSet, PriorityQueue will provide an implementation of Iterator Interface
+
+---------------------------------------------------------
+	 	
+#### ListIterator
+
+-	ListIterator can traverse in both forward and backward direction
+-	ListIterator Interface extends Iterator and provides additional methods on top of Iterator interface
+-	hasPrevious(), previous(), nextIndex(), previousIndex() --> additional methods
+
+
+	
+	Code Snippet : 
+
+		List<Integer> integerArray = new ArrayList<>();
+		
+		integerArray.add(1);
+		integerArray.add(2);
 		
 		
+		ListIterator<Integer> iterator = integerArray.listIterator();
 		
+		while(iterator.hasNext()) {
+			System.out.println(iterator.next());
+			iterator.remove();
+		}
 		
+		while(iterator.hasPrevious()) {
+			System.out.println(iterator.previous());
+			iterator.remove();
+		}
+
+
+---------------------------------------------------------
+	 	
+#### Comparable and Comparator
+
+-	Comparable and Comparator is used to provided sorting order on the elements of Data Structure
+-	Comparable and Comparator is used mostly in TreeSet and TreeMap 
+-	Comparable is from java.lang package
+-	Comparator is from java.util package
+	
+		
+	Code Snippet for Sorting String based on length using Comparator:		
+		
+			public class SortingStringsBasedOnLength {
+				public static void main(String[] args) {
+					
+					String [] stringArray = new String[10];
+					stringArray[0] = "aadfd";
+					stringArray[1] = "dfd";
+					stringArray[2] = "";
+					stringArray[3] = "afadfa";
+					stringArray[4] = "dfhrtrtdfgs";
+					stringArray[5] = "aa";
+					stringArray[6] = "erecv";
+					stringArray[7] = "dfdsafda";
+					stringArray[8] = "geg";
+					stringArray[9] = "gegdfdfd";
+					
+					List<String> stringList = new ArrayList<>(Arrays.asList(stringArray));
+					System.out.println(stringList);
+					
+					List<String> sortedStringList = stringList.stream().sorted(Comparator.comparingInt(String::length)).collect(Collectors.toList());
+					sortedStringList.forEach(System.out::println);
+				}
+			}
+
+
+---------------------------------------------------------
+	 	
+### Map Interface
+
+-	Map Interface is used to represent key values type of objects
+-	Map is parent interface in Collection API
+-	Map is implemented by HashMap, WeakHashMap, IdentityHashMap, TreeMap
+
+
+1. HashMap 
+
+	-	Allows both null as key and values
+	-	Removes Duplicated keys
+	-	Doesn't maintain insertion order 
+	
+2.	LinkedHashMap
+
+	-	Allows null values and keys
+	-	Removes duplicates or duplicates are not allowed
+	-	Maintains insertion order 
+
+3.	TreeMap
+
+	-	DoesNot allow null values by Default --> Throws NullPointerException
+	-	DoesNot allow duplicates
+	-	Sorts the elements in Map on Keys or Values
+	
+	Code Snippets:
+	
+		public class MapDemo {
+			public static void main(String[] args) {
+				Map<String, Integer> map = new HashMap<>();
+
+				map.put(null, 23);
+				map.put("ddd", 24);
+				map.put("ddd", null);
+				map.put(null, null);
+
+				System.out.println("HashMap : "+map);
+
+				Map<String, Integer> linkedMap = new LinkedHashMap<>();
+
+				linkedMap.put(null, 23);
+				linkedMap.put("ddd", 24);
+				linkedMap.put("ddd", null);
+				linkedMap.put(null, null);
+				linkedMap.put(null, 243);
+
+				System.out.println("LinkedHashMap : "+linkedMap);
+
+				Map<String, Integer> treeMap = new TreeMap<>();
+
+				treeMap.put(null, 23);
+				treeMap.put("ddd", 24);
+				treeMap.put("ddd", null);
+				treeMap.put(null, null);
+				treeMap.put(null, 243);
+
+				System.out.println("LinkedHashMap : "+treeMap);
+				
+				
+				
+				 // NullFriendly Comparator to Avoid NullPointerExceptions
+				
+					Map<String, Integer> treeMap = new TreeMap<>(Comparator.nullsFirst(Comparator.naturalOrder()));
+
+					treeMap.put(null, 23);
+					treeMap.put("ddd", 24);
+					treeMap.put("ddd", null);
+					treeMap.put(null, null);
+					treeMap.put(null, 243);
+
+					System.out.println("LinkedHashMap : "+treeMap);
+					}
+				}
+
+
+
+	Output :
+	
+		HashMap : {null=null, ddd=null}
+		LinkedHashMap : {null=243, ddd=null}
+		Exception in thread "main" java.lang.NullPointerException
+			at java.base/java.util.TreeMap.compare(TreeMap.java:1291)
+			at java.base/java.util.TreeMap.put(TreeMap.java:536)
+			at map.HashMapDemo.main(HashMapDemo.java:34)
+			
+				
+	Output of Null Friendly Comparator : 		
+			HashMap : {null=null, ddd=null}
+			LinkedHashMap : {null=243, ddd=null}
+			LinkedHashMap : {null=243, ddd=null}	
+			
+			
 
 
 
 
+4.	IdentityHashMap
+	
+		Code Snippet
+				public class IdentityHashMapDemo {
+					public static void main(String[] args) {
+						Map<Integer, String> map = new HashMap<>();
+						
+						Integer i1 = Integer.valueOf(10);
+						Integer i2 = Integer.valueOf(20);
+						
+						map.put(i1, "aaaa");
+						map.put(i1, "bbbb");
+						
+						System.out.println("HashMap : "+map); //HashMap used equals() and hashCode() method to compare the Keys
+												// If Keys contents are equals then it will replace the existing key with new value
+						
+						Map<Integer,String> identityHashMap = new IdentityHashMap<>();
+						identityHashMap.put(i1, "aaaa");
+						identityHashMap.put(i2, "aaaa");
+						
+						System.out.println("Identity HashMap : "+identityHashMap);//IdentityHashMap will Compare the keys with == Operators
+																			//== (Double equal to operator) will check whether two keys are pointing to same objects or not using hashcode values rather than content
+																			//
+					}
+				}
+			
+		Output :
+
+			HashMap : {10=bbbb}
+			Identity HashMap : {10=aaaa, 20=aaaa}
+
+			
 
 
 
+	5.	WeakHashMap 
+	
+	
+		Code Snippet :
+		
+			public class WeakHashMapDemo {
 
+				public static void main(String[] args) throws InterruptedException {
+					Map<User, String> hashMap = new HashMap<>();
+					System.out.println(" .................. HashMap ..................");
+					User u = new User();
+					
+					hashMap.put(u, "aaaa");
+					System.out.println(hashMap);
+					
+					u = null;
+					System.gc();
+					Thread.sleep(5000);
+					
+					System.out.println(hashMap);
+					
+					/*
+					 * WeakHashMap
+					 /
+					System.out.println(" .................. WeakHashMap ..................");
+					
+					Map<User, String> weakHashMap = new WeakHashMap<>();
+					User u2 = new User();
+					
+					weakHashMap.put(u2, "bbbb");
+					
+					System.out.println(weakHashMap);
+					
+					u2 = null;
+					System.gc();
+					Thread.sleep(5000);
+					
+					System.out.println(weakHashMap);
+				}
+			}
+	
+	
+		Output :
+		
+			 .................. HashMap ..................
+			{User=aaaa}
+			{User=aaaa}
+			 .................. WeakHashMap ..................
+			{User=bbbb}
+			Finalize Called
+			{}
 
-
-
-
-
-
-
-
-
-
-
-
-
+	
+---------------------------------------------------------
+	 	
+### Queue Interface
+		
 
 
 
