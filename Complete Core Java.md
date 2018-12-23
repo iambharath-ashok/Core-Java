@@ -2621,34 +2621,35 @@ Code Snippet :
 
 4.	IdentityHashMap
 	
-		Code Snippet
-				public class IdentityHashMapDemo {
-					public static void main(String[] args) {
-						Map<Integer, String> map = new HashMap<>();
-						
-						Integer i1 = Integer.valueOf(10);
-						Integer i2 = Integer.valueOf(20);
-						
-						map.put(i1, "aaaa");
-						map.put(i1, "bbbb");
-						
-						System.out.println("HashMap : "+map); //HashMap used equals() and hashCode() method to compare the Keys
-												// If Keys contents are equals then it will replace the existing key with new value
-						
-						Map<Integer,String> identityHashMap = new IdentityHashMap<>();
-						identityHashMap.put(i1, "aaaa");
-						identityHashMap.put(i2, "aaaa");
-						
-						System.out.println("Identity HashMap : "+identityHashMap);//IdentityHashMap will Compare the keys with == Operators
-																			//== (Double equal to operator) will check whether two keys are pointing to same objects or not using hashcode values rather than content
-																			//
-					}
+	Code Snippet
+			public class IdentityHashMapDemo {
+				public static void main(String[] args) {
+					Map<Integer, String> map = new HashMap<>();
+					
+					Integer i1 = Integer.valueOf(10);
+					Integer i2 = Integer.valueOf(20);
+					
+					map.put(i1, "aaaa");
+					map.put(i1, "bbbb");
+					
+					System.out.println("HashMap : "+map); //HashMap used equals() and hashCode() method to compare the Keys
+											// If Keys contents are equals then it will replace the existing key with new value
+					
+					Map<Integer,String> identityHashMap = new IdentityHashMap<>();
+					identityHashMap.put(i1, "aaaa");
+					identityHashMap.put(i2, "aaaa");
+					
+					System.out.println("Identity HashMap : "+identityHashMap);//IdentityHashMap will Compare the keys with == Operators
+																		//== (Double equal to operator) will check whether two keys are pointing to same objects or not using hashcode values rather than content
+																		//
 				}
+			}
 			
-		Output :
+		
+	Output :
 
-			HashMap : {10=bbbb}
-			Identity HashMap : {10=aaaa, 20=aaaa}
+		HashMap : {10=bbbb}
+		Identity HashMap : {10=aaaa, 20=aaaa}
 
 			
 
