@@ -2608,7 +2608,8 @@ Code Snippet :
 			at map.HashMapDemo.main(HashMapDemo.java:34)
 			
 				
-	Output of Null Friendly Comparator : 		
+	Output of Null Friendly Comparator : 
+	
 			HashMap : {null=null, ddd=null}
 			LinkedHashMap : {null=243, ddd=null}
 			LinkedHashMap : {null=243, ddd=null}	
@@ -2653,7 +2654,7 @@ Code Snippet :
 
 
 
-	5.	WeakHashMap 
+5.	WeakHashMap 
 	
 	
 		Code Snippet :
