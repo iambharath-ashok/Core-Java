@@ -2418,7 +2418,11 @@ Code Snippet :
 	-	Removes Duplicates and maintains Some Order on the Elements
 	-	TreeSet Elements should either implement Comparable or Provide Comparator Interface as impl for TreeSet Constructor
 	
+5.	NavigableSet
 	
+	-	NavigableSet is a child interface of SortedSet has methods
+	-	NavigableSet is implemented by TreeSet
+	-	Important Methods of NavigableSet are ceiling(), higher(), floor(), lower(), pollFirst(), pollLast(), descendingSet()
 	
 ---------------------------------------------------------
 	 	
@@ -2711,25 +2715,363 @@ Code Snippet :
 	 	
 ### Queue Interface
 		
+-	Queue Interface extends Collection interface
+-	Queue Interface is implemented by LinkedList, PriorityQueue and BlockingQueue
+-	Blocking Queue falls under concurrent collections 
+
+1.	LinkedList 
+
+
+	-	LinkedList is a Strict FIFO Data Structure 
+	-	LinkedList allows null and duplicate values
+	-	Maintains Insertion order
+
+2.	PrioritQueue
+
+	-	We can change the Order of Priority Queue using Comparator
+	-	Priority Queue allows duplicates but doesn't allow null values -> Throws NullPointerException on addition of Queue
+	-	Important methods are 
+	
+	
+		offer(Object o) // used to add elements to Queue
+		Object peek() // Returns first element or head element of the queue if queue is empty then return null
+		Object element() // Similar to peek but throws NoSuchElementException if Queue is empty
+		Object poll() // Removes Head element of the Queue .. if empty returns null
+		Object remove() // Similar to poll but if queue is empty then throws NoSuchElementException
+		
+		
+	Code Snippets :
+
+		public class PriorityQueueDemo {
+
+			public static void main(String[] args) {
+
+				Queue<Integer> queue = new PriorityQueue<>();
+
+				System.out.println(queue.offer(23));// used to add elements to Queue
+
+				for (int i = 0; i <= 100; i += 10) {
+						queue.offer(i);
+				}
+				
+				System.out.println("Priority Queue After Insertion : "+queue);
+				
+				System.out.println(queue.offer(11));
+				System.out.println("After inserting 11 : "+queue);
+				System.out.println(queue.peek());// Returns first element or head element of the queue if queue is empty then return null
+				System.out.println(queue.element());// Similar to peek but throws NoSuchElementException if Queue is empty
+				System.out.println(queue.poll());// Removes Head element of the Queue .. if empty returns null
+				System.out.println(queue.remove());// Similar to poll but if queue is empty then throws NoSuchElementException
+				System.out.println(queue.remove(89));
+			}
+		}
+		
+	Output :
+	
+		true
+		Priority Queue After Insertion : [0, 20, 10, 23, 30, 40, 50, 60, 70, 80, 90, 100]
+		true
+		After inserting 11 : [0, 20, 10, 23, 30, 11, 50, 60, 70, 80, 90, 100, 40]
+		0
+		0
+		0
+		10
+		false
+		
+		
+---------------------------------------------------------
+	 	
+### Arrays and Collections Classes
+
+-	Arrays and Collections classes are utility Classes that has several static utility methods 
+-	Both Arrays and Collections class from java.util package
+-	Collections 
+
+	-	sort(List l)
+	-	reverse(List l)
+	-	int binarySearch(List l, I i) // Performs Binary Search of the list	and returns the index of the item in the list
+
+-	Arrays
+
+	-	sort // Arrays.sort() we can also pass custom comparator for Sort Method
+	-	asList
+	- 	stream
+
+
+---------------------------------------------------------
+	 	
+##	Generics
+
+-	Generics was introduced in Java 1.5
+-	Generics mainly introduced for Type Safety and Type Casting Problems while working with Collection API
+	
+	1.  Type Safety
+	2.	Type Casting --> Avoid ClassCastException at runtime
+	
+
+	Code Snippet :
+
+		public class MyGenericClass<T> {
+
+			T t;
+
+			MyGenericClass(T t) {
+				this.t = t;
+			}
+
+			public void displayObjectType() {
+				System.out.println(t.getClass().getName());
+			}
+
+			public T getObject() {
+				return this.t;
+			}
+
+		}
+		
+		
+		public class TestGeneric {
+			
+			public static void main(String[] args) {
+				System.out.println("==============================");
+				MyGenericClass<String> stringGeneric = new MyGenericClass<String>(new String("Bharath"));
+				stringGeneric.displayObjectType();
+				System.out.println(stringGeneric.getObject());
+				
+				System.out.println("==============================");
+				
+				MyGenericClass<Integer> integerGeneric = new MyGenericClass<Integer>(Integer.valueOf(10));
+				integerGeneric.displayObjectType();
+				System.out.println(integerGeneric.getObject());
+				System.out.println("==============================");
+				
+				MyGenericClass<Float> floatGeneric = new MyGenericClass<Float>(Float.valueOf(999.99f));
+				floatGeneric.displayObjectType();
+				System.out.println(floatGeneric.getObject());
+			}
+		}
+	
+	Output : 
+		
+		==============================
+		java.lang.String
+		Bharath
+		==============================
+		java.lang.Integer
+		10
+		==============================
+		java.lang.Float
+		999.99
+
+
+1. 	Restricting Generic Type Parameters
+
+	Code Snippet : 
+	
+		public class MyRunnable<T extends Runnable> {
+
+		}
+		class Test {
+			public static void main(String[] args) {
+				MyRunnable<Thread> m = new MyRunnable<>();
+				MyRunnable<Runnable> m2 = new MyRunnable<>();
+			}
+		}
+	
+2.	Using Multiple Restrictions
+	
+	Code Snippet : 
+	
+		class MyGeneric<T extends Runnable & Comparable<?>> {
+		}
+
+		class MyThreadClass<T> extends Thread implements Comparable<T> {
+			@Override
+			public int compareTo(T o) {
+				return 0;
+			}
+		}
+
+		class MyRunnableClass<T> implements Comparable<T>, Runnable {
+			@Override
+			public void run() {
+			}
+
+			@Override
+			public int compareTo(T o) {
+				return 0;
+			}
+		}
+
+		public class TestClass {
+			public static void main(String[] args) {
+				MyGeneric<MyThreadClass<String>> m = new MyGeneric<>();
+				MyGeneric<MyRunnableClass<Integer>> m2 = new MyGeneric<>();
+			}
+		}
+	
+3.	Using Generic Method Parameters and wild cards
+	
+	Code Snippet :
+		
+		public class WildCardParams {
+	
+			public <T> void myMethod(List<T> l) {
+				l.add(null);
+				l.add("ddd"); // Compilation Error
+				l.add(3);// Compilation Error
+			}
+			
+			public void myMethod2(List<?> l) {
+				l.add(null);
+				l.add("ddd");// Compilation Error
+				l.add(3);// Compilation Error
+			}
+			
+			
+			public static void main(String[] args) {
+				WildCardParams wcp = new WildCardParams();
+				wcp.myMethod(new ArrayList<Integer>());
+				wcp.myMethod2(new ArrayList<String>());
+			}
+		}
+
+4.	Wildcard and extends
+	
+-	We can't add values using extends keyword in the calling method and gives compilation error
+	
+	
+	Code Snippet:
+	
+		public class WildCardParams {
+		
+			public <T extends Integer> void myMethod(List<T> l) {
+				l.add(null);
+				l.add("ddd"); // Compilation Error
+				l.add(3);// Compilation Error
+			}
+			
+			public void myMethod2(List<?> l) {
+				l.add(null);
+				l.add("ddd");// Compilation Error
+				l.add(3);// Compilation Error
+			}
+			
+			
+			public static void main(String[] args) {
+				WildCardParams wcp = new WildCardParams();
+				wcp.myMethod(new ArrayList<Integer>());
+				wcp.myMethod(new ArrayList<String>());// Gives Compilation Due to Argument Mismatch
+			}
+		}
+
+
+	
+5.	Wildcard and super
+
+-	We can add values using super keyword in the calling method and doesn't gives any compilation error
+
+	Code Snippet :
+	
+		public class WildCardParams {
+			
+			public void myMethod(List<? super Integer> l) {
+				l.add(null);
+				l.add("ddd"); // Compilation Error due to type Mismatch
+				l.add(3);
+			}
+			
+			public void myMethod2(List<? super String> l) {
+				l.add(null);
+				l.add("ddd");
+				l.add(3);// Compilation Error due to type Mismatch
+			}
+			
+			
+			public static void main(String[] args) {
+				WildCardParams wcp = new WildCardParams();
+				wcp.myMethod(new ArrayList<Integer>());
+				wcp.myMethod2(new ArrayList<String>());
+			}
+		}
+
+6.	Type Erasure
+
+-	Generics in Java are Compile Time Generics and not Runtime Generics
+-	Compiler will uses Type specified on the Generic Class at only Compile time
+-	Once Type Check on the Generic Class is done at Compile time 
+
+	-	Compiler will remove the Types at the end of compilation phase 
+	-	This will be applicable for all the inbuilt class like List, Set, Queue and Map
+	-	At the end of Compilation Phase, Java Compiler will remove the Type Check at runtime
+	-	Type erasure is done backward Compatibility issues with Java 1.4, 1.3 
+
+	
+-----------------------------------------------
+
+## Enums
+
+-	Enums are used to represent group of Named Constants
+-	Enums were introduced in Java 1.5
+-	Enums in Java is represented as a class
+-	Enums by default extends an abstract class called java.lang.Enum class
+-	Properties in Enums are by default public  static final and constants
+-	Constants in Enum can be easily accessible by Enum Class Name
+-	Enums cant extends other classes but can implement any number of interfaces
 
 
 
+	Code Snippets :
+	
+		public enum PaymentType {
+
+			CREDITCARD(5), DEBITCARD(0), CASH(10, 3.99F), CHECK(5);
+
+			private int fee;
+			private float otherChargers;
+
+			PaymentType(int fee) {
+				this.fee = fee;
+			}
+			
+			PaymentType(int fee, float otherCharges) {
+				this.fee = fee;
+				this.otherChargers = otherCharges;
+			}
+
+			public int getFee() {
+				return this.fee;
+			}
+			
+			public float getOtherCharges() {
+				return this.otherChargers;
+			}
+
+		}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	Output :
+		
+		=======================
+		PaymentType: CREDITCARD
+		Ordinal Value: 0
+		Fee: 5
+		OtherCharges: 0.0
+		=======================
+		PaymentType: DEBITCARD
+		Ordinal Value: 1
+		Fee: 0
+		OtherCharges: 0.0
+		=======================
+		PaymentType: CASH
+		Ordinal Value: 2
+		Fee: 10
+		OtherCharges: 3.99
+		=======================
+		PaymentType: CHECK
+		Ordinal Value: 3
+		Fee: 5
+		OtherCharges: 0.0
 
 
 
