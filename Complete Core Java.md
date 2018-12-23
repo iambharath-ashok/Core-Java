@@ -2657,55 +2657,54 @@ Code Snippet :
 
 5.	WeakHashMap 
 	
+	Code Snippet :
 	
-		Code Snippet :
-		
-			public class WeakHashMapDemo {
+		public class WeakHashMapDemo {
 
-				public static void main(String[] args) throws InterruptedException {
-					Map<User, String> hashMap = new HashMap<>();
-					System.out.println(" .................. HashMap ..................");
-					User u = new User();
-					
-					hashMap.put(u, "aaaa");
-					System.out.println(hashMap);
-					
-					u = null;
-					System.gc();
-					Thread.sleep(5000);
-					
-					System.out.println(hashMap);
-					
-					/*
-					 * WeakHashMap
-					 /
-					System.out.println(" .................. WeakHashMap ..................");
-					
-					Map<User, String> weakHashMap = new WeakHashMap<>();
-					User u2 = new User();
-					
-					weakHashMap.put(u2, "bbbb");
-					
-					System.out.println(weakHashMap);
-					
-					u2 = null;
-					System.gc();
-					Thread.sleep(5000);
-					
-					System.out.println(weakHashMap);
-				}
+			public static void main(String[] args) throws InterruptedException {
+				Map<User, String> hashMap = new HashMap<>();
+				System.out.println(" .................. HashMap ..................");
+				User u = new User();
+				
+				hashMap.put(u, "aaaa");
+				System.out.println(hashMap);
+				
+				u = null;
+				System.gc();
+				Thread.sleep(5000);
+				
+				System.out.println(hashMap);
+				
+				/*
+				 * WeakHashMap
+				 /
+				System.out.println(" .................. WeakHashMap ..................");
+				
+				Map<User, String> weakHashMap = new WeakHashMap<>();
+				User u2 = new User();
+				
+				weakHashMap.put(u2, "bbbb");
+				
+				System.out.println(weakHashMap);
+				
+				u2 = null;
+				System.gc();
+				Thread.sleep(5000);
+				
+				System.out.println(weakHashMap);
 			}
+		}
+
+
+	Output :
 	
-	
-		Output :
-		
-			 .................. HashMap ..................
-			{User=aaaa}
-			{User=aaaa}
-			 .................. WeakHashMap ..................
-			{User=bbbb}
-			Finalize Called
-			{}
+		 .................. HashMap ..................
+		{User=aaaa}
+		{User=aaaa}
+		 .................. WeakHashMap ..................
+		{User=bbbb}
+		Finalize Called
+		{}
 
 	
 ---------------------------------------------------------
