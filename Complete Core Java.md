@@ -3046,8 +3046,30 @@ Code Snippet :
 			public float getOtherCharges() {
 				return this.otherChargers;
 			}
+			
+			public float getTotalCharges() {
+				return this.getFee() + this.getOtherCharges();
+			}
 
 		}
+		
+		
+		public class EnumTest {
+
+			public static void main(String[] args) {
+				PaymentType[] paymentValues = PaymentType.values();
+				for (PaymentType pt : paymentValues) {
+					System.out.println("=======================");
+					System.out.println("PaymentType: " + pt.name());
+					System.out.println("Ordinal Value: " + pt.ordinal());
+					System.out.println("Fee: " + pt.getFee());
+					System.out.println("OtherCharges: " + pt.getOtherCharges());
+					System.out.println("TotalCharges: " + pt.getTotalCharges());
+				}
+			}
+		}
+
+
 
 
 	Output :
@@ -3057,21 +3079,26 @@ Code Snippet :
 		Ordinal Value: 0
 		Fee: 5
 		OtherCharges: 0.0
+		TotalCharges: 5.0
 		=======================
 		PaymentType: DEBITCARD
 		Ordinal Value: 1
 		Fee: 0
 		OtherCharges: 0.0
+		TotalCharges: 0.0
 		=======================
 		PaymentType: CASH
 		Ordinal Value: 2
 		Fee: 10
 		OtherCharges: 3.99
+		TotalCharges: 13.99
 		=======================
 		PaymentType: CHECK
 		Ordinal Value: 3
 		Fee: 5
 		OtherCharges: 0.0
+		TotalCharges: 5.0
+
 
 
 
