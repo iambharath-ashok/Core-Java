@@ -3100,41 +3100,527 @@ Code Snippet :
 		TotalCharges: 5.0
 
 
+----------------------------------------------------------------------
+
+## JVM Architecture
+
+1.	What is a Virtual Machine?
+
+	-	VMs are S/w simulation of Real Machines - that performs same functions as real one
+	-	Two types of VM 
+		1.	Hardware Based
+			
+			-	Divides given machine into logical systems which are isolated from each other
+			-	Hardware resources will be shared b/w VMs
+			-	Cloud S/w like AWS, GCP, PCF
+			-	Oracle Virtual Box, VMWare Workstations
+			
+		2.	Application Based
+			
+			-	Provides runtime engine for Programs to run 
+			- 	JVM Provides runtime engine for Java Programs
+			
+			
+		
+2.	Components of a JVM
+
+	1.	Class Loader Subsystem 
+			
+		-	Responsible for loading class to memory
+			
+	2.	Memory Areas 
+		
+		-	Heap Area
+		-	Method Area
+		-	Stack Area
+		-	PC Registers
+		-	Native Method Stacks
+		
+	3.	Execution Engine 
+	
+		-	Runs programs
+	
+	4.	Java Native Interface (JNI)
+	5.	Native Method Libraries
+	
+	
+	
+3.	How Class Loaders Work
+
+	-	When JVM came across the class it will check whether the class is already in the Method Area
+	-	If not ... it will ask Class Loader System to load the class to Method Aread
+	-	ClassLoader Subsystem is ask Application ClassLoader to load the Class
+	-	Application ClassLoader in turn delegate request to Extension ClassLoader
+	-	ExtensionClass Loader in turn will delegate request to BootStrap ClassLoader
+	-	BootStrap ClassLoader is in the top of hierarchy and checks jre/lib/rt.jar and loads it
+	-	If class is  not there then again it will delegate the request to Extension ClassLoader
+	-	Extension ClassLoader will checks in jre/lib/ext/.jar ... if not found then it will delegate request to Application ClassLoader
+	-	Application ClassLoader will checks application Class and all of its jar like hibernate.jar, jdbc.jar
+	-	If Class is not found in Application ClassPath also then it will Throw NoClassDefFoundError or ClassNotFoundException
+	
+	
+4.	Types of class loaders
+
+	-	There are 3 types of ClassLoaders
+	
+		1.	BootStrap ClassLoader
+		2.	Extension ClassLoader
+		3.	Application ClassLoader
+	
+	1.	BootStrap ClassLoader
+
+		-	Also know as Primordial Class Loader 
+		-	Is responsible loading API classes that comes with JDK 
+		-	These Classes will be under JDK/JRE/lib/rt.jar
+		-	Written in Low level Language like C and C++
+	
+	2. 	Extension ClassLoader
+
+		-	Loads class from JDK/JRE/lib/ext/security.jar ... many others
+	
+	3.	Application ClassLoader
+	
+		-	Child of Extension Class Loader
+		-	Responsible for loading all the Application Related Jars
+		
+		
+5. 	Dynamic Class Loading In Action
+	
+	-	Class can be loaded dynamically to memory using Class.forName() method
+	-	Class.forName() will take overloaded methods 
+	
+6.	Class is loaded only once
+
+	-	Class will be loaded to Memory only once
+	
+	Code Snippet :
+		
+		class User {
+			Stirng name;
+		}
+		
+		public class ClassLoaderTest {
+		
+			main() {
+				User u1 = new User();
+				Class c1 = u1.getClass();
+				
+				User u2 = new User();
+				Class c2 = u2.getClass();
+				
+				System.out.println(c1);
+				System.out.println(c2);
+				
+				System.out.println(c1 == c2);
+			}
+		}
+		
+7.	Display the class loaders
+	
+	-	this.class.getClassLoader() will  display the ClassLoader
+	-	String.class.getClassLoader() will be loaded by BootStrap ClassLoader hence those information will not be provided
+	
+8.	Class Loading Sub System and Loading Class
+
+	-	Class Loading Sub System is one of the important part of JVM
+	-	Class Loading Sub System is responsible for Loading, Linking and initialization of Class 
+	
+	1.	Loading 
+		
+		-	Loading is a process of Loading a class from Hard Disk to JVMs Method Area 
+		-	.class file be loaded to JVM Method Area 
+		-	JVM does this for every class in the Application
+		-	Once .class file is loaded in to Method Area, JVM will an Instance of that class of type java.lang.Class in the Heap Area
+		-	Its not actually an Instance of that class but a Class representation of that class - A class object of that class
+		-	Using that class instance we can access all the other information related to class
+		
+	2.	Linking
+	
+		-	Linking is divided into sub activities 
+			
+			1.	Verification
+				
+				-	Its a process of verifying that byte code of class is correct and not corrupted
+				-	Byte Code Verifier will do this check
+				-	If there are any error or misamatch in .class bytecode ... then JVM will throw java.lang.VerifyError
+				
+			2.	Preparation
+			
+				-	In this process ... JVM will allocate memory for all the static, global variables and assigns default values for them
+				
+			3.	Resolution
+				
+				-	In this process ... reference will be replaced with actual memory location on the method area
+	
+	
+	
+	3.	Initialization
+		
+		-	In this phases all the static variables are executed
+		-	All the static blocks will be executed from parent to child class ... top to bottom
+	
+9.	Method Area
+
+	-	When classes are loaded into memory ... all the binary information will be stored in Method Area
+	-	Method Area is shared across all the threads 
+	-	Started right from JVM Start Up
+
+10. Stack Area
+	
+	- 	When JVM creates a Threads ... JVM will creates Stack for each Thread
+	-	Each Thread will gets its own Stack Area and Thread can't access Stack of another Thread
+	-	All the method calls and local variables are stored in Stack Area
+	-	Each Method call will have a Stack Frame 
+	-	Once Method execution completes then Method Stack Frame will be removed
+		
+		Each Method Stack Frame will have three 3 areas
+		
+			1.	Variable Array - all the method params and local variable will be stored
+			2.	Operand Stack - pushes and pops the statements in to operand stack
+			3.	Frame Data - Points to Runtime Constant Pool and Exception Table
+		
+	-	Once Thread execution completes whole Stack Area will removed by  JVM
+	
+	
+	
+11. Heap Area
+
+	-	All the Objects of application are stored in Heap Area - Objects are allocated memory in Heap Area
+	-	All the Threads can and will share the Heap Area
+	-	Will be initialized at JVM Start up
+	
+	
+12.	PC Registers Area
+
+	-	PC - Program Counter Register 
+	-	PC Register Area will always point to current executing statements
+	-	Each Thread will gets its own PC Registers Area
+	-	PC Register will point next instruction once current execution completed
+
+
+Native Method Stack Area
+
+	-	This area is used to store the information to call the native langauges
+
+
+
+----------------------------------------------------------------------------
+
+## Java Reflection API
+
+-	Reflection is a API that can be used to change the behavior of Class Dynamically at Runtime
+-	Using Reflection we can create an Object, invoke methods and change private fields
+
+
+### Key Reflection API Classes
+
+
+	-	java.lang.Class is the Starting Point to use Reflection 
+	-	All the classes that are loaded Method Area or Memory will be created an instance of java.lang.Class
+	-	java.lang.Class has the all Reflection Methods to access class Constructors, Methods, Fields, Annotations
+	-	Using java.lang.Class ... we can access all the Constructors, Methods, Fields and Annotations
+	
+	
+	1.	Listing all the Constructor and Methods
+	
+		Code Snippet :
+			
+			public class Calculator {
+
+				private double num1;
+				private double num2;
+
+				public Calculator(double num1, double num2) {
+					this.num1 = num1;
+					this.num2 = num2;
+				}
+
+				public Calculator() {
+					System.out.println("Defalut Constructor Called");
+				}
+
+				public double getNum1() {
+					return num1;
+				}
+
+				public void setNum1(double num1) {
+					this.num1 = num1;
+				}
+
+				public double getNum2() {
+					return num2;
+				}
+
+				public void setNum2(double num2) {
+					this.num2 = num2;
+				}
+
+			}
+			
+			import java.lang.reflect.Constructor;
+			import java.lang.reflect.Method;
+		
+			public class ReflectionAPITest {
+				public static void main(String[] args) throws ClassNotFoundException {
+					Class<?> clazz = Class.forName(Calculator.class.getName());
+	
+					Constructor<?>[] constructors = clazz.getConstructors();
+					Method[] methods = clazz.getMethods();
+
+					for (Constructor<?> constructor : constructors) {
+						System.out.println(constructor);
+					}
+
+					for (Method method : methods) {
+						System.out.println(method);
+					}
+				}
+			}
+	
+			Output :
+			
+				public Calculator(double,double)
+				public Calculator()
+				public double Calculator.getNum2()
+				public void Calculator.setNum1(double)
+				public void Calculator.setNum2(double)
+				public double Calculator.getNum1()
+				public final native void java.lang.Object.wait(long) throws java.lang.InterruptedException
+				public final void java.lang.Object.wait(long,int) throws java.lang.InterruptedException
+				public final void java.lang.Object.wait() throws java.lang.InterruptedException
+				public boolean java.lang.Object.equals(java.lang.Object)
+				public java.lang.String java.lang.Object.toString()
+				public native int java.lang.Object.hashCode()
+				public final native java.lang.Class java.lang.Object.getClass()
+				public final native void java.lang.Object.notify()
+				public final native void java.lang.Object.notifyAll()
+		
+		
+	2.	How to create an instance by Constructor with Reflection API
+
+		Code Snippet :
+		
+			try {
+				
+				//Param Constructor
+				Constructor<?> paramConstructor = clazz.getConstructor(double.class, double.class);
+				Object paramInstance = paramConstructor.newInstance(20,30);
+				System.out.println(paramInstance);
+				
+				//Default Constructor
+				Constructor<?> defaultConstructor = clazz.getConstructor(null);
+				Object calInstance = defaultConstructor.newInstance(null);
+				System.out.println(calInstance);
+				
+			} catch (NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		
+		Output :
+		
+			Calculator@1055e4af
+			Defalut Constructor Called
+			Calculator@277c0f21
+			
+			
+	3.	Invoke the Getter 
+
+			Code Snippet : 
+			
+				try {
+					
+					//Creating Instance with Constructor 
+					
+					Constructor<?> paramConstructor = clazz.getConstructor(double.class, double.class);
+					Object paramInstance = paramConstructor.newInstance(20,30);
+					System.out.println("Getting Instance to invoke Method : "+paramInstance);
+					
+					
+					// Invoking Method with Instance got from above
+					
+					Method getNum1Method = clazz.getMethod("getNum1", null);
+					Object doubleInstance = getNum1Method.invoke(paramInstance, null);
+					System.out.println("Value after invoking getter method getNum1 : "+doubleInstance);
+					
+				} catch (NoSuchMethodException | SecurityException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+		
+			Output : 
+			
+				
+				Getting Instance to invoke Method : Calculator@1055e4af
+				Value after invoking getter method getNum1 : 20.0
 
 
 
 
 
+	4.	Invoking Setter Method
 
+		Code Snippet :
 
+			try {
+				Constructor<?> paramConstructor = clazz.getConstructor(double.class, double.class);
+				Object paramInstance = paramConstructor.newInstance(20,30);
+				System.out.println("Getting Instance to invoke Method : "+paramInstance);
+				
+				Method getNum1Method = clazz.getMethod("getNum1", null);
+				Object doubleInstance = getNum1Method.invoke(paramInstance, null);
+				System.out.println("Num1 Value before invoking setter method setNum1 : "+doubleInstance);
+				
+				
+				Method setNum1Method = clazz.getMethod("setNum1", double.class);
+				Object setNum1ReturnValue = setNum1Method.invoke(paramInstance, 100);
+				System.out.println("Setter Method setNum2 Return will null since its a setter : "+setNum1ReturnValue);
+				doubleInstance = getNum1Method.invoke(paramInstance, null);
+				System.out.println("Num1 value after invoking setter from ReflectionAPI : "+doubleInstance);
+			} catch (NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
 
+			
+			
+			
+		Ouptut :
 
+			Getting Instance to invoke Method : Calculator@1055e4af
+			Num1 Value before invoking setter method setNum1 : 20.0
+			Setter Method setNum2 Return will null since its a setter : null
+			Num1 value after invoking setter from ReflectionAPI : 100.0
 
+			
+			
+	5.	Modifying Private Fields 
 
-
-
-
-
-
-
-
-
+		Code Snippet :
+			
+			try {
+				Constructor<?> paramConstructor = clazz.getConstructor(double.class, double.class);
+				Object paramInstance = paramConstructor.newInstance(20,30);
+				System.out.println("Getting Instance to invoke Method : "+paramInstance);
+				
+				Method getNum1Method = clazz.getMethod("getNum1", null);
+				Object doubleInstance = getNum1Method.invoke(paramInstance, null);
+				System.out.println("Num1 Value before invoking setter method setNum1 : "+doubleInstance);
+				
+				
+				Method setNum1Method = clazz.getMethod("setNum1", double.class);
+				Object setNum1ReturnValue = setNum1Method.invoke(paramInstance, 100);
+				System.out.println("Setter Method setNum2 Return will null since its a setter : "+setNum1ReturnValue);
+				doubleInstance = getNum1Method.invoke(paramInstance, null);
+				System.out.println("Num1 value after invoking setter from ReflectionAPI : "+doubleInstance);
+				
+				Field num1Field = clazz.getDeclaredField("num1");
+				num1Field.setAccessible(true);
+				
+				num1Field.set(paramInstance, 800);
+				
+				Object updatedNum1Value = num1Field.get(paramInstance);
+				System.out.println("Updated Num1 Value : "+updatedNum1Value);
+				
+			} catch (NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			
+		Ouptut : 	
+			Getting Instance to invoke Method : Calculator@1055e4af
+			Num1 Value before invoking setter method setNum1 : 20.0
+			Setter Method setNum2 Return will null since its a setter : null
+			Num1 value after invoking setter from ReflectionAPI : 100.0
+			Updated Num1 Value : 800.0
 
 			
 			
 			
 			
+	6.	Accessing Annotations and Annotation Fields and methods
+		
+		Code Snippet :
+		
+			@Retention(RetentionPolicy.RUNTIME)
+			public @interface MyAnnotation {
+				
+				public abstract String value1();
+				public String value2();
+				public static final Integer value=500;
+				public int integerValue();
+			}
+			
+			@MyAnnotation(value1 = "123", value2 = "bharath", integerValue = 100)
+			public class Calculator {
+
+			}
 			
 			
+			import java.lang.annotation.Annotation;
+			import java.util.Arrays;
+
+			public class ReflectionAPITest {
+
+				public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException {
+					Class<?> clazz = Class.forName(Calculator.class.getName());
+
+					Annotation[] annotations = clazz.getAnnotations();
+					System.out.println("Annotations List : " + Arrays.toString(annotations));
+
+					MyAnnotation annotation = clazz.getAnnotation(MyAnnotation.class);
+					System.out.println("Annotation Instance : "+annotation);
+					System.out.println("Calling Annotation integerValue Method : "+annotation.integerValue());
+					System.out.println("Calling Annotation Value() method"+annotation.value1());
+					System.out.println("Calling Public Static Final Variable of Annotation: "+MyAnnotation.value);
+				}
+			}
+
+	Output:
+		
+		RetentionPolicy.RUNTIME	
 			
-			
-			
-			
-			
-			
-			
-			
-			
+			Annotations List : [@MyAnnotation(value1="123", value2="bharath", integerValue=100)]
+			Annotation Instance : @MyAnnotation(value1="123", value2="bharath", integerValue=100)
+			Calling Annotation integerValue Method : 100
+			Calling Annotation Value() method123
+			Calling Public Static Final Variable of Annotation: 500
+				
+		RetentionPolicy.CLASS
+
+			Annotations List : []
+			Exception in thread "main" java.lang.NullPointerException
+				at ReflectionAPITest.main(ReflectionAPITest.java:14)
+			Annotation Instance : null
+
 			
 			
 			
