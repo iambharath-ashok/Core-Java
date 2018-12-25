@@ -3104,7 +3104,7 @@ Code Snippet :
 
 ## JVM Architecture
 
-1.	What is a Virtual Machine?
+#### 1. What is a Virtual Machine?
 
 	-	VMs are S/w simulation of Real Machines - that performs same functions as real one
 	-	Two types of VM 
@@ -3122,7 +3122,7 @@ Code Snippet :
 			
 			
 		
-2.	Components of a JVM
+#### 2.	Components of a JVM
 
 	1.	Class Loader Subsystem 
 			
@@ -3145,7 +3145,7 @@ Code Snippet :
 	
 	
 	
-3.	How Class Loaders Work
+#### 3.	How Class Loaders Work
 
 	-	When JVM came across the class it will check whether the class is already in the Method Area
 	-	If not ... it will ask Class Loader System to load the class to Method Aread
@@ -3159,7 +3159,7 @@ Code Snippet :
 	-	If Class is not found in Application ClassPath also then it will Throw NoClassDefFoundError or ClassNotFoundException
 	
 	
-4.	Types of class loaders
+#### 4.	Types of class loaders
 
 	-	There are 3 types of ClassLoaders
 	
@@ -3184,12 +3184,12 @@ Code Snippet :
 		-	Responsible for loading all the Application Related Jars
 		
 		
-5. 	Dynamic Class Loading In Action
+#### 5. 	Dynamic Class Loading In Action
 	
 	-	Class can be loaded dynamically to memory using Class.forName() method
 	-	Class.forName() will take overloaded methods 
 	
-6.	Class is loaded only once
+#### 6.	Class is loaded only once
 
 	-	Class will be loaded to Memory only once
 	
@@ -3215,12 +3215,12 @@ Code Snippet :
 			}
 		}
 		
-7.	Display the class loaders
+#### 7.	Display the class loaders
 	
 	-	this.class.getClassLoader() will  display the ClassLoader
 	-	String.class.getClassLoader() will be loaded by BootStrap ClassLoader hence those information will not be provided
 	
-8.	Class Loading Sub System and Loading Class
+### Class Loading Sub System and Loading Class
 
 	-	Class Loading Sub System is one of the important part of JVM
 	-	Class Loading Sub System is responsible for Loading, Linking and initialization of Class 
@@ -3259,13 +3259,13 @@ Code Snippet :
 		-	In this phases all the static variables are executed
 		-	All the static blocks will be executed from parent to child class ... top to bottom
 	
-9.	Method Area
+### Method Area
 
 	-	When classes are loaded into memory ... all the binary information will be stored in Method Area
 	-	Method Area is shared across all the threads 
 	-	Started right from JVM Start Up
 
-10. Stack Area
+### Stack Area
 	
 	- 	When JVM creates a Threads ... JVM will creates Stack for each Thread
 	-	Each Thread will gets its own Stack Area and Thread can't access Stack of another Thread
@@ -3283,7 +3283,7 @@ Code Snippet :
 	
 	
 	
-11. Heap Area
+### 11. Heap Area
 
 	-	All the Objects of application are stored in Heap Area - Objects are allocated memory in Heap Area
 	-	All the Threads can and will share the Heap Area
