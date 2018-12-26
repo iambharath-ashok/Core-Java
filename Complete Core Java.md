@@ -1194,6 +1194,11 @@ Code Snippet :
 	2.	Thread.sleep(millis)
 	
 		-	Thread.sleep() is a static method used to send the thread in sleeping mode for specified amount of time
+		-	sleep method is used to make processor time for other threads 
+		-	sleep is used to increase the performance
+		
+			-	Reading the data from webservice every second can slow down the application
+			-	Instead we can read this periodically ... when the data is available 
 		
 	3.	join()
 	
@@ -2793,9 +2798,12 @@ Code Snippet :
 
 -	Arrays
 
-	-	sort // Arrays.sort() we can also pass custom comparator for Sort Method
-	-	asList
-	- 	stream
+	-	sort(T[] t) // Arrays.sort() we can also pass custom comparator for Sort Method
+	-	parrelSort(T[] t)
+	-	asList(T... t)
+	- 	stream()
+	-	toString(T[] t)
+	-	fill()
 
 
 ---------------------------------------------------------
@@ -3104,7 +3112,7 @@ Code Snippet :
 
 ## JVM Architecture
 
-#### 1. What is a Virtual Machine?
+1.	What is a Virtual Machine?
 
 	-	VMs are S/w simulation of Real Machines - that performs same functions as real one
 	-	Two types of VM 
@@ -3122,7 +3130,7 @@ Code Snippet :
 			
 			
 		
-#### 2.	Components of a JVM
+2.	Components of a JVM
 
 	1.	Class Loader Subsystem 
 			
@@ -3145,7 +3153,7 @@ Code Snippet :
 	
 	
 	
-#### 3.	How Class Loaders Work
+3.	How Class Loaders Work
 
 	-	When JVM came across the class it will check whether the class is already in the Method Area
 	-	If not ... it will ask Class Loader System to load the class to Method Aread
@@ -3159,7 +3167,7 @@ Code Snippet :
 	-	If Class is not found in Application ClassPath also then it will Throw NoClassDefFoundError or ClassNotFoundException
 	
 	
-#### 4.	Types of class loaders
+4.	Types of class loaders
 
 	-	There are 3 types of ClassLoaders
 	
@@ -3184,12 +3192,12 @@ Code Snippet :
 		-	Responsible for loading all the Application Related Jars
 		
 		
-#### 5. 	Dynamic Class Loading In Action
+5. 	Dynamic Class Loading In Action
 	
 	-	Class can be loaded dynamically to memory using Class.forName() method
 	-	Class.forName() will take overloaded methods 
 	
-#### 6.	Class is loaded only once
+6.	Class is loaded only once
 
 	-	Class will be loaded to Memory only once
 	
@@ -3215,12 +3223,12 @@ Code Snippet :
 			}
 		}
 		
-#### 7.	Display the class loaders
+7.	Display the class loaders
 	
 	-	this.class.getClassLoader() will  display the ClassLoader
 	-	String.class.getClassLoader() will be loaded by BootStrap ClassLoader hence those information will not be provided
 	
-### Class Loading Sub System and Loading Class
+8.	Class Loading Sub System and Loading Class
 
 	-	Class Loading Sub System is one of the important part of JVM
 	-	Class Loading Sub System is responsible for Loading, Linking and initialization of Class 
@@ -3259,13 +3267,13 @@ Code Snippet :
 		-	In this phases all the static variables are executed
 		-	All the static blocks will be executed from parent to child class ... top to bottom
 	
-### Method Area
+9.	Method Area
 
 	-	When classes are loaded into memory ... all the binary information will be stored in Method Area
 	-	Method Area is shared across all the threads 
 	-	Started right from JVM Start Up
 
-### Stack Area
+10. Stack Area
 	
 	- 	When JVM creates a Threads ... JVM will creates Stack for each Thread
 	-	Each Thread will gets its own Stack Area and Thread can't access Stack of another Thread
@@ -3283,7 +3291,7 @@ Code Snippet :
 	
 	
 	
-### 11. Heap Area
+11. Heap Area
 
 	-	All the Objects of application are stored in Heap Area - Objects are allocated memory in Heap Area
 	-	All the Threads can and will share the Heap Area
@@ -3624,17 +3632,356 @@ Native Method Stack Area
 			
 			
 			
-			
-		
-		
+----------------------------------------------------------------------------
 
-		
+## Java Annotations
 
+
+-	Annotations are metadata -> Provides details about methods, classes and variables or fields
+-	Annotations adds special meanings, capabilities and functionalities to Classes --> JPA, Spring, Hibernate and WebServices Annotations
+-	Annotations are followed by @ Symbol
+-	Annotation makes code cleaner and easy to understand
+-	Annotations are used to get rid of lot of XML based configuration	
+-	In Java ... there are 3 types of Annotations 
+
+	1.	CLASS --> Compile Time	---> Used Compiler for Compile Time Validations
+	2. 	SOURCE	-->	Build Time  ---> Used By Build tools like Maven, Gradle and Ant
+	3.  RUNTIME  --> Runtime 	---> Used By JVM at Runtime
+		
+-	There are lot of Built-in Annotations and we can define our own Custom Annotations
 			
- 
-		
-		
+			@Override
+			@Deprecated
+			@SuppressWarnings
+
+
+-	@Target Annotation is used to specify where this Annotations can be used or applicable
+				
+			Constructor, Fields, Types, Methods, Package, Parameters, and Local Variables 	
+
+----------------------------------------------------------------------------
+
+## Java Internationalization
+
+## Regular Expressions
+
+----------------------------------------------------------------------------
+
+## Race Conditions
+
+
+-	Race Conditions is a situation where Two or more Threads intervene each other and each Thread will read the values modified by other Threads 
+-	Race Conditions will result Inconsistent results
+-	Each Thread will have its own Stack Area and all the local variables are allocated in the Thread Stack Area
+
+#### Reasons for Race Conditions are :
+
+-	Multiple Threads sharing same Object or Resource
+-	Multiple Threads Reading and Writing Shared Object 
+-	Multiple Threads will sharing instance variable of Object that are allocated Memory on the Heap Area
+
+
+#### How to avoid Thread Race Conditions
+
+-	By Providing Threads different Objects or Resource - Not ideal Solution
+-	Avoiding instance variables and Static variables that are allocated memory on the Heap Area
+-	Through Synchronization
+
+
+##### 1. Synchronization of Method
 	
+-	Synchronization is a process in which Threads are allowed to access the Heap area in controlled Manner
+-	Synchronization can be applied to Methods are blocks of code
+-	Once Thread executing Synchronized method other Threads can't intervene the executing Thread - Other Threads have to wait for current thread to complete the execution
+-	If Class has Three synchronized Methods then all the 3 methods will be locked by Currently Executing Thread - Other Threads can't execute any of the synchronized methods of the Class
+- Synchronization is Reentrant meaning that Thread can execute other synchronized methods or block as it already hold the lock on the object or instance
+		
+		
+##### 2. Synchronizing a Block of Statements
+
+-	Instead of making whole method Synchronized ... we can particular statements synchronized with synchronized blocks
+	
+	
+		
+	Code Snippet demonstrating Thread Race Conditions :
+	
+		package raceconditions;
+
+		public class Countdown {
+
+			private int i;// Instance variable will allocated memory in the Heap Area .. i will be shared
+							// across the thread resulting in inconsistent results
+
+			public void doCountdown() {
+				String color = ThreadColor.ANSI_RED;
+
+				switch (Thread.currentThread().getName()) {
+				case "RED":
+					color = ThreadColor.ANSI_RED;
+					break;
+				case "GREEN":
+					color = ThreadColor.ANSI_GREEN;
+					break;
+				case "PURPLE":
+					color = ThreadColor.ANSI_PURPLE;
+					break;
+				}
+
+				synchronized (color) {
+					for (i = 10; i > 0; i--) {
+						// for (int i = 10; i > 0; i--) { // Local variable i will allocated on the
+						// Thread Stack Area .. Each Thread will have its own Stack Area ... Specific to
+						// that ... resulting Consistent result
+						System.out.println(color + Thread.currentThread().getName() + " : i =" + i);
+					}
+				}
+			}
+		}
+		
+		package raceconditions;
+
+		public class CountdownThread extends Thread {
+
+			private Countdown countdown;
+
+			CountdownThread(Countdown countdown) {
+				this.countdown = countdown;
+			}
+
+			public void run() {
+				this.countdown.doCountdown();
+			}
+		}
+
+		package raceconditions;
+
+		public class RaceConditionTest {
+
+			public static void main(String[] args) {
+				Countdown cd = new Countdown();
+
+				CountdownThread cdt1 = new CountdownThread(cd);
+				CountdownThread cdt2 = new CountdownThread(cd);
+				cdt1.setName("RED");
+				cdt2.setName("PURPLE");
+				
+				cdt1.start();
+				cdt2.start();
+
+			}
+		}
+	
+	
+	
+	Output :
+	
+			PURPLE : i =10
+			PURPLE : i =9
+			PURPLE : i =8
+			RED : i =10
+			RED : i =6
+			RED : i =5
+			RED : i =4
+			RED : i =3
+			RED : i =2
+			RED : i =1
+			PURPLE : i =7
+			
+		
+		After adding synchronized and using object lock
+		
+			
+			RED : i =10
+			RED : i =9
+			RED : i =8
+			RED : i =7
+			RED : i =6
+			RED : i =5
+			RED : i =4
+			RED : i =3
+			RED : i =2
+			RED : i =1
+			PURPLE : i =10
+			PURPLE : i =9
+			PURPLE : i =8
+			PURPLE : i =7
+			PURPLE : i =6
+			PURPLE : i =5
+			PURPLE : i =4
+			PURPLE : i =3
+			PURPLE : i =2
+			PURPLE : i =1
+
+
+
+		
+----------------------------------------------------------------------------
+
+## Thread Dead, wait, notify and notifyAll
+
+
+-	Deadlock is a situation where Threads holding resources is waiting for another Threads to release the hold on those resources
+-	Deadlock can be avoidable my making proper use of wait, notify and notifyAll methods of Object Class
+
+
+	1.	wait() - invoking Thread will go to waiting mode by release the lock .... will be waiting state until another Threads notify it explicitly
+	2.	notify() - Once Thread finishes its task ... it notify other thread by release the lock
+		-	There is no mechanism to notify a particular thread
+	3.	notifyAll() - Since there no mechanism to notify a particular thread ... it's convention to use notifyAll() to notify all the waiting threads
+	
+		-	notifyAll may result in performance issue ... if lots of Threads are waiting for same resource or waiting to perform same task
+			
+		Code Snippet showing Thread Deadlock and overcome by using wait, notify and notifyAll :
+	
+			package producerconsumer;
+
+			public class ProducerConsumerTest {
+
+				public static void main(String[] args) throws InterruptedException {
+					Message message = new Message();
+					Writer writer = new Writer(message);
+					writer.setName("WRITER");
+
+					Reader reader = new Reader(message);
+					reader.setName("READER");
+
+					writer.start();
+					reader.start();
+
+					writer.join();
+					reader.join();
+				}
+
+			}
+
+			class Message {
+
+				private String message;
+				private boolean isEmpty = true;
+
+				public synchronized String read() {
+					if (isEmpty) {
+						try {
+							wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					isEmpty = true;
+					notifyAll();
+					return this.message;
+				}
+
+				public synchronized void write(String message) {
+					if (!isEmpty) {
+						try {
+							wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					isEmpty = false;
+					this.message = message;
+					notifyAll();
+				}
+			}
+
+			class Writer extends Thread {
+
+				Message message;
+
+				Writer(Message message) {
+					this.message = message;
+				}
+
+				public synchronized void run() {
+					String[] messages = new String[] { "aaa", "bbbb", "ccc", "dddd", "eeee" };
+
+					for (int i = 0; i < messages.length; i++) {
+						System.out.println(Thread.currentThread().getName() + " Thread is writing new message....");
+
+						System.out.println(messages[i]);
+						message.write(messages[i]);
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					message.write("Finished");
+				}
+			}
+
+			class Reader extends Thread {
+
+				Message message;
+
+				Reader(Message message) {
+					this.message = message;
+				}
+
+				public void run() {
+					System.out.println(Thread.currentThread().getName() + " Thread is Consuming new message....");
+
+					for (String latestMessage = message.read(); !latestMessage.equals("Finished"); latestMessage = message.read()) {
+						System.out.println("Latest Message : " + latestMessage);
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		
+		Output :
+
+			READER Thread is Consuming new message....
+			WRITER Thread is writing new message....
+			aaa
+			Latest Message : aaa
+			WRITER Thread is writing new message....
+			bbbb
+			Latest Message : bbbb
+			WRITER Thread is writing new message....
+			ccc
+			Latest Message : ccc
+			WRITER Thread is writing new message....
+			dddd
+			Latest Message : dddd
+			WRITER Thread is writing new message....
+			eeee
+			Latest Message : eeee
+			
+### Threads Suspension
+
+-	While executing a Synchronized code Threads can be suspended while executing single line of code 
+-	Thread can be suspended while performing before or after the operations	or while calling the methods
+
+###	Atomic Operations 
+
+-	Atomic Operations are the operations that happens all at once 
+-	Some of the Atomic Operations are
+	
+	1.	Object Comparison --> object1.equals(object2)
+	2.	Reading and writing primitive variables except of those type long and double 
+	3.	Thread can't suspended while int i=10 but can be suspended while executing double d = 10.90
+	
+	
+### Collection Classes 
+
+-	Few Collection Classes are Thread Safe and few are not
+-	ArrayList is not Thread Safe --> Multiple Threads can share or work on the single instance of ArrayList
+-	While using ArrayList Developer needs to write a synchronized code
+- 	Vector is Thread safe --> all the methods in Vector class is synchronized
+-	Developer no need to needs to handle synchronization explicitly
+
+
+-------------------------------------------------------------------
+
+## Java Util Concurrent package
+		
+
 		
 		
 		
