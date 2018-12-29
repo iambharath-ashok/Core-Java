@@ -1583,6 +1583,9 @@ Code Snippet :
 		Steps to ExecutorService 
 		
 			1.	Create a instance of ExecutorService with specific type of Thread Pool
+				
+				- Executors Class provides factory methods that provides implementation of ExecutorService
+				
 			2.	Create a Thread and needs to perform actual Task
 			3.	Assign Thread task to ExecutorMethod
 			
@@ -3727,7 +3730,8 @@ Native Method Stack Area
 					break;
 				}
 
-				synchronized (color) {
+				//synchronized (color) {
+				synchronized (this) {
 					for (i = 10; i > 0; i--) {
 						// for (int i = 10; i > 0; i--) { // Local variable i will allocated on the
 						// Thread Stack Area .. Each Thread will have its own Stack Area ... Specific to
@@ -3817,7 +3821,7 @@ Native Method Stack Area
 		
 ----------------------------------------------------------------------------
 
-## Thread Dead, wait, notify and notifyAll
+## Thread Dead Lock, wait, notify and notifyAll
 
 
 -	Deadlock is a situation where Threads holding resources is waiting for another Threads to release the hold on those resources
@@ -3955,7 +3959,7 @@ Native Method Stack Area
 			
 ### Threads Suspension
 
--	While executing a Synchronized code Threads can be suspended while executing single line of code 
+-	While executing a Synchronized code Threads can be suspended while executing any single line of code 
 -	Thread can be suspended while performing before or after the operations	or while calling the methods
 
 ###	Atomic Operations 
@@ -3979,39 +3983,844 @@ Native Method Stack Area
 
 -------------------------------------------------------------------
 
-## Java Util Concurrent package
+## Java Util Concurrent package and Thread Interference with ArrayList
+
+
+-	ArrayList is not synchronized meaning when two or more threads working on same ArrayList Instance we may exceptions especially reading and writing from the ArrayList
+-	Below is Producer-Consumer Program in which both Producer and Consumer Threads interfere with each while reading and writing Messages from same ArrayList Instance 
+- 	Since ArrayList is not synchronized, Developer should provide a Custom Implementation of Synchronized code ... Threads may end-up with ArrayIndexOutOfBoundException
+-	Another Solution is to Synchronized List Implementation like Vector ... where all methods are Synchronized
+-	Producer-Consumer with Synchronized block
+	
+	Code Snippet :
+	
+		public class ArrayListProducerAndConsumer {
+
+			public static final String EOF = "EOF";
+
+			public static void main(String[] args) {
+
+				List<String> buffer = new ArrayList<>();
+
+				Producer producer = new Producer(buffer, ANSI_RED);
+				Consumer consumer1 = new Consumer(buffer, ANSI_CYAN);
+				Consumer consumer2 = new Consumer(buffer, ANSI_BLUE);
+
+				producer.start();
+				consumer1.start();
+				consumer2.start();
+
+			}
+
+		}
+
+		// Producer
+		class Producer extends Thread {
+
+			private List<String> buffer;
+			private String color;
+
+			Producer(List<String> buffer, String color) {
+				this.buffer = buffer;
+				this.color = color;
+			}
+
+			public void run() {
+				String[] messages = { "a", "b", "c", "d" };
+				for (String message : messages) {
+					synchronized (this.buffer) { // Producer getting the Lock on ArrayList
+						System.out.println(color + "Producer adding to Buffer: " + message);
+						this.buffer.add(message);
+					}
+					try {
+						System.out.println(color+ "Producer is going to sleep for 3 secs...");
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				synchronized (this.buffer) { // Producer getting the Lock on ArrayList
+					this.buffer.add(EOF);
+				}
+				System.out.println(color + "Adding EOF and Exiting...");
+			}
+		}
+
+		// Consumer
+		class Consumer extends Thread {
+
+			private List<String> buffer;
+			private String color;
+
+			public Consumer(List<String> buffer, String color) {
+				this.buffer = buffer;
+				this.color = color;
+			}
+
+			public void run() {
+				while (true) {
+					// Consumers getting the Lock on ArrayList
+					// And only one Thread will used to get execute
+					synchronized (this.buffer) {
+						if (this.buffer.isEmpty()) {
+							continue;
+						}
+						if (this.buffer.get(0).equals(EOF)) {
+							System.out.println(color + "EOF Reached .... Exiting ...");
+							break;
+						} else {
+							System.out.println(color + "Consumer: " + Thread.currentThread().getName()
+									+ " Removing Element from Buffer " + this.buffer.remove(0));
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+
+				}
+			}
+		}
+
 		
+		Output :
+		
+			Producer adding to Buffer: a
+			Producer is going to sleep for 3 secs...
+			Consumer: Thread-1 Removing Element from Buffer a
+			Producer adding to Buffer: b
+			Producer is going to sleep for 3 secs...
+			Consumer: Thread-2 Removing Element from Buffer b
+			Producer adding to Buffer: c
+			Producer is going to sleep for 3 secs...
+			Consumer: Thread-1 Removing Element from Buffer c
+			Producer adding to Buffer: d
+			Producer is going to sleep for 3 secs...
+			Consumer: Thread-2 Removing Element from Buffer d
+			Adding EOF and Exiting...
+			EOF Reached .... Exiting ...
+			EOF Reached .... Exiting ...
+
+
+
+
+###	Drawbacks of using Synchronized Block
+
+1.	Threads will get blocked until they get the Lock and currently executing Thread can't be interrupted
+2.	Synchronized block must be within the same method .. can't start in one method and endup in another one
+3.	Don't have info on the object's Intrinsic lock availability or any other information about the Lock
+4.	Flow of execution may reach the top of synchronized block either Thread needs to get a Lock and continue or block at that point of line
+5.	Threads will not be served in FIFO ... First Blocked Thread may execute at Last and vice versa
+
+
+Sol : Thread Interference can be avoided ... Instead of using synchronization ... we can use Classes that implement java.util.concurrent.locks.Lock Interface
+		
+----------------------------------------------------------------------
+
+##	Reentrant Lock and Unlock
+
+
+-	Reentrant Lock in which developer needs to explicitly open the lock and close the lock
+-	Reentrant Lock can open and close across the methods
+-	Unlike INTRINSIC LOCK where JVM will OPEN and CLOSE the LOCK with synchronized methods and Blocks ... Developer needs to open and close the lock explicitly.
+-	Advantage of using REETRANT LOCK is that Developer knows where exactly LOCK is opening and LOCK is closing and AVAILABILITY of LOCK
+
+
+
+
+	Code Snippet :
+	
+		public class ReentrantLockDemo {
+
+			public static void main(String[] args) {
+
+				List<String> buffer = new ArrayList<>();
+				
+				// Create an Instance of ReentrantLock from Concurrent Lock Package
+				// ReentrantLock instance must be shared with Threads that Competing for Same Lock
+				ReentrantLock reentrantLock = new ReentrantLock();
+
+				Producer producer = new Producer(buffer, ANSI_RED, reentrantLock);
+				Consumer consumer1 = new Consumer(buffer, ANSI_CYAN, reentrantLock);
+				Consumer consumer2 = new Consumer(buffer, ANSI_BLUE, reentrantLock);
+
+				producer.start();
+				consumer1.start();
+				consumer2.start();
+
+			}
+
+		}
+
+		class Producer extends Thread {
+
+			private List<String> buffer;
+			private String color;
+			private ReentrantLock reentrantLock;
+
+			Producer(List<String> buffer, String color, ReentrantLock reentrantLock) {
+				this.buffer = buffer;
+				this.color = color;
+				this.reentrantLock = reentrantLock;
+			}
+
+			public void run() {
+				String[] messages = { "a", "b", "c", "d" };
+				for (String message : messages) {
+					//synchronized (this.buffer) { // Producer getting the Lock on ArrayList
+						reentrantLock.lock(); // Reentrant Lock Opening
+						System.out.println(color + "Producer adding to Buffer: " + message);
+						this.buffer.add(message);
+						reentrantLock.unlock();// Reentrant Lock Closing
+					//}
+					try {
+						System.out.println(color + "Producer is going to sleep for 3 secs...");
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				//synchronized (this.buffer) { // Producer getting the Lock on ArrayList
+					reentrantLock.lock(); // Reentrant Lock Opening
+					this.buffer.add(EOF);
+					reentrantLock.unlock(); // Reentrant Lock Closing
+				//}
+				System.out.println(color + "Adding EOF and Exiting...");
+			}
+		}
+
+		class Consumer extends Thread {
+
+			private List<String> buffer;
+			private String color;
+			ReentrantLock reentrantLock;
+
+			public Consumer(List<String> buffer, String color, ReentrantLock reentrantLock) {
+				this.buffer = buffer;
+				this.color = color;
+				this.reentrantLock = reentrantLock;
+			}
+
+			public void run() {
+				while (true) {
+					// Consumers getting the Lock on ArrayList
+					// And only one Thread will used to get execute
+					//synchronized (this.buffer) {
+						 Maximum Lock Count Exceeded Problem
+						
+						reentrantLock.lock(); // Reentrant Lock Opening
+						
+						if (this.buffer.isEmpty()) {
+							continue;
+						}
+						if (this.buffer.get(0).equals(EOF)) {
+							System.out.println(color + "EOF Reached .... Exiting ...");
+							break;
+						} else {
+							System.out.println(color + "Consumer: " + Thread.currentThread().getName()
+									+ " Removing Element from Buffer " + this.buffer.remove(0));
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						reentrantLock.unlock();// Reentrant Lock Closing
+					//}
+
+				}
+			}
+		}
+				
+		
+	Output :
+
+		Exception in thread "Thread-2" java.lang.Error: Maximum lock count exceeded
+		at java.base/java.util.concurrent.locks.ReentrantLock$Sync.nonfairTryAcquire(ReentrantLock.java:138)
+		at java.base/java.util.concurrent.locks.ReentrantLock$NonfairSync.tryAcquire(ReentrantLock.java:199)
+		at java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:1237)
+		at java.base/java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:267)
+		at reentrantlock.Consumer.run(ReentrantLockDemo.java:88)
+		
+		
+### Note :
+
+-	Above Program will error out due to maximum lock opening but not closing explicitly by Consumer Threads
+-	If we are using Reentrant Lock then programmer should make sure that ... Reentrant Locks should be closed explicitly otherwise it will opened forever
+	-	Thread will be in Blocked Status forever
+-	Unlike in the Intrinsic Lock where the JVM will manage Opening and Closing the Locks
+
+
+		
+	Code Snippet After Closing the Reentrant Lock explicitly:
+
+		public class ReentrantLockDemo {
+
+			public static void main(String[] args) {
+
+				List<String> buffer = new ArrayList<>();
+
+				// Create an Instance of ReentrantLock from Concurrent Lock Package
+				// ReentrantLock instance must be shared with Threads that Competing for Same
+				// Lock
+				ReentrantLock reentrantLock = new ReentrantLock();
+
+				Producer producer = new Producer(buffer, ANSI_RED, reentrantLock);
+				Consumer consumer1 = new Consumer(buffer, ANSI_CYAN, reentrantLock);
+				Consumer consumer2 = new Consumer(buffer, ANSI_BLUE, reentrantLock);
+
+				producer.start();
+				consumer1.start();
+				consumer2.start();
+
+			}
+
+		}
+
+		class Producer extends Thread {
+
+			private List<String> buffer;
+			private String color;
+			private ReentrantLock reentrantLock;
+
+			Producer(List<String> buffer, String color, ReentrantLock reentrantLock) {
+				this.buffer = buffer;
+				this.color = color;
+				this.reentrantLock = reentrantLock;
+			}
+
+			public void run() {
+				String[] messages = { "a", "b", "c", "d" };
+				for (String message : messages) {
+					// synchronized (this.buffer) { // Producer getting the Lock on ArrayList
+					reentrantLock.lock();
+					System.out.println(color + "Producer adding to Buffer: " + message);
+					this.buffer.add(message);
+					reentrantLock.unlock();
+					// }
+					try {
+						System.out.println(color + "Producer is going to sleep for 3 secs...");
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				// synchronized (this.buffer) { // Producer getting the Lock on ArrayList
+				reentrantLock.lock();
+				this.buffer.add(EOF);
+				reentrantLock.unlock();
+				// }
+				System.out.println(color + "Adding EOF and Exiting...");
+			}
+		}
+
+		class Consumer extends Thread {
+
+			private List<String> buffer;
+			private String color;
+			ReentrantLock reentrantLock;
+
+			public Consumer(List<String> buffer, String color, ReentrantLock reentrantLock) {
+				this.buffer = buffer;
+				this.color = color;
+				this.reentrantLock = reentrantLock;
+			}
+
+			int lockCounter;
+
+			public void run() {
+
+				while (true) {
+					// Consumers getting the Lock on ArrayList
+					// And only one Thread will used to get execute
+					// synchronized (this.buffer) {
+					/*
+					 * Maximum Lock Count Exceeded Problem Below code is opening the Lock explicitly
+					 * but not able to reach Closing Statement Due to continue statement inside if
+					 * buffer isEmpty
+					 */
+					reentrantLock.lock();
+					if (this.buffer.isEmpty()) {
+						reentrantLock.unlock();
+						continue;
+					}
+					if (this.buffer.get(0).equals(EOF)) {
+						System.out.println(color + "EOF Reached .... Exiting ...");
+						reentrantLock.unlock();
+						break;
+					} else {
+						System.out.println(color + "Consumer: " + Thread.currentThread().getName()
+								+ " Removing Element from Buffer " + this.buffer.remove(0));
+					}
+					reentrantLock.unlock();
+					// }
+
+				}
+			}
+		}
+		*
+		
+	Output after closing explicitly:
+
+		Producer adding to Buffer: a
+		Producer is going to sleep for 3 secs...
+		Consumer: Thread-1 Removing Element from Buffer a
+		Producer adding to Buffer: b
+		Producer is going to sleep for 3 secs...
+		Consumer: Thread-1 Removing Element from Buffer b
+		Producer adding to Buffer: c
+		Producer is going to sleep for 3 secs...
+		Consumer: Thread-2 Removing Element from Buffer c
+		Producer adding to Buffer: d
+		Producer is going to sleep for 3 secs...
+		Consumer: Thread-2 Removing Element from Buffer d
+		Adding EOF and Exiting...
+		EOF Reached .... Exiting ...
+		EOF Reached .... Exiting ...
+
+	
+		
+--------------------------------------------------------------------------------		
+		
+##	Using Try Finally with Threads
+
+-	Try finally can be used to close the Reentrant Lock explicitly in finally Block
+-	Instead of writing REENTRANT CLOSE reentrantLock.close() the code multiple times
+-	We can put the ReentrantLock opening Statement in the Try Block and can put ReentrantLock Closing Statement in finally Block
+-	Finally block will execute irrespective of exceptions or conditions in the try block
+
+
+### Advantages of Reentrant Lock
+
+-	Reentrant Lock Class provides various methods that helps to get information about lock explicitly
+-	boolean tryLock() method returns true if lock is freely available and locks the instance 
+-	int getHoldCount() method returns the number of holds on the lock
+-	int getQueueLength() method returns an estimate number of Threads that are waiting for this lock
+-   boolean hasQueuedThreads() methods boolean if any threads are waiting for lock on this object
+-	boolean isFair() methods returns whether ReentrantLock is Fair ... Lock Serves in FIFO manner ... if Lock is fair then while releasing current lock it will look for longest waiting Thread-0
+-	boolean isHeldByCurrentThread() method returns boolean if lock is currently held by current running thread
+-	boolean isLocked() method queries whether Lock is held by any threads	
 
 		
 		
+	Code Snippet :
+	
+		public class TryFinallyThreadsDemo {
+
+			public static final String EOF = "EOF";
+
+			public static void main(String[] args) {
+				List<String> buffer = new ArrayList<>();
+				ReentrantLock reentrantLock = new ReentrantLock();
+
+				Producer producer = new Producer(buffer, ANSI_RED, reentrantLock, "Producer");
+				Consumer consumer1 = new Consumer(buffer, ANSI_PURPLE, reentrantLock, "Consumer 1");
+				Consumer consumer2 = new Consumer(buffer, ANSI_CYAN, reentrantLock, "Consumer 2");
+
+				new Thread(producer).start();
+				new Thread(consumer1).start();
+				new Thread(consumer2).start();
+
+			}
+
+		}
+
+		class Producer implements Runnable {
+
+			private List<String> buffer;
+			private String color;
+			private ReentrantLock reentrantLock;
+			private String threadName;
+
+			public Producer(List<String> buffer, String color, ReentrantLock reentrantLock, String threadName) {
+				super();
+				this.buffer = buffer;
+				this.color = color;
+				this.reentrantLock = reentrantLock;
+				this.threadName = threadName;
+			}
+
+			@Override
+			public void run() {
+
+				String[] messages = new String[] { "1", "2", "3", "4", "5", "6" };
+
+				for (String message : messages) {
+					System.out.println(color + threadName + " - has added message to buffer: " + message);
+					try {
+						this.reentrantLock.lock();
+						System.out.println(color + threadName +" Get Hold Count: "+this.reentrantLock.getHoldCount());
+						System.out.println(color + threadName +" Queue Length: "+this.reentrantLock.getQueueLength());
+						System.out.println(color + threadName +" Has Queued Threads: "+this.reentrantLock.hasQueuedThreads());
+						System.out.println(color + threadName +" Is Fair: "+this.reentrantLock.isFair());
+						System.out.println(color + threadName +" IsHeldByCurrentThread: "+this.reentrantLock.isHeldByCurrentThread());
+						System.out.println(color + threadName +" Is Locked: "+this.reentrantLock.isLocked());
+						buffer.add(message);
+						try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					} finally {
+						this.reentrantLock.unlock();
+					}
+				}
+				try {
+					this.reentrantLock.lock();
+					buffer.add(EOF);
+				} finally {
+					this.reentrantLock.unlock();
+				}
+
+			}
+
+		}
+
+		class Consumer implements Runnable {
+
+			private List<String> buffer;
+			private String color;
+			private ReentrantLock reentrantLock;
+			private String threadName;
+
+			public Consumer(List<String> buffer, String color, ReentrantLock reentrantLock, String threadName) {
+				super();
+				this.buffer = buffer;
+				this.color = color;
+				this.reentrantLock = reentrantLock;
+				this.threadName = threadName;
+			}
+
+			@Override
+			public void run() {
+				long lockCounter = 0;
+				while (true) {
+					try {
+						if (this.reentrantLock.tryLock(5,TimeUnit.SECONDS)) {
+							System.out.println(color + threadName +" Get Hold Count: "+this.reentrantLock.getHoldCount());
+							System.out.println(color + threadName +" Queue Length: "+this.reentrantLock.getQueueLength());
+							System.out.println(color + threadName +" Has Queued Threads: "+this.reentrantLock.hasQueuedThreads());
+							System.out.println(color + threadName +" Is Fair: "+this.reentrantLock.isFair());
+							System.out.println(color + threadName +" IsHeldByCurrentThread: "+this.reentrantLock.isHeldByCurrentThread());
+							System.out.println(color + threadName +" Is Locked: "+this.reentrantLock.isLocked());
+							try {
+								// this.reentrantLock.lock();
+								if (buffer.isEmpty()) {
+									continue;
+								}
+								System.out.println(color + threadName + " Lock Counter: " + lockCounter);
+								lockCounter = 0;
+								if (buffer.get(0).equals(EOF)) {
+									System.out.println(color + "Reached EOF.... Exiting....");
+									break;
+								} else {
+									System.out.println(
+											color + threadName + " - is removing message from buffer: " + buffer.remove(0));
+								}
+							} finally {
+								this.reentrantLock.unlock();
+							}
+						} else {
+							lockCounter++;
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+
+			}
+		}
+		
+		
+		
+----------------------------------------------------------------------
+
+##	Thread Pools
+
+-	Thread Pool is a managed set of Threads from JVM
+-	Thread Pool managed by JVM offers Resource, Memory Optimization, reduces time consuming and manages life-cycle of Threads
+-	JVM manages Thread scheduling and Thread life-cycle
+-	Thread Pool is suitable for application with large set of threads
+-	ExecutorService provides implementation for different Thread Pools in Java
+-	ExecutorService is from java.util.concurrent package
+-	ExecutorService offers different factory methods that returns implementation of Thread Pool
+- 	ExecutorService helps to focus the code instead of Thread management
+
+
+	Code Snippet :
+	
+		public class ExecutorServiceDemo {
+
+			public static void main(String[] args) throws InterruptedException, ExecutionException {
+				List<String> buffer = new ArrayList<>();
+				ReentrantLock lock = new ReentrantLock();
+
+				Producer producer1 = new Producer(buffer, ANSI_RED, "Producer ", lock);
+				Consumer consumer1 = new Consumer(buffer, ANSI_PURPLE, "Consumer 1 ", lock);
+				Consumer consumer2 = new Consumer(buffer, ANSI_CYAN, "Consumer 2 ", lock);
+
+				ExecutorService es = Executors.newFixedThreadPool(4);
+
+				es.submit(producer1);
+				es.submit(consumer1);
+				es.submit(consumer2);
+
+				Callable<String> c = new Callable<String>() {
+					public String call() {
+						return "Bharath The Great";
+					}
+				};
+				//// Get Method on Future is Blocking meaning ... it will not executed until the
+				// result is not available in the Future Instance
+				Future<String> future = es.submit(c);
+				
+				
+				Future<String> submit = es.submit(() -> "Bharath");
+				System.out.println(ANSI_GREEN + future.get());
+				System.out.println(submit.get());
+
+				es.shutdown();
+			}
+
+		}
+
+		class Producer implements Runnable {
+
+			private List<String> buffer;
+			private String color;
+			private String threadName;
+			private ReentrantLock lock;
+
+			public Producer(List<String> buffer, String color, String threadName, ReentrantLock lock) {
+				super();
+				this.buffer = buffer;
+				this.color = color;
+				this.threadName = threadName;
+				this.lock = lock;
+			}
+
+			public void run() {
+				String[] messages = { "1", "2", "3", "4", "5", "6", "7", "8" };
+
+				for (String message : messages) {
+					try {
+						this.lock.lock();
+						System.out.println(color + threadName + " has added a Message: " + message);
+						buffer.add(message);
+					} finally {
+						this.lock.unlock();
+					}
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				try {
+					this.lock.lock();
+					buffer.add("EOF");
+				} finally {
+					this.lock.unlock();
+				}
+			}
+		}
+
+		class Consumer implements Runnable {
+			private List<String> buffer;
+			private String color;
+			private String threadName;
+			private ReentrantLock lock;
+
+			public Consumer(List<String> buffer, String color, String threadName, ReentrantLock lock) {
+				super();
+				this.buffer = buffer;
+				this.color = color;
+				this.threadName = threadName;
+				this.lock = lock;
+			}
+
+			public void run() {
+				long countLock = 0;
+				while (true) {
+					if (this.lock.tryLock()) {
+						try {
+							if (buffer.isEmpty()) {
+								continue;
+							}
+							System.out.println(color + threadName + " Lock Count: " + countLock);
+							countLock = 0;
+							if (buffer.get(0).equals("EOF")) {
+								System.out.println(color + threadName + " Reached EOF.... EXITING....");
+								break;
+							} else {
+								System.out.println(
+										color + threadName + "--> is removing message from Buffer: " + buffer.remove(0));
+							}
+						} finally {
+							this.lock.unlock();
+						}
+					} else {
+						countLock++;
+					}
+				}
+			}
+		}
+
+	Output :
+
+		Producer  has added a Message: 1
+		Consumer 2  Lock Count: 6834
+		Bharath The Great
+		Consumer 2 --> is removing message from Buffer: 1
+		Producer  has added a Message: 2
+		Consumer 2  Lock Count: 43416272
+		Consumer 2 --> is removing message from Buffer: 2
+		Producer  has added a Message: 3
+		Consumer 2  Lock Count: 35687034
+		Consumer 2 --> is removing message from Buffer: 3
+		Producer  has added a Message: 4
+		Consumer 1  Lock Count: 131046307
+		Consumer 1 --> is removing message from Buffer: 4
+		Producer  has added a Message: 5
+		Consumer 2  Lock Count: 101386327
+		Consumer 2 --> is removing message from Buffer: 5
+		Producer  has added a Message: 6
+		Consumer 1  Lock Count: 95686684
+		Consumer 1 --> is removing message from Buffer: 6
+		Producer  has added a Message: 7
+		Consumer 2  Lock Count: 92031560
+		Consumer 2 --> is removing message from Buffer: 7
+		Producer  has added a Message: 8
+		Consumer 2  Lock Count: 36699126
+		Consumer 2 --> is removing message from Buffer: 8
+		Consumer 1  Lock Count: 131470594
+		Consumer 1  Reached EOF.... EXITING....
+		Consumer 2  Lock Count: 51520908
+		Consumer 2  Reached EOF.... EXITING....
 		
 		
 		
 		
 		
+----------------------------------------------------------------------
+
+##	ArrayBlockingQueue		
+
+-	ArrayBlockingQueue is one of the ThreadSafe Queue Class form java.util.concurrent package
+-	Instead of using ArrayList we can use ThreadSafe Classes like ArrayBlockingQueue to Reduce the Synchronization code
+-	ArrayBlockingQueue methods are Thread Safe meaning that only Thread at a time can execute the method and other threads will wait for the lock
+-	ArrayBlockingQueue is FIFO Data Structure which is best suitable for Producer and Consumer Problem
+-	add() and remove() method throws NoSuchElementException if not able to perform immediately or items are present in buffer
+-	put() and take() methods are synchronized and will be blocked,  so no need to add synchronized code explicitly
+-	put() and take() needs to handle exception explicitly
+-	poll() method will retrieve and remove head of queue ... if queue is empty then return null
+-	Even if we use Thread Safe Classes like ArrayBlockingQueue it not sure that there will no Thread interference --> so need to add synchronization explicitly to consumers	
 		
+	Code Snippet :
+	
+		public class ArrayBlockingQueueDemo {
+
+			public static void main(String[] args) {
+				ArrayBlockingQueue<String> buffer = new ArrayBlockingQueue<>(100);
+
+				Producer producer1 = new Producer(buffer, ANSI_RED, "Producer 1");
+				Consumer consumer1 = new Consumer(buffer, ANSI_PURPLE, "Consumer 1 ");
+				Consumer consumer2 = new Consumer(buffer, ANSI_CYAN, "Consumer 2 ");
+
+				new Thread(producer1).start();
+				new Thread(consumer2).start();
+				new Thread(consumer1).start();
+			}
+
+		}
+
+		class Producer implements Runnable {
+
+			private ArrayBlockingQueue<String> buffer;
+			private String color;
+			private String name;
+
+			public Producer(ArrayBlockingQueue<String> buffer, String color, String name) {
+				super();
+				this.buffer = buffer;
+				this.color = color;
+				this.name = name;
+			}
+
+			@Override
+			public void run() {
+				String[] messages = { "1", "2", "3", "4", "5", "6", "7", "8"};
+				try {
+					for (String message : messages) {
+						System.out.println(color + name + " has added a Message: " + message);
+						buffer.add(message);
+						Thread.sleep(3000);
+					}
+					buffer.put("EOF");
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		class Consumer implements Runnable {
+			private ArrayBlockingQueue<String> buffer;
+			private String color;
+			private String name;
+
+			public Consumer(ArrayBlockingQueue<String> buffer, String color, String name) {
+				super();
+				this.buffer = buffer;
+				this.color = color;
+				this.name = name;
+			}
+
+			public void run() {
+
+				while (true) {
+					if (buffer.isEmpty()) {
+						continue;
+					}
+					if (buffer.peek().equals("EOF")) {
+						System.out.println(color + name + " EOF Reached and Exiting...");
+						break;
+					} else {
+						System.out.println(color + name + " --> Removed Message from Buffer: " + buffer.poll());
+					}
+				}
+			}
+		}
+
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	Output: 
+
+		Producer 1 has added a Message: 1
+		Consumer 1  --> Removed Message from Buffer: 1
+		Consumer 2  --> Removed Message from Buffer: null
+		Producer 1 has added a Message: 2
+		Consumer 2  --> Removed Message from Buffer: 2
+		Consumer 1  --> Removed Message from Buffer: null
+		Producer 1 has added a Message: 3
+		Consumer 2  --> Removed Message from Buffer: 3
+		Consumer 1  --> Removed Message from Buffer: null
+		Producer 1 has added a Message: 4
+		Consumer 1  --> Removed Message from Buffer: 4
+		Consumer 2  --> Removed Message from Buffer: null
+		Producer 1 has added a Message: 5
+		Consumer 2  --> Removed Message from Buffer: 5
+		Consumer 1  --> Removed Message from Buffer: null
+		Producer 1 has added a Message: 6
+		Consumer 1  --> Removed Message from Buffer: 6
+		Consumer 2  --> Removed Message from Buffer: null
+		Producer 1 has added a Message: 7
+		Consumer 1  --> Removed Message from Buffer: 7
+		Producer 1 has added a Message: 8
+		Consumer 2  --> Removed Message from Buffer: 8
+		Consumer 1  --> Removed Message from Buffer: null
+		Consumer 2  EOF Reached and Exiting...
+		Consumer 1  EOF Reached and Exiting...
+
 		
 		
 		
