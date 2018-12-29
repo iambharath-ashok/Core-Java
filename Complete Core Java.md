@@ -4822,9 +4822,180 @@ Sol : Thread Interference can be avoided ... Instead of using synchronization ..
 		Consumer 1  EOF Reached and Exiting...
 
 		
+------------------------------------------------------------------------
+
+## Deadlocks		
+
+-	Deadlock is a situation where a Thread Holding lock trying to get a lock on another instance which in turn holding by another Thread
+- 	Deadlock usually occurs due to improper coding structure
+-	Deadlock occurs when from multiple class try to access the locks in opposition direction
+
+
+Preventing Deadlocks 
+
+1.	Obtain the Locks in same order 
+2. 	Make Threads to work on single shared object or lock
+
+
+
+	Code snippet of Showing Deadlocks] Situation: 
+		
+		
+		public class DeadLock1Demo {
+			public static Object lock1 = new Object();
+			public static Object lock2 = new Object();
+
+			public static void main(String[] args) {
+				new Thread1().start();
+				new Thread2().start();
+			}
+
+			static class Thread1 extends Thread {
+
+				public void run() {
+					System.out.println(Thread.currentThread().getName()+ " Started ...");
+					synchronized (lock1) {
+						System.out.println(Thread.currentThread().getName()+": Has Lock 1");
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						System.out.println(Thread.currentThread().getName()+": Waiting for Lock 2");
+						synchronized (lock2) {
+							System.out.println(Thread.currentThread().getName()+": Has Lock 1 and Lock 2");
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							System.out.println(Thread.currentThread().getName()+": Released Lock 2");
+						}
+						System.out.println(Thread.currentThread().getName()+": Released Lock 1");
+					}
+				}
+			}
+
+			static class Thread2 extends Thread {
+
+				public void run() {
+					System.out.println(Thread.currentThread().getName()+ " Started ...");
+					synchronized (lock2) {
+						System.out.println(Thread.currentThread().getName()+": Has Lock 2");
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						System.out.println(Thread.currentThread().getName()+": Waiting for Lock 1");
+						synchronized (lock1) {
+							System.out.println(Thread.currentThread().getName()+": Has Lock 1 and Lock 2");
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							System.out.println(Thread.currentThread().getName()+": Has Release Lock1");
+						}
+						System.out.println(Thread.currentThread().getName()+": Has Released Lock2");
+					}
+				}
+			}
+		}
+
+	Output :
+
+		Thread-0 Started ...
+		Thread-0: Has Lock 1
+		Thread-1 Started ...
+		Thread-1: Has Lock 2
+		Thread-0: Waiting for Lock 2
+		Thread-1: Waiting for Lock 1
+		
+		
+----------------------------------------------------------------
+
+##	Deadlock Scenario 2 	
+
+
+	Display display = new Display();
+	Data data = new Data();
+	
+	display.setData(data);
+	data.setDisplay(display);
+	
+-	In the below code deadlock is happening since two different threads will enter the sayHello by holding a lock on calling object(bharath and sharath)
+-	Synchronized method will have intrinsic lock on "this" instance
+-	Two Different threads will enter synchronized methods by getting hold of intrinsic lock on calling instance and waiting for each other resulting in DeadLock
+-	Below program shows an example of Getting Locks in different order
+
+		
+	Code Snippet of DeadLock :
+	
+		
+		Execution flow :
+		
+			1.	Thread1 acquires lock on Bharath object and enters sayHello() method
+				It prints to console and then suspends
+			2. Thread2 acquires lock on Sharath object and enters sayHello() method
+				It prints to console and then suspends
+			3.	Thread1 runs again and wants to sayHelloBack to Sharath Object. It then tries to call sayHelloBack() method with Sharath object ... but Sharath object has been already locked by Thread2, so Thread1 will be in BLOCKED state and get suspended.
+			4.  Thread2 runs again and wants to sayHelloBack to Bharath Object. It then tries to call sayHelloBack() method with Bharath object ... but Bharath object has been already locked by Thread1, so Thread1 will be in BLOCKED state and get suspended.
+			5.	Since Both Threads will end-up in Blocked Status ... it will result in Deadlock
 		
 		
 		
+		
+		
+		public class DeadLock2Demo {
+			public static void main(String[] args) {
+				PolitePerson bharath = new PolitePerson("Bharath");
+				PolitePerson sharath = new PolitePerson("Sharath");
+		//		bharath.sayHello(sharath);
+		//		sharath.sayHello(bharath);
+				
+				// Java 8
+				new Thread(()->bharath.sayHello(sharath)).start();
+				new Thread(()->sharath.sayHello(bharath)).start();
+			}
+		}
+
+		class PolitePerson {
+
+			private String name;
+
+			PolitePerson(String name) {
+				this.name = name;
+			}
+			
+			
+
+			public synchronized  void sayHello(PolitePerson person) {
+				System.out.println(Thread.currentThread().getName()+" Has Started sayHello");
+				System.out.format("%s: %s has said hello to me%n" ,this.name, person.name);
+				person.sayHelloBack(this);// Deadlock point
+			}
+			
+			public synchronized  void sayHelloBack(PolitePerson person) {
+				System.out.println(Thread.currentThread().getName()+" sayHelloBack");
+				System.out.format("%s: %s has said hello back to me%n" , this.name, person.name);
+			}
+		}
+
+
+	Output :
+
+		Thread-0 Has Started sayHello
+		Bharath: Sharath has said hello to me
+		Thread-1 Has Started sayHello
+		Sharath: Bharath has said hello to me
+
+		
+------------------------------------------------------------------------
+
+## Thread Starvation
+
+	
 		
 		
 		
