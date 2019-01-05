@@ -5194,10 +5194,268 @@ Examples :
 				}).start();
 			}
 		}
+		
+		
+	Output of Code :
+
+		Alice: You eat first my darling Bob!
+		Bob: You eat first my darling Alice!
+		Alice: You eat first my darling Bob!
+		Bob: You eat first my darling Alice!
+		Alice: You eat first my darling Bob!
+		Bob: You eat first my darling Alice!
+		Alice: You eat first my darling Bob!
+		Bob: You eat first my darling Alice!
+		Alice: You eat first my darling Bob!
 
 ---------------------------------------------------------------
 
 ## Slipped Conditions
+
+-	Slipped condition is a potential problem that can occur in Multi-Threaded Applications
+-	Slipped condition is type of Race Conditions aka Thread interference
+-	Slipped condition can happen when Thread suspending b/w Reading a operation and acting upon it
+
+### Scenario 1:	Two Threads reading from Buffer
+
+
+	1.	Thread1 reads the buffer and set some condition 
+	2. 	Thread1 will be suspended
+	3.	Thread2 reads the Buffer ... reaches EOF and set condition to EOF
+	4. 	Thread2 will be suspended
+	5.	Thread1 resumes and tries to read buffer ... resulting in Throw Exception or will gets crashed
+	
+####	Above is a scenario for slipped condition Thread is suspending b/w reading an operation and acting upon it.	
+---------------------------------------------------------------	
+	
+## Threads Issues and its Solutions 
+
+
+### 1.	AtomicActions
+
+	-	Threads can be suspended in middle of doing something
+	-	An AtomicAction can be suspended in middle of being executed
+	-	Thread either will complete AtomicAction or will doesn't executed at all
+	-	Once Thread starts an AtomicAction we can be sure that it wont be suspended in the middle until its get completed
+
+
+	####	In Java Following are Atomic Actions
+
+	1.	Reading and writing an reference variable
+	2. 	Reading and writing a primitive type except long and double
+	3.	JVM does reading and writing long and double in 2 operations
+
+
+		myInt = 10; // Atomic
+		myLong = 999999999; // Non-Atomic
+
+	4.	Reading and writing volatile variables are Atomic
+
+
+
+### 2.	Volatile Variables
+
+	-	Because of Java Memory Model(JMM), Multiple Threads reading and writing same variable will result in inconsistency and some errors
+	-	Each Thread will have CPU Cache ... where it will copy values from main memory to its CPU Cache
+	-	CPU Cache will increase performance ... but may result in inconsistency when multiple Threads running with multi core systems
+	
+	
+
+#### Scenario 1: Multiple Threads with Counter
+
+	1.	Value of Counter in Main Memory is 0
+	2.	Thread1 reads value from main memory and caches it to local
+	3.	Thread1 adds 1 to its counter updates its cache 
+	4.	Thread2 reads value from main memory which is still 0 and caches it to its local
+	5.	Thread2 add 1 and updates its counter and writes to main memory
+	6.	Thread1 resumes and writes 1 to main memory 
+	7. 	Even though increment operation is done twice ... counter is still have value 1 
+	8.	Above problem can be solved by making variable volatile
+	
+	
+	
+#### Notes
+-	Volatile Variable makes JVM to write updated cache values immediately to main memory
+-	Volatile variables make sure that it uses latest values from main memory
+-	Volatile Variables doesn't solve the problem of Thread Interference
+-	After using Volatile variables may still result in Race condtions
+-	Counter++ is not Atomic // Increment is not atomic
+
+	Thread has to do following 
+
+	1.	Read value of Counter
+	2. 	Add 1 value to it
+	3.	Update latest value to counter
+	
+-	Thread can be suspended in middle of any of the above operation
+-	Following Scenario can happen
+	
+	
+#### Scenario 2: Multiple Threads with Multi-Core Processors
+
+	1.	Value of Counter in Main Memory is 1
+	2.	Thread1 from Core1 reads value of 1 from main memory and caches it to local
+	3.	Thread1 from Core1 reads value of 1 from main memory and caches it to local
+	4.	Thread1 adds 1 to its counter updates its cache to 2 and JVM writes it immediately to Main Memory
+	5.	Thread2 adds 1 and updates its counter and JVM writes it immediately to main memory
+	6. 	Even though increment operation is done twice ... counter is still have value 2 
+	8.	Counter Value is still 2 instead of 3
+	
+	
+-	Using volatile for long and double make them Atomic
+-	Using volatile variable will not solve of Thread interference
+
+	
+#### Scenario 2: Multiple Threads working on local cache data
+
+	1.	Thread1 reads of values of 5 from main memory and caches its to local cache
+	2.	Thread1 suspends
+	3.	Thread2 reads of values of 5 from main memory and caches its to local cache
+	4.	Thread2 increment and update value from local cache to main memory 
+	5.	Thread3 reads value of 6 .. update it to 7 and write value from cache to main memory
+	6. 	Thread1 resumes and updates values to 6 and write it main memory 
+	7.	Above scenario results in inconsistency
+	
+#### Atomic Classes:
+
+	1.	Thread changes the value of counter based the CPU Cache
+	2.	CPU Cache may contain stale data or dirty data
+	3.	Solution for above increment and decrement problem is use of Atomic classes
+	4.  To solve above problem Java provides Atomic Classes under java.util.concurrent.atomic package
+	5.  java.util.concurrent.atomic package contains various Atomic Classes like AtomicInteger, AtomicDouble
+	6.	Atomic package classes can be used to make sure that Reading and writing variables are atomic
+	7.	Atomic Types guarantees that 
+		
+			1.	No Thread Interference
+			2.	Thread Safe
+			3.	Lock-Free on single variable
+			
+			
+			
+			
+	Code Snippet:
+	
+		class Counter {
+			AtomicInteger counter = new AtomicInteger();
+			
+			public void inc() {
+				counter.incrementAndGet();
+			}
+			
+			public void dec() {
+				counter.decrementAndGet();
+			}
+			 
+			public int value() {
+				return counter();
+			}
+			
+		}
+
+-	Atomic Integer is not meant to use as substitute for Integer object
+-	It is meant to use in specific scenarios
+-	There are Atomic Classes of type long, boolean, integer, integer Array, Object Reference and double
+-	Reading and writing long and double is AtomicLong and AtomicDouble classes
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
 
 
 
