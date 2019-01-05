@@ -4995,14 +4995,214 @@ Preventing Deadlocks
 
 ## Thread Starvation
 
+-	Starvation is a situation where a thread is unable to gain regular access to shared resources and is unable to make progress
+-	This happens when shared resources are made unavailable for long periods by "greedy" threads
+-	For example, suppose an object provides a synchronized method that often takes a long time to return.
+-	Thread Starvation occurs mainly due to Thread Priority
+-	OS Choose to run Thread with Highest priority rather than longest waiting period
+-	Threads in Java will not be served based on FIFO
+-	When Lock becomes available after sometime with few Threads waiting for the lock ... OS will provide the Lock to Thread with highest priority rather than Thread waiting for Longest Period
+-	Thread Priority will scheduled to run by OS ... there is no surety that Highest Priority Thread will allocated resources and locks
+
+
+## Note:	
+
+-	While Dealing with deadlock ... order in which lock is required is important
+-	While Dealing with Thread Starvation order in which lock is available is important	
+
+
 	
 		
+	Code Snippet :
+
+
+		public class ThreadStarvation {
+
+			private static Object lock1 = new Object();
+
+			public static void main(String[] args) {
+				Thread t1 = new Thread(new Worker(ANSI_CYAN), "Thread Priority 10");
+				Thread t2 = new Thread(new Worker(ANSI_BLACK), "Thread Priority 8");
+				Thread t3 = new Thread(new Worker(ANSI_PURPLE), "Thread Priority 5");
+				Thread t4 = new Thread(new Worker(ANSI_RED), "Thread Priority 2");
+				Thread t5 = new Thread(new Worker(ANSI_GREEN), "Thread Priority 1");
+				Thread t6 = new Thread(new Worker(ANSI_YELLOW), "Thread Priority 3");
+
+				t1.setPriority(10);
+				t2.setPriority(8);
+				t3.setPriority(5);
+				t4.setPriority(2);
+				t5.setPriority(1);
+				t6.setPriority(3);
+
+				t4.start();
+				t5.start();
+				t6.start();
+				t1.start();
+				t2.start();
+				t3.start();
+			}
+
+			static class Worker implements Runnable {
+				private int runCount = 1;
+				private String color;
+
+				Worker(String color) {
+					this.color = color;
+				}
+
+				@Override
+				public void run() {
+					synchronized (lock1) {
+						for (int i = 0; i < 1; i++) {
+							System.out.println(color + Thread.currentThread().getName() + " runCount: " + runCount++);
+							try {
+								Thread.sleep(3000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		}
+
 		
 		
+		Output: 
 		
+			Thread Priority 2 runCount: 1
+			Thread Priority 5 runCount: 1
+			Thread Priority 10 runCount: 1
+			Thread Priority 8 runCount: 1
+			Thread Priority 3 runCount: 1
+			Thread Priority 1 runCount:
+			
+			
+
+------------------------------------------------------------------------
+
+## Fair Locks and Live Locks
+	
+-	Fair Locks is used to ensure that Threads are served in FIFO order
+-	Fair Lock only tries to ensure FIFO and Threads may still have to wait for long time
+-	Fair Lock may result in Performance impact to ensure fairness and additional layer is needed to ensure fairness
+
+
+###	Live Lock
+	
+-	A thread often acts in response to the action of another thread. 
+-	If the other thread's action is also a response to the action of another thread, then livelock may result.
+-	As with deadlock, livelocked threads are unable to make further progress.
+-	However, the threads are not blocked — they are simply too busy responding to each other to resume work.
+-	This is comparable to two people attempting to pass each other in a corridor: 
+-	LiveLock is like a DeadLock but Threads will be constantly active instead being in DeadLock
+-	In LiveLock Thread will be waiting for other Threads to complete the task
+-	Since all Threads are waiting to complete their task ... none of them makes any progress on task
+
+-	Live Lock => Threads will never complete but they were not blocked state
+
+Examples : 
+	
+	1.	Two person trying to pass a corridor
+	2.	Husband and wife(Alice and Bob) eating with single spoon 
+	3.	Two workers with shared resource
+
+	
+	Code Snippet of Live Lock:
+	
+	
+		public class LiveLock {
+			static class Spoon {
+				private Diner owner;
+
+				public Spoon(Diner d) {
+					owner = d;
+				}
+				public Diner getOwner() {
+					return owner;
+				}
+				public synchronized void setOwner(Diner d) {
+					owner = d;
+				}
+				public synchronized void use() {
+					System.out.printf("%s has eaten!", owner.name);
+				}
+			}
+
+			static class Diner {
+				private String name;
+				private boolean isHungry;
+
+				public Diner(String n) {
+					name = n;
+					isHungry = true;
+				}
+
+				public String getName() {
+					return name;
+				}
+
+				public boolean isHungry() {
+					return isHungry;
+				}
+
+				public void eatWith(Spoon spoon, Diner spouse) {
+					while (isHungry) {
+						// Don't have the spoon, so wait patiently for spouse.
+						if (spoon.owner != this) {
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {
+								continue;
+							}
+							continue;
+						}
+
+						// If spouse is hungry, insist upon passing the spoon.
+						if (spouse.isHungry()) {
+							System.out.printf("%s: You eat first my darling %s!%n", name, spouse.getName());
+							spoon.setOwner(spouse);
+							continue;
+						}
+
+						// Spouse wasn't hungry, so finally eat
+						spoon.use();
+						isHungry = false;
+						System.out.printf("%s: I am stuffed, my darling %s!%n", name, spouse.getName());
+						spoon.setOwner(spouse);
+					}
+				}
+			}
+
+			public static void main(String[] args) {
+				final Diner husband = new Diner("Bob");
+				final Diner wife = new Diner("Alice");
+
+				final Spoon s = new Spoon(husband);
+
+				new Thread(new Runnable() {
+					public void run() {
+						husband.eatWith(s, wife);
+					}
+				}).start();
+
+				new Thread(new Runnable() {
+					public void run() {
+						wife.eatWith(s, husband);
+					}
+				}).start();
+			}
+		}
+
+---------------------------------------------------------------
+
+## Slipped Conditions
+
+
+
 		
-		
-		
+			
 		
 		
 		
