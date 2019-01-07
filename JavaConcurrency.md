@@ -35,6 +35,7 @@
 
 	Code Snippet: 
 	
+	```java 
 		class Hello extends Thread{
 			public void run()  {
 				for (int i = 1; i <= 5;) {
@@ -80,7 +81,7 @@
 			}
 
 		}
-
+	````
 
 
 -	In the above code join() method on t1 and t2 will makes Main Thread to wait till t1 and t2 joins with Thread Main
@@ -92,6 +93,7 @@
 
 	Code Snippet :
 	
+	```java 
 		class Counter {
 			int counter;
 			public void inc() {
@@ -130,7 +132,7 @@
 				System.out.println("Counter : " + counter.getCount());
 			}
 		}
-	
+	````
 	
 
 --------------------------------------------------------------------
@@ -176,6 +178,7 @@ Tools to enable Parallelism in Java
 
 	Code Snippet :
 
+	```java 
 		public static void main() {
 		
 			ExecutorService es = Executors.newFixedThreadPool(4);
@@ -184,7 +187,7 @@ Tools to enable Parallelism in Java
 			
 			heavyCalculations();
 		}
-
+	````
 
 ### Concurrency 
 
@@ -239,6 +242,7 @@ Tools to deal with Concurrency
 		
 	Code Snippet :
 	
+	```java 
 		class FieldVisibility {
 			
 			int x =0;
@@ -251,7 +255,7 @@ Tools to deal with Concurrency
 				r1 = x;
 			}
 		}
-
+	````
 	
 	
 	-	When Writer Thread write the value it will write it only of Local Cache ... which is x =1
@@ -261,6 +265,7 @@ Tools to deal with Concurrency
 	
 	Code Snippet :
 	
+	```java 
 		class VolotileFieldVisibility {
 		
 			volatile int x = 0;
@@ -274,7 +279,7 @@ Tools to deal with Concurrency
 			}
 		}
 
-
+	````
 	-	volatile Keyword make sure that latest values from Local Cache will be pushed to shared cache by JVM before Read Operation
 
 #### JMM
@@ -290,6 +295,7 @@ Tools to deal with Concurrency
 
 	Code Snippet :
 	
+	```java 
 		class VolatileFieldVisibility {
 			
 			boolean isTrue = true;
@@ -305,7 +311,7 @@ Tools to deal with Concurrency
 			}
 		}
 
-
+	````
 
 ---------------------------------------------------------------------------
 
@@ -330,12 +336,13 @@ Tools to deal with Concurrency
 -	This problem can be overcome by using Atomic Class like AtomicInteger, AtomicLong, AtomicDouble, LongAdder
 -	This problem is also called synchronized problem since multiple threads may read and write simultaneously
 
-	volatile int counter = 0;
-	
-	synchronized (this) {
-		counter++;
-	}
-	
+	```java
+		volatile int counter = 0;
+
+		synchronized (this) {
+			counter++;
+		}
+	````
 	
 	AtmoicInteger counter = new AtomicInteger();
 		
@@ -368,18 +375,92 @@ Tools to deal with Concurrency
 
 ## Adder and Accumulator  Classes in Java 8
 
--	AtomicLong increment needs to be flushed and refreshed across the Threads
--	This leads to contention and performance degradations
 
+### AtomicLong
+-	AtomicLong increment needs to be flushed and refreshed across the Threads a.k.a Needs to be synchronized across the threads
+-	This leads to contentions and performance degradations
+
+
+	Code snippet :
+	
+	```java 	
+		class AtomicLong {
+			AtomicLong counter = new AtomicLong(0);
+			psv main() {
+				ExecutorService es = Execurtors.newFixedThreadPool();
+				
+				for(int i=0; i<50;i++){
+					es.submit(new Task(counter));
+				}
+				
+				es.awatiTermination(3000, TimeUnit.MILLISECONDS);
+				
+				counter.get();// get the counter value at the end
+			}
+		}
+
+
+		class Task implements Runnable {
+			AtomicLong counter ;
+			
+			Task(AtomicLong counter ) {
+				this.counter = counter;
+			}
+			
+			public void run() {
+				// heavyCalculations();
+				
+				counter.increment();
+				// Each AtomicLong increment is synchornized and updates will be flused and updted across the threads
+			}
+		}
+
+	````
 
 
 ### Adder 
+-	LongAdder has different internal implementation for increment operation and finding sum across the threads
+-	Each Thread will have it's own internal counter called cnt` and for each  increment it will update its internal counter cnt` and writes updated values to local cache
+-	For LongAdder instance thread will not flush local cache changes to shared space for every increment ... instead it will be updated in the local  cache
+-	sum will be calculated by adding all the thread local cnt` in a synchrozined manner
+-	LongAdder results in High Throughput since its increment operation is not sync, done on its local counter and only sum is sync across the threads
+
+	Code snippet :
+	
+	```java 	
+		class LongAddedEx {
+			LongAdded adder = new LongAdder(0);
+			psv main() {
+				ExecutorService es = Execurtors.newFixedThreadPool();
+				
+				for(int i=0; i<50;i++){
+					es.submit(new Task(adder));
+				}
+				
+				es.awatiTermination(3000, TimeUnit.MILLISECONDS);
+				
+				adder.sum();// only once synchronized 
+				// At the end all the Threads local cnt` variable will added in synchronous manner
+			}
+		}
 
 
+		class Task implements Runnable {
+			LongAdder adder;
+			
+			Task(LongAdder adder) {
+				this.adder = adder;
+			}
+			
+			public void run() {
+				// heavyCalculations();
+				
+				adder.increment(); // increment local cnt` variable and updates to Local Cache
+				// Each thread will have its own cnt` variable 
+			}
+		}
 
-
-
-
+	````
 
 
 
