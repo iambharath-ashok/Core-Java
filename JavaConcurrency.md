@@ -35,7 +35,6 @@
 
 	Code Snippet: 
 	
-	```java 
 		class Hello extends Thread{
 			public void run()  {
 				for (int i = 1; i <= 5;) {
@@ -81,7 +80,7 @@
 			}
 
 		}
-	````
+
 
 
 -	In the above code join() method on t1 and t2 will makes Main Thread to wait till t1 and t2 joins with Thread Main
@@ -91,48 +90,47 @@
 ## Synchronized Simple Example
 
 
-Code Snippet :
-
-```java 
-	class Counter {
-		int counter;
-		public void inc() {
-			synchronized (this) {
-				counter++;
+	Code Snippet :
+	
+		class Counter {
+			int counter;
+			public void inc() {
+				synchronized (this) {
+					counter++;
+				}
+			}
+			public int getCount() {
+				return counter;
 			}
 		}
-		public int getCount() {
-			return counter;
+
+		public class CounterDemo {
+			public static void main(String[] args) throws InterruptedException {
+
+				Counter counter = new Counter();
+
+				Thread t1 = new Thread(() -> {
+					for (int i = 0; i < 1000; i++) {
+						counter.inc();
+					}
+				}, "Thread 1");
+
+				Thread t2 = new Thread(() -> {
+					for (int i = 0; i < 5000; i++) {
+						counter.inc();
+					}
+				}, "Thread 2");
+
+				t1.start();
+				t2.start();
+
+				t1.join();
+				t2.join();
+
+				System.out.println("Counter : " + counter.getCount());
+			}
 		}
-	}
-
-	public class CounterDemo {
-		public static void main(String[] args) throws InterruptedException {
-
-			Counter counter = new Counter();
-
-			Thread t1 = new Thread(() -> {
-				for (int i = 0; i < 1000; i++) {
-					counter.inc();
-				}
-			}, "Thread 1");
-
-			Thread t2 = new Thread(() -> {
-				for (int i = 0; i < 5000; i++) {
-					counter.inc();
-				}
-			}, "Thread 2");
-
-			t1.start();
-			t2.start();
-
-			t1.join();
-			t2.join();
-
-			System.out.println("Counter : " + counter.getCount());
-		}
-	}
-````
+	
 	
 
 --------------------------------------------------------------------
@@ -178,7 +176,6 @@ Tools to enable Parallelism in Java
 
 	Code Snippet :
 
-	```java 
 		public static void main() {
 		
 			ExecutorService es = Executors.newFixedThreadPool(4);
@@ -187,7 +184,7 @@ Tools to enable Parallelism in Java
 			
 			heavyCalculations();
 		}
-	````
+
 
 ### Concurrency 
 
@@ -242,7 +239,6 @@ Tools to deal with Concurrency
 		
 	Code Snippet :
 	
-	```java 
 		class FieldVisibility {
 			
 			int x =0;
@@ -255,7 +251,7 @@ Tools to deal with Concurrency
 				r1 = x;
 			}
 		}
-	````
+
 	
 	
 	-	When Writer Thread write the value it will write it only of Local Cache ... which is x =1
@@ -265,7 +261,6 @@ Tools to deal with Concurrency
 	
 	Code Snippet :
 	
-	```java 
 		class VolotileFieldVisibility {
 		
 			volatile int x = 0;
@@ -279,7 +274,7 @@ Tools to deal with Concurrency
 			}
 		}
 
-	````
+
 	-	volatile Keyword make sure that latest values from Local Cache will be pushed to shared cache by JVM before Read Operation
 
 #### JMM
@@ -295,7 +290,6 @@ Tools to deal with Concurrency
 
 	Code Snippet :
 	
-	```java 
 		class VolatileFieldVisibility {
 			
 			boolean isTrue = true;
@@ -311,7 +305,7 @@ Tools to deal with Concurrency
 			}
 		}
 
-	````
+
 
 ---------------------------------------------------------------------------
 
@@ -336,13 +330,12 @@ Tools to deal with Concurrency
 -	This problem can be overcome by using Atomic Class like AtomicInteger, AtomicLong, AtomicDouble, LongAdder
 -	This problem is also called synchronized problem since multiple threads may read and write simultaneously
 
-	```java
-		volatile int counter = 0;
-
-		synchronized (this) {
-			counter++;
-		}
-	````
+	volatile int counter = 0;
+	
+	synchronized (this) {
+		counter++;
+	}
+	
 	
 	AtmoicInteger counter = new AtomicInteger();
 		
@@ -374,7 +367,6 @@ Tools to deal with Concurrency
 ---------------------------------------------------------------------------
 
 ## Adder and Accumulator  Classes in Java 8
-
 
 ### AtomicLong
 -	AtomicLong increment needs to be flushed and refreshed across the Threads a.k.a Needs to be synchronized across the threads
@@ -465,26 +457,222 @@ Tools to deal with Concurrency
 
 
 
+### Accumulator
+
+- 	Accumulator is similar to Adder but it can do more additional and complex programs
+- 	Apart from performing addition and increment it can do multiple, division and much more complex tasks
+-	Accumulator constructor takes FunctionalInterface as an argument 
+
+	public LongAccumulator(LongBinaryOperator accumulatorFunction,
+                           long identity) {}
+
+	Code Snippet of LongBinaryOperator :
+	
+	
+		@FunctionalInterface
+		public interface LongBinaryOperator {
+		
+			long applyAsLong(long left, long right);
+		}
+	
+		
+
+	LongAccumulator counter = new LongAccmulator((x,y) -> x + y, 0);
+	
+		x : Intermediate Value
+		y :	 New Value
+		0 : Intial value of x
+		accumulate(1); step
+	
+	counter.accumulate(y:1);
+	counter.get();
+
+
+
+	Code snippet :
+	
+	```java 	
+		class LongAddedEx {
+			LongAccmulator counter = new LongAccmulator((x,y)-> x + y, 0);
+			psv main() {
+				ExecutorService es = Execurtors.newFixedThreadPool();
+				
+				for(int i=0; i<50;i++){
+					es.submit(new Task(counter));
+				}
+				
+				es.awatiTermination(3000, TimeUnit.MILLISECONDS);
+				
+				counter.get();// only once synchronized 
+				// At the end all the Threads local cnt` variable will added in synchronous manner
+			}
+		}
+
+
+		class Task implements Runnable {
+			LongAccmulator counter;
+			
+			Task(LongAccmulator counter) {
+				this.counter = counter;
+			}
+			
+			public void run() {
+				// heavyCalculations();
+				
+				counter.accumulator(); // increment local cnt` variable and updates to Local Cache
+				// Each thread will have its own cnt` variable 
+			}
+		}
+
+	````
+
+
+
+Advantages of Accumulator:
+
+-	Best Suited for Heavy Operations
+-	Don't have side affects
+-	Can be applied repeatedly	
 
 
 
 
+---------------------------------------------------------------------------
+
+## ForkJoinPool
+
+- 	Similar to ExecutorService
+-	ForkJoin is different from ExecutorService in two ways
+
+	1.	Task producing subtasks and joining results of each subtask to form a final result
+	2.	PerThread queueing and Work Stealing
+	
+	
+	1.	Forking and Joining for Fibonacci 
+	
+		if(n<=1) 
+			return n;
+		else {
+			Fibonacci f1 = new Fibonacci(n-1);
+			Fibonacci f2 = new Fibonacci(n-2);
+			
+			f1.solve();
+			f2.solve();
+			
+			number = f1.number + f2.number;
+			return number;
+		}
+	
+
+		Algorithm of ForkJoin
+		
+		
+			public Result solve(Task T) {
+				
+				split task T into smaller task
+					for each of these tasks
+						solve(t)
+						
+					wait or each to complete
+					join results of each task
+					compute final result 
+				
+				return finalResult;
+			
+			}
+
+
+	2.	PerThread Queueing and Work Stealing
+	
+		
+		a. PerThread Queueing 
+		
+			-	Each Thread will have its own internal deque
+			-	All the subtasks will placed in that Thread internal deque
+			-	Thread will keep taking task from its internal deque and executes them ---> hence there is no synchronization b/w threads
+			
+		b.	Work Stealing
+			
+			-	When one of the Thread is idle and it can steal the tasks from deque of other Threads 
+			-	Idle Thread will steal the task from back side of the deque 
+			-	Original Thread continue to execute task by taking from front end of deque
+
+		c. 	Advantages of Per Thread Queueing and Work Stealing
+		
+			1.	Threads picking tasks from its own internal deque
+			2.	Steals tasks from other Threads when its become Idle
+			3.	No Blocking unless stealing from other Threads
 
 
 
+	Code Snippet of ForkJoin Pool :
+	
+	
+		class Fibonacci extends RecursiveTask<Integer> {
+		
+			final int n;
+			
+			Fibonacci(int n) {
+				this.n = n;
+			}
+			
+			public Integer compute() {
+				
+				Fibonacci f1 = new Fibonacci(n-2);
+				f1.fork();
+				
+				Fibonacci f2 = new Fibonacci(n-1);
+				f2.fork();
+				
+				return f1.join() + f2.join();
+			}
+		}
 
 
+### Ideal for ForkJoin Pools
+
+-	No Synchronization
+-	No IO operations
+-	No Shared variables
+-	pure functions
 
 
+###	ForkJoin Task Instances are Futures with some extra Methods
+
+-	get(), get(TimeOut)
+-	cancel(), isDone(), isCancelled()
+
+### Use Cases of ForkJoin
+
+-	Sorting
+-	Matrix multiplication
+-	Tree Traversals
 
 
+----------------------------------------------------------
+
+## Synchronous Queue
 
 
+### Blocking Queue
 
+- 	Blocking Queue is queue with array of elements 
+- 	Blocking is Thread Safe
+-	Producer will put the elements to queue from one end and Consumer will read the elements from another end
+-	When Blocking Queue is empty ... Consumer try to read an element from Queue then Consumer will be blocked untill another element in the Queue
+-	Similarly Blocking Queue is full ... Producer Thread will get blocked until one of the block is free
 
+### Synchronous Queue
 
+-	Synchronous queue is a Blocking queue but with size of one
+-	In fact ... Synchronous queue has no size
+-	In Synchronous Queue there is a direct hand-off of messages b/w Producer Thread and Consumer Thread
 
+#### That's why
 
+-	Synchronous Queue don't have peek() methods
+-	No iterate() methods
+-	Perfect for Direct Handoff
 
 
 
