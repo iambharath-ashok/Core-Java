@@ -368,14 +368,15 @@ Tools to deal with Concurrency
 
 ## Adder and Accumulator  Classes in Java 8
 
-### AtomicLong
+### Atomic Long
+
 -	AtomicLong increment needs to be flushed and refreshed across the Threads a.k.a Needs to be synchronized across the threads
 -	This leads to contentions and performance degradations
 
 
 	Code snippet :
 	
-	```java 	
+```java 	
 		class AtomicLong {
 			AtomicLong counter = new AtomicLong(0);
 			psv main() {
@@ -406,11 +407,11 @@ Tools to deal with Concurrency
 				// Each AtomicLong increment is synchornized and updates will be flused and updted across the threads
 			}
 		}
-
 	````
 
 
 ### Adder 
+
 -	LongAdder has different internal implementation for increment operation and finding sum across the threads
 -	Each Thread will have it's own internal counter called cnt` and for each  increment it will update its internal counter cnt` and writes updated values to local cache
 -	For LongAdder instance thread will not flush local cache changes to shared space for every increment ... instead it will be updated in the local  cache
@@ -539,13 +540,13 @@ Advantages of Accumulator:
 
 ---------------------------------------------------------------------------
 
-## ForkJoinPool
+## Fork Join Pool
 
 - 	Similar to ExecutorService
--	ForkJoin is different from ExecutorService in two ways
+-	Fork Join is different from ExecutorService in two ways
 
 	1.	Task producing subtasks and joining results of each subtask to form a final result
-	2.	PerThread queueing and Work Stealing
+	2.	Per Thread Queuing and Work Stealing
 	
 	
 	1.	Forking and Joining for Fibonacci 
@@ -582,14 +583,14 @@ Advantages of Accumulator:
 			}
 
 
-	2.	PerThread Queueing and Work Stealing
+	2.	PerThread Queuing and Work Stealing
 	
 		
-		a. PerThread Queueing 
+		a. PerThread Queuing 
 		
-			-	Each Thread will have its own internal deque
-			-	All the subtasks will placed in that Thread internal deque
-			-	Thread will keep taking task from its internal deque and executes them ---> hence there is no synchronization b/w threads
+			-	Each Thread will have its own internal Dequeue
+			-	All the subtasks will placed in that Thread internal Dequeue
+			-	Thread will keep taking task from its internal Dequeue and executes them ---> hence there is no synchronization b/w threads
 			
 		b.	Work Stealing
 			
@@ -675,8 +676,266 @@ Advantages of Accumulator:
 -	Perfect for Direct Handoff
 
 
+----------------------------------------------------------
 
 
+## 	Thread Local 
+
+### Use-Case #1 : Per Thread Instances for Memory Efficiency and Thread Safety
+
+	Code Snippet:
+	
+		1.	Two Threads Creating Separate SimpleDateFormat instances
+		
+			class ThreadLocalEx {
+			
+				public static void main(String ... args) {
+					new Thread(() -> {
+						String date = ThreadLocalEx.getDateOfBirth(1);
+						System.out.println(date);	
+					}).start();
+					
+					new Thread(() -> {
+						String date = ThreadLocalEx.getDateOfBirth(2);
+						System.out.println(date);	
+					
+					}).start();
+				}
+				
+				public static String getDateOfBirth(int id) {
+					Date date = getBirthDateFromDB(id);
+					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+					return df.format(date);
+				}
+			}
+			
+		2.	10 Threads Creating 10 Instances of SimpleDateFormat
+		
+			class ThreadLocalEx {
+				
+				ExecutorService threadPool = Executors.newThreadFixedPool(n:5);
+			
+				
+				public static String getDateOfBirth(int id) {
+					Date date = getUserBirthDateFromDB(id);
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					return sdf.format(date);
+				}
+				
+				public static void main() {
+				
+					for(int i=0; i <= 10; i++){
+						threadPool.submit(new Thread(() -> {
+							String date = ThreadLocalEx.getDateOfBirth();
+							System.out.println(date);
+						}));
+					}
+				}
+			}
+			
+		3.	10 Threads executing 1000 Tasks with 1000 SimpleDateFormat Instances
+
+			class ThreadLocalEx {
+				
+				ExecutorService threadPool = Executors.newThreadFixedPool(n:5);
+			
+				public static String getDateOfBirth(int id) {
+					Date date = getUserBirthDateFromDB(id);
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					return sdf.format(date);
+				}
+				
+				public static void main() {
+					for(int i=0; i <= 10000; i++){
+						threadPool.submit(() -> {
+							id = i;
+							String date = getDateOfBirth(id);
+							System.out.println(date);
+						});
+					}
+				}
+			}
+			
+		4.	Single Global SimpleDateFormat instance Sharing across 10000 Tasks
+			
+			class ThreadLocalEx {
+				
+				ExecutorService threadPool = Executors.newThreadFixedPool(n:5);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+				public static String getDateOfBirth(int id) {
+					Date date = getUserBirthDateFromDB(id);
+					return sdf.format(date);
+				}
+				
+				public static void main() {
+					for(int i=0; i <= 10000; i++){
+						threadPool.submit(() -> {
+							id = i;
+							String date = getDateOfBirth(id);
+							System.out.println(date);
+						});
+					}
+				}
+			}
+		
+				
+
+#### Problems :
+
+1.	Local variables inside Tasks will be created for the Tasks 
+2.	Single variables or Global variables will cause Concurrency Issue or Data Integrity Issue
+
+#### Solution
+
+1.	Create variables per Threads and share them across Tasks
+
+	
+	-	Before Java 8
+		
+		class ThreadSafetyFormatter {
+		
+			static ThreadLocal<SimpleDateFormat> dateFormatter = new ThreadLocal<SimpleDateFormat> {
+				
+				@Override
+				protected SimpleDateFormat initialValue() {
+					return new SimpleDateFormat("yyyy-MM-dd");//	Called only once per Thread
+				}
+				
+				
+				@Override
+				public SimpleDateFormat get() {
+					return super.get(); // First Time for each Thread this will implicitly call initialValue
+					// Once its variable is loaded into cache it will be used across Tasks
+					//	1st call = initialValue()
+					// 	Subsequent call will returns initialized value
+				}
+				
+			};
+		}
+
+		class ThreadLocalEx {
+		
+			ExecutorService threadPool = Executors.newFixedThreadPool(n:5);
+			
+			public static void main() {
+				for(int i=0; i<=10000; i++) {
+					threadPool.submit(() -> {
+						
+						String date = ThreadLocalEx.getDateOfBirth(i);
+						System.out.println(date);
+					
+					});
+				}
+			}
+			
+			public static String getDateOfBirth(int id) {
+					Date date = getUserBirthDateFromDB(id);
+					SimpleDateFormat sdf = ThreadSafetyFormatter.dateFormatter.get();
+					return sdf.format(date);
+				}
+		}
+
+-	ThreadSafetyFormatter.get() call makes Threads to have own copy SimpleDateFormat
+
+
+	-	Java 8
+	
+		class ThreadSafetyFormatter {
+		
+			static ThreadLocal<SimpleDateFormatter> dateFormatter = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
+		}
+
+
+
+###	Use-Case #2: Per Thread Context and Performance
+
+-	Each request needs to handle by separate Thread 
+-	Each Thread needs to go through 4 separate services
+-	Each Service wants to know user details
+-	One way to implement this is by using HashMap or ConcurrentHashMap
+-	But problem with map is that Synchronization or Performance degradation
+
+#### Solution : ThreadLocal with User variable in it 
+
+-	Thread Handling request will be assigned a user details in first service to its ThreadLocal
+-	Subsequent Requests will get the user details from ThreadLocal
+
+	
+	class UserContextHolder {
+	
+		static ThreadLocal<User> userHolder = new ThreadLocal<User>();
+	}
+	
+	class Service1 {
+	
+		public void process() {
+			User user = getUser();
+			UserContextHolder.userHolder.set(user); // Set User for this Thread
+		}
+	}
+	
+	
+	class Service2 {
+	
+		public void process() {
+			User user = UserContextHolder.userHolder.get(); // Get User for this Thread
+		}
+	}
+
+#### Notes: 
+
+-	Spring uses ThreadLocal and Context Holder concept in many of its classes
+-	In Spring each request will be handled by Separate Thread
+-	Spring maintains request attributes throughout scope of Request
+-	Once request is processed we need to clean up ThreadLocal Context Holder manually 
+
+
+class UserContexHolder {
+
+	public static ThreadLocal<User> userContextHodler = new ThreadLocal<User>();
+}
+
+class Service1 {
+	// set User
+}
+
+class Service2 {
+	// get User
+}
+
+class Service3 {
+	// get User
+}
+
+class Service4 {
+	//	get User
+	// process
+	// clean up context holder
+	UserContextHolder.userContextHolder.remove();
+}
+
+
+
+### Advantages of ThreadLocal 
+
+-	Per Thread Instances + Performance 
+-	Per Thread Context
+-	Thread Confinement // Thread Safety
+
+
+----------------------------------------------------------
+## 	Phaser vs CountDownLatch vs Cyclic Barrier
+##	Asynchronous Java
+##	Lock Conditions Class
+##	Semaphore in Java
+##	Reentrant Locks 
+## 	Reentrant Lock vs ReadWriteLock	
+##      Spin Locks
+## 	Exchanger Class 
+##	Stripped Locks
+## 	Java Fibers in Project Loom (coroutines) 	
+##	Completable Future
 
 
 
