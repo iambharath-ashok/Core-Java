@@ -568,18 +568,15 @@ Advantages of Accumulator:
 		Algorithm of ForkJoin
 		
 		
-			public Result solve(Task T) {
-				
-				split task T into smaller task
-					for each of these tasks
-						solve(t)
-						
-					wait or each to complete
-					join results of each task
-					compute final result 
-				
-				return finalResult;
-			
+			Result solve(Problem problem) {
+				if (problem is small)
+					directly solve problem
+				else {
+					split problem into independent parts
+					fork new subtasks to solve each part
+					join all subtasks
+					compose result from subresults
+				}
 			}
 
 
@@ -925,13 +922,398 @@ class Service4 {
 
 
 ----------------------------------------------------------
-## 	Phaser vs CountDownLatch vs Cyclic Barrier
+## 	Phaser vs Count Down Latch vs Cyclic Barrier
+
+###	Count Down Latch 
+
+-	Count Down Latch is used when Thread Main needs to wait for Dependent Threads to initialize
+-	Count Down Latch will be created and shared with tasks with Count down count
+-	Once specified number of threads execute countDown() method ... Thread Main will start to execute
+-	Count Down Latch can be used to initialize some resources ... 
+-	Once specified number Threads completes initialization ... by calling latch.countDown() .... Thread Main will continue to proceed its execution
+
+
+	Code Snippet Of Count Down Latch:
+	
+		public class CountDownLatchEx {
+		
+			ExecutorService threadPool = Executors.newFixedThreadPool(4);
+			
+			public static void main() {
+				
+				CountDownLatch latch = new CountDownLatch(3);
+					
+				threadPool.submit(new DependetService(latch));
+				threadPool.submit(new DepedentService(latch));
+				threadPool.submit(new DependentService(latch));
+				
+				latch.await();
+			}
+		}
+		
+		
+		static class DependentService implements Runnable {
+			
+			CountDownLatch latch;
+			
+			DependentService(CountDownLatch latch) {
+				this.latch = latch;
+			}
+			
+			public void run() {
+				
+				// Initialized Service 
+				this.latch.countDown();
+				// Proceed further
+			}
+		
+		}
+		
+		
+### Cyclic Barrier 
+
+-	Cyclic Barrier is a class 
+-	CyclicBarrier is used when all dependent Threads will reach some barrier 
+-	Dependent Threads will wait for other Threads to reach barrier and once all dependent Threads reach barrier ... 
+-	Threads will continue their tasks
+-	Threads will be blocked till all dependent threads reach the barrier
+
+
+	Code Snippet of Cyclic Barrier:
+	
+		public class CyclicBarrierEx {
+
+			static ExecutorService threadPool = Executors.newFixedThreadPool(4);
+			static CyclicBarrier barrier = new CyclicBarrier(3);
+
+			public static void main(String[] args) {
+
+				for (int i = 0; i < 50; i++) {
+					threadPool.submit(process());
+				}
+				
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				threadPool.shutdown();
+
+			}
+
+			private static Runnable process() {
+				return () -> {
+					try {
+						while (true) {
+							Thread.sleep(new Random().nextInt(6000));
+							System.out.println(Thread.currentThread().getName() + " has reached Barrier");
+							barrier.await();
+							System.out.println(Thread.currentThread().getName() + " continued to process further tasks ");
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (BrokenBarrierException e) {
+						e.printStackTrace();
+					}
+				};
+			}
+		}
+
+		
+### Phaser
+
+-	Phaser is a class that acts both Cyclic Barrier and Count Down Latch and much more additional functionality
+-	Phaser will have multiple phases with completing cycles
+
+
+#### Phaser as Count Down Latch
+
+	Code Snippet of Phaser as Count Down Latch:
+		
+		public class CountDownLatchPhaser {
+
+			static ExecutorService threadPool = Executors.newFixedThreadPool(4);
+
+			public static void main(String[] args) {
+
+				Phaser phase = new Phaser();
+				threadPool.submit(new Task(phase));
+				threadPool.submit(new Task(phase));
+				threadPool.submit(new Task(phase));
+				
+				System.out.println(Thread.currentThread().getName()+" is waiting for depending Threads to complete");
+				
+				phase.register();
+				phase.arriveAndAwaitAdvance();
+				
+				
+				
+			}
+			
+			static class Task implements Runnable {
+
+				Phaser phaser;
+
+				Task(Phaser phaser) {
+					this.phaser = phaser;
+				}
+
+				public void run() {
+					try {
+						Thread.sleep(new Random().nextInt(10000));
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					System.out.println(Thread.currentThread().getName()+ " has arrived");
+					phaser.arrive();
+					
+				}
+			}
+		}
+
+#### Phaser as Cyclic Barrier
+
+
+	Code Snippet of Phaser as Cyclic Barrier
+	
+	
+		public class CyclicBarrierPhaser {
+
+			static ExecutorService threadPool = Executors.newFixedThreadPool(4);
+
+			public static void main(String[] args) {
+
+				Phaser phase = new Phaser();
+				threadPool.submit(new Task(phase));
+				threadPool.submit(new Task(phase));
+				threadPool.submit(new Task(phase));
+
+			}
+
+			static class Task implements Runnable {
+
+				Phaser phaser;
+
+				Task(Phaser phaser) {
+					this.phaser = phaser;
+				}
+
+				public void run() {
+						try {
+							Thread.sleep(new Random().nextInt(10000));
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						System.out.println(Thread.currentThread().getName() + " has arrived");
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						System.out.println(Thread.currentThread().getName() + " is waiting for dependent threads");
+						phaser.arriveAndAwaitAdvance();
+						
+						System.out.println(Thread.currentThread().getName() + " is proceeding further");
+						
+				}
+			}
+
+		}
+
+		
+#### Register and De-registering with Phaser
+
+-	new Phaser(count)
+-	register()
+-	bulkRegister(count)
+
+
+#### Methods of Phaser 
+
+-	arrive()
+-	arriveAndAwaitAdvance()
+-	arriveAndDeregister()
+
+
+#### Other Methods
+
+-	gePhase()
+-	getArrivedParties()
+-	getUnarrivedParties()
+
+-	onAdvance()
+-	forceTerminate()
+-	isTerminated()
+
+
+
+----------------------------------------------------------
 ##	Asynchronous Java
+
+- 	Each Java Thread is OS Thread or Kernel Thread
+-	Every Java Thread will run on single core at a time
+-	Each Java Thread will have PC, Java Stack, Stack Frames 
+-	Each Java Threads will consume more memory  ... limiting the number of Threads 
+-	With High computational devices also ... more number of Threads will result in slow performance
+-	Scheduling Overhead, context switching around Threads and Data Locality result in slow performance
+
+
+### Blocking IO Operation
+
+-	IO Operation will block main thread till its completion and unable to process other requests
+-	Blocking IO Operation not allows to utilize CPU Computation with full extent
+
+
+###	Synchronous API
+
+-	Synchronous API will block thread till its completion
+-	Future<Integer>.get()
+
+
+	Code Snippet of Synchronous API: 
+	
+		
+		for(Integer id : empIds){
+			
+			Future<Employee> empFuture = threadPool.submit(new EmployeeFetcher(id));
+			Employee emp = empFuture.get();// Main Thread will block
+			
+			Future<TaxRate> taxFuture = threadPool.submit(new TaxRateFetcher(emp));
+			TaxRate taxRate = taxFuture.get(); // Main Thread will block
+			
+			
+			BigDecimal tax = mputeTax(emp, taxRate);
+			threadPool.submit(new MailSender(emp ,tax));
+			
+		} 
+		
+###	Asynchronous API
+
+
+	Code Snippet of Asynchronous ApI
+	
+		for(Integer id : empIds) {
+		
+			CompletableFuture.supplyAsync(() -> fetchEmployee(id))
+			.thenSupplyAsync(employee -> fetchTaxRate(employee));
+			.thenSupplyAsync(taxRate -> computeTax(emp, taxRate))
+			.acceptAsync(taxValue -> sendMail(emp, taxRate))
+			
+		}
+
+### Problems is Java Threads are expensive and Blocking IO Ops
+
+-	Expensive Thread + Blocking IO = Limited Scalability
+
+### Solution for Blocking IO Operation and Sync ApI
+
+-	Non-Blocking IO introduced in Java 7
+-	Async API
+
+###	Async API and Non-Blocking IO
+
+-	NIO Non-Blocking IO will have callback methods ... 
+-	Main Thread will trigger IO operation by passing a callback method .. once IO operation gets results it will call callback methods in a separate threads
+-	ComplitabeFuture can be used as an Aysc API
+-	ComplitableFuture is a algorithm where we specify the instructions by passing callback methods and chaining the operations
+
+
+###	Servlet 3.0
+
+-	Servlet 3.0 supports Async Calls
+-	In Servlet each request will handled by a separate Thread
+-	Thread will gets blocked for IO operation
+-	Tomcat will have around 200 Threads ... so Tomcat only is able to serve 200 concurrent requests
+-	One Solution is to make HTTP calls and IO calls in a separate Thread by passing callback method
+-	In doing so Main Thread will not gets blocked and can process more number of concurrent requests
+
+
+	@WebServlet(urlPatterns={"/user"}, asyncSupported=true)
+	pubic class UserAsyncService extends HttpServlet {
+		
+		@Override
+		public void doGet(HttpServletRequest request, HttpServletResponse response) {
+		
+			final AysncContext context = request.startAsync();
+			context.start(new Runnable () {
+				
+				// Make Network Calls
+				
+				ServletResponse response = context.getResponse();
+				
+				
+				contex.complete();
+			});
+		}
+	}
+	
+	
+### Servlet 3.1
+
+-	Servlet 3.1 even went further 1 step to make read and writing attributes from request and response is non -blocking
+-	Previously Read and writing of Request and response is blocking
+
+
+	@WebServlet(urlPatterns ={"/user"}, asyncSupported=true)
+	public class UserServicAsync_2 extends HttpServlet {
+	
+		@Override
+		public void doGet(HttpServletRequest request, HttpServletResponse response){
+			
+			AsyncContext context = request.startAsync();
+			ServletInputStream inputStream = response.getInputStream();
+			inputStream.setReadListener(new ReadListener() {
+			
+				public void onAllDataRead() {
+				
+					// data available, process
+					// Write data to output 
+					
+					// input and output read and write operation are non blocking
+				}
+			});
+		} 
+		
+	}
+
+	
+	
+### Spring Webflux 5.0
+
+-	Reactive Programming 
+-	Spring Webflux is reactive Programming under Sprig umbrella
+-	Spring Webflux simplifies Non-Blocking Asynchronous programming
+-	Spring uses Mono which is Future equivalent of Java 
+-	Mono is push operation rather get operation
+-	Whenever data or operation is ready it will push the data to Mono Object 
+-	Mono Object will send response backt to client
+-	In this way Servlet request will not be blocked for IO operation
+
+
+### Problems with Reactive Programming
+
+-	Difficult to debug
+-	Difficult to understand
+-	Different Stack Trace and difficult to trace 
+
+### What we really want is 
+
+1.	Light Weight Threads
+2.	Synchronous Programming
+
+-	Java is coming up with new project called Fibers which are light weight threads
+-	Java Fibers are light weight threads
+-	We can run millions of Java Fiber Threads on top of limited set of OS Threads
+-	4 OS Thread with millions of Java Fiber Threads
+
+
+
+----------------------------------------------------------
 ##	Lock Conditions Class
 ##	Semaphore in Java
 ##	Reentrant Locks 
 ## 	Reentrant Lock vs ReadWriteLock	
-##      Spin Locks
+##  Spin Locks
 ## 	Exchanger Class 
 ##	Stripped Locks
 ## 	Java Fibers in Project Loom (coroutines) 	
