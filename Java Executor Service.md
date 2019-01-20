@@ -27,40 +27,40 @@
 
 #### 2.	When t1.start() is executed then a new thread will be created with name thread-0
 	
-	- 	Once thread has been created its start to work asynchronously 
-	-	At same time Main thread also continue its execution
-	-	Once thread task is completed Java will delete that Thread
+- 	Once thread has been created its start to work asynchronously 
+-	At same time Main thread also continue its execution
+-	Once thread task is completed Java will delete that Thread
 
 #### 3. 	In Java, 1 Java Thread = 1 OS Thread
 
 #### 4.	Creating Threads is a Expensive task
 	
-	-	Creating 100 threads to perform 100 task is an very Expensive task
-	-	Instead we need to create a pool of Threads - this pool of threads is called Thread Pool
-	-	We will assign 100 task to Thread pool of 10 
-	
-		-	Each thread will start with one task at a time
-		-	Once task is completed on particular thread then it will pick up another task
+-	Creating 100 threads to perform 100 task is an very Expensive task
+-	Instead we need to create a pool of Threads - this pool of threads is called Thread Pool
+-	We will assign 100 task to Thread pool of 10 
+
+	-	Each thread will start with one task at a time
+	-	Once task is completed on particular thread then it will pick up another task
 	
 #### 5.	Executor Service
 	
-	-	Executors has 4 static methods to get the pool of threads
-	-	Executors will return ExecutorService that is used to execute or submit the task to Blocking queue
-	-	Instead of creating a thread, now a task is submitted to ExecutorService
+-	Executors has 4 static methods to get the pool of threads
+-	Executors will return ExecutorService that is used to execute or submit the task to Blocking queue
+-	Instead of creating a thread, now a task is submitted to ExecutorService
 		
-- 	Thread Pool Executor
+##### 	Thread Pool Executor
 	
-	-	Thread Pool Executor internally uses Blocking Queue
-	-	All the task that are submitted to ExecutorService are stored in a Blocking Queue
-	-	All Threads within Thread Pool Executor will perform 2 steps
-		
-		1.	Fetch next Tasks from Queue
-		2.	Execute the Tasks
+-	Thread Pool Executor internally uses Blocking Queue
+-	All the task that are submitted to ExecutorService are stored in a Blocking Queue
+-	All Threads within Thread Pool Executor will perform 2 steps
 	
-	-	Since all the threads with in Thread Pool Executor pick up tasks at same time - Concurrently
-		
-		-	Queue should be able to handle Concurrent Operations	
-		- 	Thread Pool Executor uses Blocking Queue which is Thread Safe	
+	1.	Fetch next Tasks from Queue
+	2.	Execute the Tasks
+
+-	Since all the threads with in Thread Pool Executor pick up tasks at same time - Concurrently
+	
+	-	Queue should be able to handle Concurrent Operations	
+	- 	Thread Pool Executor uses Blocking Queue which is Thread Safe	
 
 		
 		
