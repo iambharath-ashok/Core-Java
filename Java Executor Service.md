@@ -67,7 +67,7 @@
 
 		
 		
-	Code Snippet of submitting a Tasks to ThreadPool: 
+	### Code Snippet of submitting a Tasks to ThreadPool: 
 	
 		public class MainClass {
 		
@@ -97,16 +97,16 @@
 -	Ideal size of Thread Pool depends on the Task that we going to perform inside the run methods
 -	Tasks can be CPU Intensive or IO Intensive Tasks	
 	
-	1.  CPU Intensive Task
+	### 1.  CPU Intensive Task
 	
--	If Tasks were CPU intensive then Thread Pool Size depends on the number of CPU cores
-	
-	-	If tasks is CPU intensive like algorithm to create hash function or Cryptography then it consumes more CPU
+	-	If Tasks were CPU intensive then Thread Pool Size depends on the number of CPU cores
+		
+		-	If tasks is CPU intensive like algorithm to create hash function or Cryptography then it consumes more CPU
 
--	If CPU is having only 4 cores, then we can run only 4 threads at a time irrespective of number of Threads
-	
-	-	A CPU with 4 cores and 1000 threads will use the Time Split Scheduling Algorith
-			
+	-	If CPU is having only 4 cores, then we can run only 4 threads at a time irrespective of number of Threads
+		
+		-	A CPU with 4 cores and 1000 threads will use the Time Split Scheduling Algorith
+				
 			-	It will give some time to one of the thread and bump it off
 			-	This will result in performance degradations
 			-	In this case, Ideal Pool size is to have the same number of cores in the CPU
@@ -140,15 +140,17 @@
 		
 	
 	
-	2.	IO Intensive Task
+	### 2.	IO Intensive Task
 		
-		-	I/O Intensive Task are like DB call or HTTP call,  N/w calls
-		-	For I/O Intensive Tasks, we can have large Thread Pool Size
-		-	Ideally for I/O calls Threads will be in a Waiting State 
-			
-			-	So we can have a other threads to continue the tasks				
-			
+	-	I/O Intensive Task are like DB call or HTTP call,  N/w calls
+	-	For I/O Intensive Tasks, we can have large Thread Pool Size
+	-	Ideally for I/O calls Threads will be in a Waiting State 
 		
+		-	So we can have a other threads to continue the tasks				
+			
+	
+	#### Code Snippet of IO Intensive Task: 
+	
 			public class MainClass {
 						
 				public static void main(String ... args) {
@@ -173,14 +175,13 @@
 	
 	
 	
-#### Summary 
+### Summary 
 	
 -	Thread Pool Size depends on the Task that we are going to perform
 -	Ideal Thread Pool Size for CPU Intensive task will depends on the Number of Cores on CPU
 	-	How many other Executors or Threads are running on the same CPU
 	
 -	Ideal Thread Pool Size for I/O Intensive task will be higher like 100
-	
 	-	Exact number of threads depends on 
 		-  Rate of task submission
 		-  Average task wait time
