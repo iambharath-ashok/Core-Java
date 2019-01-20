@@ -48,7 +48,7 @@
 -	Executors will return ExecutorService that is used to execute or submit the task to Blocking queue
 -	Instead of creating a thread, now a task is submitted to ExecutorService
 		
-	##### 	Thread Pool Executor
+	### Thread Pool Executor
 	
 -	Thread Pool Executor internally uses Blocking Queue
 -	All the task that are submitted to ExecutorService are stored in a Blocking Queue
