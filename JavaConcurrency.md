@@ -1310,28 +1310,1164 @@ class Service4 {
 
 ----------------------------------------------------------
 ##	Lock Conditions Class
-##	Semaphore in Java
+
+
+-	Condition is a class from java.util.concurrent Package 
+-	Condition Class is used for Threads Coordination and Communication
+-	Condition Class is similar to wait, notify(), notifyAll() Concepts
+-	Difference b/w wait(), notify() and Condition class is that wait(), notify() methods needs to used in synchronized methods or block
+-	wait(), notify(), notifyAll() methods  are from java.lang.Object class
+-	wait(), notify(), notifyAll() methods are used to make any Object as MONITOR in Java
+
+
+----------------------------------------------
+### Use Case of Condition Class
+
+
+-	Thread 1 after performing some task can't continue to perform further tasks until certain condition is met
+-	Thread 1 will call await() method on Condition instance i.e coditionMet.await() ... Thread 1 will go to wait state
+-	Thread 2 after performing some tasks will call conditionMet.signal() method ... which signals for Threads that are waiting for that condition to be met
+-	JVM will take the Threads that are waiting for that condition to be met  ... will move from Waiting state to Runnable state
+
+
+
+#### Code Snippets
+
+		public class ConditionClass {
+
+			static Lock lock = new ReentrantLock();
+			static Condition condition = lock.newCondition();
+
+			public static void main(String[] args) {
+				ExecutorService threadPool = Executors.newFixedThreadPool(4);
+				threadPool.submit(ConditionClass::method1);
+				threadPool.submit(ConditionClass::method2);
+
+			}
+
+			public static void method1() {
+				lock.lock();
+				try {
+					System.out.println(Thread.currentThread().getName() +" has Started ");
+					Thread.sleep(2000);
+					System.out.println(Thread.currentThread().getName()+" is awaiting for condition to be met");
+					..// do some operations
+					condition.await(); 				// <-----	Suspend here 
+					// can do now dependent operations  <---- Resume here
+					System.out.println(Thread.currentThread().getName()+" Has started execution after meeting the condition");
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					lock.unlock();
+				}
+			}
+			
+			public static void method2() {
+				lock.lock();
+				try {
+					System.out.println(Thread.currentThread().getName()+" Has Started Execution");
+					Thread.sleep(10000);
+					System.out.println(Thread.currentThread().getName()+" Has Signal for waiting Threads");
+					//do some operations
+					condition.signal();
+				} catch(Exception e) {
+					e.printStackTrace();
+				}		finally {
+					lock.unlock();
+				}
+			}
+
+		}
+
+		
+		
+	Output :
+	
+		pool-1-thread-1 has Started 
+		pool-1-thread-1 is awaiting for condition to be met
+		pool-1-thread-2 Has Started Execution
+		pool-1-thread-2 Has Signal for waiting Threads
+		pool-1-thread-1 Has started execution after meeting the condition
+
+----------------------------------------------
+
+### Same semantics as wait-notify
+
+-	Condition Class serves same semantics as wait-notify methods
+-	Only difference is that wait-notify methods can be on any Java object and can be used as Monitor object
+- 	Wait-Notify methods can be used only inside the synchronized blocks and methods
+-	Monitor is nothing but a simple object ... that is used for Thread communication using wait and notify methods
+-	Monitor can be any object i.e String, Object, or any Object
+-	siganlAll() works on basis of FIFO and follows fairness 
+
+
+
+	// wait-notify semantics
+	public synchronized void execute() {
+		
+		try {
+			monitor.wait();
+		} catch(InterruptedException e) {
+			e.printStackTrace();
+		} 
+		
+		// notify only one Thread
+		monitor.notify();
+		
+		...// notifyAll Threads
+		monitor.notifyAll();
+	}
+	
+	
+	// condition class semantics
+	
+	this.lock.lock();
+	try{
+		condition.await();
+	} finally {
+		this.lock.unlock();
+	}
+	 
+	 // Notify only one Thread
+	 condition.signal();
+	 
+	 // Notify only All Thread
+	 condition.signalAll();
+	
+----------------------------------------------
+###	Perform await() in while loop
+
+-	condition.await() method should be used and invoked in the while loop
+-	Thread can do spurious wakeup even though no one has waked it up
+-	In order to do avoid spurious wakeup we needs to put that in while loop ... again it will go in to await state
+-	Some Threads may do spurious Wakeup in order to avoid that ... condition.await() method needs to be invoked in the while loop
+
+
+#### Code Snippets
+
+
+	public void consume() {
+	
+		this.lock.lock();
+		try {
+		
+			while(count == 0) {
+				condition.await();  // Spurious wake-up
+			}
+
+			return getData();
+		} finally {
+			this.lock.unlock();
+		}
+	}
+	
+	
+----------------------------------------------
+
+###	 Condition Class Best fit for Producer and Consumer  Problem
+
+
+#### Code Snippet 
+
+	Lock lock = new ReentrantLock();
+	Condition added = lock.newCondition();
+	Condition removed = lock.newCondition();
+	
+
+	class Producer {
+	
+		public void producer() {
+			this.lock.lock();
+			try {
+				while( count == MAX_COUNT ) {
+					removed.await();
+				}		
+				addData();
+				added.signal(); // Sending Added Signal to Consumer Thread
+			} finally {
+				this.lock.unlock();
+			}
+		}
+	}
+	
+	
+	class Consumer {
+		
+		public void consume() {
+			this.lock.lock();
+			try {
+				while(count == 0) {
+				added.await();
+			}	
+				String message = getData();
+				removed.signal(); // Sending Removed Signal to Producer Thread
+			} finally {
+				this.lock.unlock():	
+			}
+			
+		}
+	}
+
+	
+
+
+
+
+----------------------------------------------------------
+##	Semaphore in Java Concurrency
+
+
+-	Semaphore is class from java.util.concurrent package
+-	Semaphore is used to manage or restrict access to resource( i.e External Resources)
+-	Semaphore has a concept of permits that every Thread should acquire before access the resources or performing some tasks
+-	Semaphore needs to be initialized with number of Permits 
+-	Once Thread acquired a permit from Semaphore ... Semaphore count will be decremented
+-	Once all Threads acquired permits from Semaphore and count of Semaphore becomes 0 ... then all the remaining Threads that were try to get Permits will be blocked at that point till one of the Thread release the permit
+-	Once existing Thread releases the Permit ... then First Thread that is waiting for Permit will be given permit ... Thread can continue to perform the tasks
+-	Semaphore at any point in time ... depending on permit count will allow only limited set(Number) of Threads to access or perform the operation
+
+
+
+### Use Case #1: Making call to Slow External Service
+
+-	Our Service needs to consume service from External Service ... which is Slow can handle limited set of Requests
+-	In this case we need to allow only 3 Threads at a time to consume service from External Service
+-	Our application is having 50 Threads ... but only 3 Threads should be allowed to consume the service from external system
+-	This use case can be achieved by using Semaphore with 3 permits
+
+
+#### Code Snippets of Semaphore:
+
+	class Main {
+	
+		public static void main(String ... args) {
+			
+			ExecutorService threadPool = Executors.newFixedThreadPool(50);
+			Semaphore semaphore = new Semaphore(3);
+			
+			
+			IntStream.rangeClosed(1, 100).forEach(threadPool.execute(new Task(semaphore)));
+		
+		}
+	}
+
+	
+	class Task implements Runnable {
+		
+		Semaphore semaphore;
+		
+		Task(Semaphore semaphore) {
+			this semaphore = semaphore;
+		}
+		
+		public void run() {
+		
+			this.semaphore.acquire(); // Throws InterruptedException
+					or
+			this.semaphore.acquireUninterruptbly();
+			
+			// After performing operation Threads should release the Permits 
+			// Otherwise Semaphore permits will run out ... resulting in Threads blocked for Permit will never come out
+			
+			this.semaphore.release();
+			
+			// Number of permit acquired by thread should be equals to Thread releasing Permits
+			
+			
+		}
+	}
+
+-----------------------------------------------------------
 ##	Reentrant Locks 
-## 	Reentrant Lock vs ReadWriteLock	
-##  Spin Locks
+
+
+-	Lock allows to restrict access to shared resources 	... so that only one thread will allowed to access the Shared Resources
+-	Lock allows only one Thread at a time access SHARED RESOURCE
+-	Use case: Multiple Threads simultaneously modifying the Shared Resource DB
+
+### Difference B/w ReentrantLock and Synchronized Keyword
+
+-	Synchronized is a implicit lock
+-	Lock are explicit
+-	Lock allows locking and unlocking in any scopes and in any order
+-	Ability to tryLock and tryLock(timeout) 
+
+
+###	Why the name is Reentrant 
+
+-	ReentrnantLock allows to call block multiple times
+-	Thread wants to execute same or different code with same lock
+-	No needs to wait Thread for Lock ... it already has and can reenter the lock
+-	There is a method called getHoldCount() that gives #number of times that Thread has reentered the lock
+-	Behind the screen Thread doesn't needs to reacquire the lock because it already holds the lock
+-	Only hold count will gets incremented
+
+
+###	Fairness Lock
+
+-	ReentrantLock has a overloaded constructor that allows to create a fairness lock
+-	ReentrantLock constructor has to pass a boolean value true to make it fairness lock
+-	Fairness Lock try to ensure Threads in a FIFO order 
+-	Fairness Lock allows to get hold of Lock for a Thread that has waited for longest duration
+-	Fairness Lock will push the Threads that trying to get a lock on the Queue
+-	Unfair Lock will may result in performance improvement but it leads some thread to STARVATION
+
+
+
+### TryLock with ReentrantLock
+
+-	boolean tryLock() is a method on the ReentrantLock 
+-	lock() method will push the Thread in to waiting state if lock is not available
+-	tryLock() method will try to acquire the lock if lock is not hold by any other Threads
+-	tryLock() returns true or false depending on Lock status
+-	If lock is not free then we can continue to perform other operations
+-	Even if ReentrantLock is Fair Lock tryLock doesn't ensure fairness
+-	To tryLock() to fairness we need to use overloaded tryLock(2, TimeUnit.SECONDS) method
+
+
+
+###	Other Methods of Reentrant Lock
+
+-	isHeldByCurrentThread
+-	getQueueLength
+-	getHoldCount
+-	newCondition
+
+#### Code Snippet of ReentrantLock with tryLock():
+
+	public static void accesResource() {
+		boolean lockAcquired = lock.tryLock();
+		
+		if(lockAcquried) {
+			try {
+				
+				// Access Resource
+				
+			} finally {
+				lock.unlock();
+			}
+		} else {
+			// Do something else 
+		}
+	
+	}
+
+
+#### Code Snippet of ReentrantLock:
+
+
+	
+		public static void accessResource() {
+			
+			this.lock.lock();
+			
+			// Access to Shared Resource
+			
+			this.lock.unlock():
+		
+		}	
+	
+	
+	
+	public class MainClass {
+	
+		public  static void main() {
+			
+			ExecutorService threadPool = Executors.newFixedThreadPool(4);
+				
+			threadPool.submit(() -> accessResource());
+			threadPool.submit(() -> accessResource());
+			threadPool.submit(() -> accessResource());
+			threadPool.submit(() -> accessResource());
+		}
+	}
+
+	
+####	Code Snippet of Synchronized Block:
+
+
+	public static void accessResource() {
+	
+		synchronized(this) { // this.lock.lock()
+			// access shared resources
+		}                   // this.lock.unlock()
+	
+	}
+	
+	public class MainClass {
+		
+		public static void main(String ... args ) {
+			ExecutorService threadPool = Executors.newFixedThreadPool(4);
+				
+			threadPool.submit(() -> accessResource());
+			threadPool.submit(() -> accessResource());
+			threadPool.submit(() -> accessResource());
+			threadPool.submit(() -> accessResource());
+		}
+	}
+	
+
+### Use Case #1 : Booking a Seat on Movie App
+
+-	Movie App allows to multiple users to book a ticket
+-	Each user is a Single Thread
+-	Allowing Multiple Threads simultaneously to book same ticket will result in to issues
+-	To overcome this issue ... we allow only one Thread at a time to book the ticket
+
+-----------------------------------------------------------
+## 	Reentrant Lock vs ReentrantReadWriteLock	
+
+1.	Reentrant Lock 
+
+-	Normal Lock and only one Thread at a time
+-	Good for general purpose locking
+
+2.	ReadWriteLock
+
+-	Good for Frequent Reads and Infrequent Writes
+-	Much more performant than Reentrant Lock
+-	ReentrantReadWriteLock has two functionality
+-	Separate Read and Write locks per lock instance
+-	Allows Write Lock owner Thread to also acquire read lock
+-	One Writer Thread at a time and multiple Read Threads at a time
+-	Even though ReadLock and WriteLock though are separate instances .... only one is allowed at a time
+-	Either READ LOCK to be hold by N number of Threads or WRITE LOCK to be hold by 1 Thread at a time
+-	But never both at same time
+
+
+### Waiting Queue of ReentrantReadWriteLock 
+
+
+-	When one of the Write Thread is holding write lock then both Read and Write Threads will blocked and put them in waiting queue
+-	When one or more than one Thread holds the Read lock then ... if another Thread comes for Reading Shared resource then that Thread will be allowed to hold Read Lock ... will not put them in waiting queue
+-	When Read Threads holds the Lock then all Write Thread will put in waiting state in waiting queue
+-	When Read Threads release the lock ... then only one Write lock is allowed to hold the write lock 
+-	Both Read and remaining write threads will be put on waiting queue
+
+
+
+#### Code Snippet of ReadWriteLock: 
+
+	class MainClass {
+	
+		private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+		private ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+		private ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+	
+	
+		public static void main() {
+		
+			Resource resource = new Resource():
+			
+			Thread t1 = new Thread(() -> resource.readResource()); t1.start();
+			Thread t2 = new Thread(() -> resource.readResource()); t2.start();
+			Thread t3 = new Thread(() -> resource.writeResource()); t3.start();
+			Thread t4 = new Thread(() -> resource.writeResource()); t4.start();
+		
+		}
+	}
+
+	class Resource {
+	
+		public void readResource() {
+			readLock.lock();
+			
+			//	View the Resource 
+			
+			readLock.unlock():
+		}
+		
+		public void writeResource() {
+			writeLock.lock();
+			
+			//	update the Resource
+			writeLock.unlock();
+		}
+	
+	}
+
+
+
+### Use Case #1 : Booking a Seat on Movie App with Read and Write Lock
+
+-	Using single lock across all the Threads will result in Performance Issue
+-	When Threads wants to read the data ... it will have to wait for other Threads ... since only one Thread to allowed to hold the Lock
+-	Some Thread may just want to read the Seat Chart ... some Threads may wants to update the data 
+-	Threads wants to read the Seat Chart may hold the Read Lock ... and any number of Threads can hold of Read Lock
+-	N number of Threads holding READ LOCK can view SEAT CHART at same time
+-	While Read Threads hold the read lock ... Write Threads will in blocked status
+-	Once all Read Threads release READ LOCK then Write Threads from WAIT QUEUE will to moved from Blocked status to Runnable Status
+-	ONLY one WRITE Thread will be allowed to hold lock at a time
+
+-----------------------------------------------------------
+
 ## 	Exchanger Class 
+
+-	Exchanger Class is a class from java.util.concurrent package
+-	Exchanger class is similar to Synchronous Queue ... which allows direct handoff of messages b/w producer and consumer
+-	Exchanger class allows direct handoff b/w Producer and Consumer in both direction
+-	Since both Producer and Consumer is getting Something in return it's Data Structure is called Exchange
+-	When either of the Thread wants to exchange the items ... if one of the Thread is not available then Thread will get blocked
+-	Whenever Thread is available ... then Threads will exchange the messages
+
+
+### Use Case #1: Producer and Consumer exchanging with Full and Empty Buffer
+
+-	Producer Thread initially will have Full Buffer (i.e contains data) which is ready to exchange
+-	Consumer on the other hand has already read all the data and has Empty Buffer
+-	At this point in time both Producer and Consumer can perform exchange of Buffers by calling Exchange method
+-	After exchange ... Producer will have Empty buffer and Consumer will have empty buffer
+-	Again Producer can fill the Buffer and Consumer can read the Buffer
+
+
+---------------------------------------------------------
 ##	Stripped Locks
-## 	Java Fibers in Project Loom (coroutines) 	
+
+-	Stripped is a class from java.util.concurrent package 
+-	Stripped Locks is used to handle number of locks while working with large set of Objects
+-	Less Locks => Better Memory, more contention
+-	More Locks => More Memory but High Throughput 
+-	Stripped Locks will somewhere will fit in with middle and comes with limited set of Locks that can work with Thousands of objects
+-	Stripped => Middle ground
+-	Needs to have hashcode and equals method 
+-	Choose Object to retrieve the lock
+	
+
+### Use case #1: Adding Candy's to 10000 bags with limited set of Threads 
+
+-	We needs to add Different Colored Candy's to 10000 bags with 20 Threads
+-	Thread 4 and 7 may tries to add Blue Candy to Bag 3 
+-	bag.hasBlueCandy() method for both Threads result in false ... resulting in both Threads will add candy's twice to bag instead of one
+-	Having Single Lock for 10000 bags will result in more Contention b/w Threads
+-	Having 10000 Locks will result in More Memory Consumption ... => Inefficient Solution
+-	We need middle ground or ideal of set of Locks to deal with 10000 Bags 
+-	Striped Lock provides set of specified number of Locks ... that are passed to parameter to Stripped.lock(number: 10)
+-	Stripped lock = Stripped.lock(10) will return 10 Locks ... that can be used to handle 10000 Bag Objects
+-	One Lock will be assigned to Handle Set of Bags
+
+### Code Snippet of Use Case #1:  Adding Candy's to 10000 bags with limited set of Threads 
+
+	private Stripped<Lock> strippedLocks = Stripped.lock(10); // Total Number of Locks
+	
+	public void updateBag(Bag bag) {
+			
+		Lock lock = strippedLocks.get(bag.getId()); // Get a Lock for this Bag
+		lock.lock();
+		if(!bag.hasBlueCandy()) {						// Use like a Normal Lock
+			bag.add(new Candy(color: blue));			// Perform Operations
+		}
+		lock.unlock();				
+	}
+
+	Code Snippet 
+	
+		Lock lock = strippedLock.get(bag.getId());
+		// getId is a String ... and String Class has valid equals and hashcode method implementation
+		
+		
+		Lock lock = strippedLock.get(bag);
+		// In order to use Custom Object as key to get Lock from strippedLocks
+		// valid implementation of hashcode and equals method needs to provided on Bag Class
+
+	
+##### No matter how many bag instances we have all will be resolved with these 10 Locks
+
+
+### How Locks are mapped to an Object
+
+-	Lock will assigned based on Object hashcode value % Number of Locks 
+-	Lock# = Object HashCode % 10
+
+			   Hashcode    Total Locks	  #Lock to be used
+		Lock # = 2432    %    10 	    =   2
+		Lock # = 433     %    10	    =   3
+		Lock # = 99437   %    10 	    =   7
+		Lock # = 82      %    10 	    =   2
+
+
+
+### Code Snippet of Stripped Locks 
+
+		
+	if(!bag.hasBlueCandy()) {
+		bag.add(new Candy(color: blue));
+	}
+
+
+	Solution with Lock 
+
+	lock.lock();
+	if(!bag.hasBlueCandy()) {
+		bag.add(new Candy(color: blue));
+	}
+	lock.unlock();
+		
+---------------------------------------------------------
+
+##  Spin Locks
+
+-	Keep trying to acquire the lock without going into wait state
+-	Assumption: Most locks are used for short period of time
+-	Spin Locks are also called Busy Loop, Busy Wait, Spinning
+-	
+
+### Trade Off of Spin Lock
+
+							    Spinning 							Wait State 
+						
+Lock Available Quickly 		Improves perf 				      cost of Thread Switches
+						  by avoiding Thread Swich	
+
+Locks Taking More Time 		Thread Starvation 			      Improves CPU utilization
+
+
+
+###	Adaptive Spinning
+
+-	Try spinning for some time, if still not available then go into wait state 
+-	JVM Profiles the code and decides how much time to spin for 
+
+
+###	Use case #1: Update a Bid 
+
+-	Suppose we want to update a Bid with latest Bid value
+-	Bid Request will come with Bid ID 
+-	Fetch Bid 
+-	Increment Bid
+-	Save Item
+-	Concurrent updates by multiple Threads can be avoided by Lock
+-	To improve performance Threads can run across multiple Cores
+-	Thread 1 will try to perform operation by acquiring a lock 
+-	Instead of saving item back to DB ... we will save it in in-memory 
+-	This is going to be very quick operation ...  Thread 2 will keep on trying to acquire the lock
+-	Thread 2 instead of going to waiting state by doing context switching will keep trying to acquire the lock
+
+
+
+#### Code Snippet of Use Case:
+
+	public void update(int id) {
+	
+		Lock lock = getLock():
+		lock.lock();
+		
+		try {
+			BidItem item = getItem(id);
+			Item item = incrementBid(item);
+			saveItem(item);
+			
+		} finally {
+			lock.unlock();
+		}
+	
+	}
+
+
+
+
+
+---------------------------------------------------------
+## 	Coroutines and Java Fibers in Project Loom (coroutines) 	
+
+
+### Use Case #1: Getting 10000 Products from External Service
+
+-	In this use case we needs to fetch 10000 products from external Service and update then and save it into our DB
+-	We created 10000 tasks for each of the operations and submit them for ThreadPool
+-	A ThreadPool of 10 Threads can perform handle 10000 tasks
+-	Since Use Case #1 contains HTTP call and DB IO call ... Threads will gets blocked for IO and HTTP operations
+-	Blocking Threads will result in inefficient CPU utilization
+-	One solution is to use CacheThreadPool ... that will creates as many Threads as required
+-	But CachedThreadPool will result in JVM crash or OutOfMemoryException
+
+
+	Code Snippet of Use Case :
+	
+		ExecutorService threadPool = Executors.newFixedThreadPool(10);
+		
+		
+		for(int i = 1; i <= 100_000; i++) {
+			
+			int productId = i;
+			
+			Runnable task = new Runnable() {
+						
+				@Override
+				public void run() {
+					Product p = getProduct(productId);
+					updatePrice(p);
+					saveProduct(p);
+				}
+			};
+			
+			threadPool.submit(task);
+		}
+	
+		
+
+
+###	What's the Core Problem
+-	waiting Threads don't allow scaling(CPU sits Idle)
+-	Threads are too expensive ... 1 MB STACK ... Can't create too many of them
+-	Task waiting for IO Operations ... blocks the Thread itself
+
+
+### Using Reactive Programming to solve  Core, Thread and Blocking IO Operations
+
+-	Event or Callback method based approach 
+-	Threading is handled efficiently in Reactive Framework
+-	Threads will not wait for IO Operation to complete ... instead will provide a callback method ... which will be called operation is completed
+- 	Main Threads will submit a task in separate Thread and pass a callback method to call ... once operation is completed
+
+
+### Problems with Reactive Programming
+
+-	Needs to learn huge number of APIs to work with it
+-	Not easy to learn and understand the code
+- 	Nor easy to debug the Code
+
+
+
+
+### Java Fibers 
+
+-	Java Fibers is a upcoming project from Java
+-	Millions of Threads will run on top limited set of OS Threads 
+-	Java Fiber uses millions of Light Weight Threads that can be used with existing APIs
+
+	Advantages of Fibers over Threads
+	
+	-	Very light weight .. only 1 KB of Stack .. compared to 1 MB of Stack of Thread
+	-	Do not block the underlying Threads
+	-	Can use same API as used with Threads
+	-	Can run millions of Fibers in an Application
+	-	Will enable servers handling thousands of Concurrent Requests
+
+
+
+
+
+---------------------------------------------------------
 ##	Completable Future
 
 
 
 
+---------------------------------------------------------
+##	DeadLocks
+
+-	DeadLocks occurs when Thread is waiting for a lock held by another Thread and vice versa
+-	DeadLocks are difficult to detect due to multiple types of locks and Thread Sources
+-	DeadLockds can be detect at runtime using ThreadDumps
+-	Consistent ordering of Locks helps in avoiding DeadLock
+-	Using Timeouts on Lock Acquisition will also helps
+
+### What is a DeadLock
+
+-	Thread 1 acquiring Lock A will wait for Lock B
+-	Thread 2 acquiring Lock B will wait for Lock A 
+
+
+#### Code Snippet of DeadLock
+
+	class DeadLockEx {
+	
+		Lock lockA = new ReentrantLock();
+		Lock lockB = new ReentrantLock();
+		
+		private void execute() {
+		
+			new Thread(this::processThis).start();
+			new Thread(this::processThat).start();
+		}
+		
+		
+		// Thread 1 Executing processThis method
+		public void processThis() {
+			lockA.lock();
+				
+				// some operations
+			
+				lockB.lock(); // DeadLock
+			
+			
+			
+				lockB.unlock();
+			lockA.unlock();
+		}
+		
+		public void processThat() {
+			lockB.lock();
+				
+				// some operations
+			
+				lockA.lock(); // DeadLock
+			
+			
+			
+				lockA.unlock();
+			lockB.unlock();
+			
+		}
+	
+	}
+
+### How to Detect DeadLocks at Runtime?
+
+-	There are tools for detecting DeadLocks at runtime
+-	ThreadDump is tool that is used to detect DeadLocks at runtime
+-	Commands to detect DeadLocks at runtime
+
+	1.	jstack 11475 > ./threadDump.txt
+	
+		-	jstack is a command to print the Threads stack that are in DeadLock 
+		-	For jstack we needs to pass the Process_Id
+		-	Above command will redirect Thread Dump log to file
+		
+		
+	2.	kill -3 12704
+	
+		-	Above Command will print the Threads that are in DeadLock status at Runtime
+		
+	3.	Java Provides an API to detect DeadLock at runtime
+
+		-	Java provides an API which constantly run in background 
+		-	Where JVM will tell at any point in time ... there is an DeadLock 
+		
+	
+### How to prevent DeadLocks?
+
+-	Creating and acquiring Locks by providing a TimeOut a Param
+-	Acquiring Lock in same order across different methods
 
 
 
+#### Code snippets of Acquiring Locks with TimeOut 
+
+
+	public void execute() {
+		
+		Lock lock = new ReentrantLock();
+		boolean isAvailable = lock.tryLock(2 , TimeUnit.SECONDS);
+		
+		
+		BlockingQueue queue = new ArrayBlockingQueue(16);
+		queue.poll(2, TimeUnit.SECONDS);
+		
+		
+		Semaphore semaphore = new Semaphore(1);
+		semaphore.acquire(2, TimeUnit.SECONDS);
+	
+	}
+
+	
+###	Global Ordering can be Tricky
+
+
+	Code snippet:
+	
+		public void transfer(Account acct1, Account acc2, int amount) {
+		
+			synchronized(acct1) {
+				synchronized(acct2) {
+					acc1.deduct(amount);
+					acc2.add(amount);
+				}
+			}
+		}
+		
+		
+		public void execute() {
+		
+			new Thread(this::transfer(john, marlie, 2000)).start();
+			new Thread(this::transfer(marlie, john, 3000)).start();
+		
+		}
+		
+		
+		public void transfer(Account from, Account to, BidDecimal amount) {
+		
+			Account acc1 = getLarger(from, to);
+			Account acc2 = getSmaller(from, to);
+			
+			synchronized(acct1) {
+				synchronized(acct2) {
+					acc1.deduct(amount);
+					acc2.add(amount);
+				}
+			}
+		}
+		
+		
+		// Updated code to avoid DeadLock
+		
+		public void execute() {
+		
+			new Thread(this::transfer(john, marlie, 2000)).start();
+			new Thread(this::transfer(marlie, john, 3000)).start();
+		
+		}
+		
+		
+		
+---------------------------------------------------------
+## How to TimeOut a Thread - Interview Question
+
+
+-	A task is Running in Separate Thread. Stop the task if it exceeds 10 mins
+-	We needs to break this into two parts
+	
+	-	How we can stop or interrupt signal to Thread
+	-	And termination after 10 minutes
+
+1. 	Stopping the Thread/ Task
+2.	Timeout Condition
+
+
+### Part 1. Stopping the Thread/ Task or How to Stop
 
 
 
+#####	Executor ThreadPool shutdown methods to force stop the Task
+
+-	shutDown()
+	
+	-	No new tasks will be accepted 
+	-	Previously submitted tasks are executed
+	
+-	shutDownNow()
+
+	-	No new tasks will be accepted
+	-	Previously submitted tasks waiting in queue will be returned
+	-	Tasks being run by Threads are attempted to stop 
+	
+	
+- No Guarantee to stop the Threads
 
 
 
+#####	Future and Callable 
 
+- 	future.cancel(true); // Methods will only attempt to stop the Threads
+-	Java Threads can't be killed 
+-	They are cooperative
+-	We needs to ASK THREADS POLITELY
+
+
+
+####	How to ASK POLITELY for Threads
+
+##### 1.	Interrupts
+
+-	Calling interrupt method on Thread
+-	In TASK we needs check whether any body wants interrupt the Thread
+-	We needs to write a logic to check Interruption frequently in the while loop
+
+
+	Code Snippet: 
+	
+	
+		public static void main(String ... args) {
+			
+			Thread t1 = new Thread(() -> {
+			
+				while(!Thread.currentThread().isInterrupted()) {  // Keep checking for Interrupts
+					//	Next Step
+				}
+			});
+			
+			t1.start();
+			
+			// 2.	TODO: Timeout for 10 Minutes
+			
+			// 3.	stop or interrupt the Thread
+			t1.interrupt();
+				or
+			t1.shutDownNow(); // This internally calls Thread.interrupt
+		}
+		
+		
+		
+		
+		// Future 
+		
+		public static void main(String ... args) {
+		
+			ExecutorService threadPool = Executors.newFixedThreadPool(3);
+			
+			Future<?> future = threadPool.submit(() -> {
+			
+				while(!Thread.currentThread().isInterrupted()) {
+					
+				}
+			});
+			
+			future.cancel(true); // Calls Thread.interrupt() method for Currently Running Thread
+		}
+		
+
+##### 2.	Volatile/ AtomicBoolean
+
+
+-	Stopping Thread using AtomicBoolean and Volatile Keyword
+
+	
+###### Code Snippet showing Stopping Thread using volatile keyword
+
+	
+		Code Snippet:
+			
+			public static void main(String ... args) {
+				
+				MyTask task = new MyTask();
+				Thread thread = new Thread(task); // Same will work for ThreadPool also  
+				
+				thread.start();
+				
+					
+				// 2.	TODO: Timeout for 10 Minutes
+				
+				// 3.	stop or interrupt the Thread
+				
+				task.keepRunning = false;
+				
+			}
+			
+			public class MyTask implements Runnable {
+			
+				public volatile boolean keepRunning = true;
+				
+				@Override
+				public void run() {
+					
+					while(KeepRunning) {
+						//Threads will keeps on running
+					}
+						
+				}
+			
+			}
+
+
+###### Code Snippet showing Stopping Thread using AtomicBoolean
+
+
+
+	Code Snippet:
+			
+			public static void main(String ... args) {
+				
+				MyTask task = new MyTask();
+				Thread thread = new Thread(task); // Same will work for ThreadPool also  
+				
+				thread.start();
+				
+					
+				// 2.	TODO: Timeout for 10 Minutes
+				
+				// 3.	stop or interrupt the Thread
+				
+				task.stop();
+				
+			}
+			
+			public class MyTask implements Runnable {
+			
+				public AtomicBoolean keepRunning = new AtomicBoolean(true);
+				
+				@Override
+				public void run() {
+					
+					while(keepRunning.get() == true) {
+						//Threads will keeps on running
+					}
+						
+				}
+				
+				public void stop() {
+					keepRunning.set(false);
+				}
+			
+			}
+
+------------------------------------
+
+### Part 2. Conditional Timeout
+
+-	Once we setup ways to stop Threads ... we can stop the Thread only after certain timeout
+
+
+
+#### Code Snippets
+
+
+-	Thread.sleep(10* 60 * 1000)
+
+	
+		public static void main() {
+		
+		
+			// 1.	Create a Task and Submit it to a Thread
+			MyTask task = new MyTask();
+			Thread thread1 = new Thread(task);
+			
+			thread1.start();
+			
+			//	2.	 TimeOut for 10 Minutes
+			try {
+				Thread.sleep(10 * 60 * 1000);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			// 3.	Stop the Thread
+			task.stop();
+		}
+
+
+
+-	Scheduler Executor Service
+
+
+		public static void main() {
+			MyTask task = new MyTask();
+			Thread thread1 = new Thread(task);
+			
+			thread1.start();
+			
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			scheduler.schedule(() -> {
+				task.stop();
+			}, 10, TimeUnit.MINUTES);
+		
+		}
+
+-	Future cancel with a TimeOut
+
+
+	
+		public static void main() {
+		
+			ExecutorService threadPool = Executors.newFixedThreadPool(2);
+			
+			//	1.	Create a task and submit to a Thread	
+			MyTask task = new MyTask();
+			final Future<?> future = threadPool.submit(task);
+			
+			try {
+				// 2.	Wait for 10 Minute to get Response
+				future.get(10, TimeUnit.MINUTES);
+			} catch(InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			} catch(TimeoutException e) {
+				future.cancel(true); // If using interrupts
+				task.stop(); // If using volatile
+			}
+			
+		
+		
+		}
 
 
 
