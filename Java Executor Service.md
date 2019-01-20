@@ -3,7 +3,7 @@
 ### 1. Introduction
 
 
-	Code Snippet of Creating a Thread in Java: 
+	##### Code Snippet of Creating a Thread in Java: 
 
 		public class MainClass {
 
