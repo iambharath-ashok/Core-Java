@@ -23,15 +23,17 @@
 		}	
 
 
-1.	Main Thread will continue to run till the end of the execution
-2.	When t1.start() is executed then a new thread will be created with name thread-0
+#### 1.	Main Thread will continue to run till the end of the execution
+
+#### 2.	When t1.start() is executed then a new thread will be created with name thread-0
 	
 	- 	Once thread has been created its start to work asynchronously 
 	-	At same time Main thread also continue its execution
 	-	Once thread task is completed Java will delete that Thread
 
-3. 	In Java, 1 Java Thread = 1 OS Thread
-4.	Creating Threads is a Expensive task
+#### 3. 	In Java, 1 Java Thread = 1 OS Thread
+
+#### 4.	Creating Threads is a Expensive task
 	
 	-	Creating 100 threads to perform 100 task is an very Expensive task
 	-	Instead we need to create a pool of Threads - this pool of threads is called Thread Pool
@@ -40,7 +42,7 @@
 		-	Each thread will start with one task at a time
 		-	Once task is completed on particular thread then it will pick up another task
 	
-5.	Executor Service
+#### 5.	Executor Service
 	
 	-	Executors has 4 static methods to get the pool of threads
 	-	Executors will return ExecutorService that is used to execute or submit the task to Blocking queue
@@ -87,24 +89,24 @@
 
 
 
-6.	Ideal Size of Thread Pool
+#### 6.	Ideal Size of Thread Pool
 	
 -	Ideal size of Thread Pool depends on the Task that we going to perform inside the run methods
 -	Tasks can be CPU Intensive or IO Intensive Tasks	
 	
 	1.  CPU Intensive Task
 	
-			-	If Tasks were CPU intensive then Thread Pool Size depends on the number of CPU cores
-				
-				-	If tasks is CPU intensive like algorithm to create hash function or Cryptography then it consumes more CPU
+-	If Tasks were CPU intensive then Thread Pool Size depends on the number of CPU cores
+	
+	-	If tasks is CPU intensive like algorithm to create hash function or Cryptography then it consumes more CPU
+
+-	If CPU is having only 4 cores, then we can run only 4 threads at a time irrespective of number of Threads
+	
+	-	A CPU with 4 cores and 1000 threads will use the Time Split Scheduling Algorith
 			
-			-	If CPU is having only 4 cores, then we can run only 4 threads at a time irrespective of number of Threads
-				
-				-	A CPU with 4 cores and 1000 threads will use the Time Split Scheduling Algorith
-						
-						-	It will give some time to one of the thread and bump it off
-						-	This will result in performance degradations
-						-	In this case, Ideal Pool size is to have the same number of cores in the CPU
+			-	It will give some time to one of the thread and bump it off
+			-	This will result in performance degradations
+			-	In this case, Ideal Pool size is to have the same number of cores in the CPU
 				
 					
 					
