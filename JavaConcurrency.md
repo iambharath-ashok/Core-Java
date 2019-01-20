@@ -376,7 +376,7 @@ Tools to deal with Concurrency
 
 	Code snippet :
 	
-```java 	
+```java	
 		class AtomicLong {
 			AtomicLong counter = new AtomicLong(0);
 			psv main() {
@@ -407,7 +407,7 @@ Tools to deal with Concurrency
 				// Each AtomicLong increment is synchornized and updates will be flused and updted across the threads
 			}
 		}
-	````
+````
 
 
 ### Adder 
@@ -2052,8 +2052,116 @@ Locks Taking More Time 		Thread Starvation 			      Improves CPU utilization
 ##	Completable Future
 
 
+-	Performing Non-Blocking Operation is very easy in Java 
+-	Create a new task and submit that task for new separate Thread ... so that Main Thread will not gets blocked
+-	Runnable Thread will call run method and once run method is completed ... Thread will gets destroyed
+-	To return a value from the Thread we can use Callable and Future 
+-	Callable will returns a value from Thread and Future will be used to fetch the value from Future Instance
+-	Future is like a container that holds the value whenever value is ready 
+-	future.get() method call is a Blocking call ... i.e Thread will gets blocked until value will be available
 
 
+
+### Use Case #1: Order Management
+
+-	Below is the set of operations for processing an Orders 
+
+-	Fetch an Orders
+-	Enrich an Order
+-	Payment for an Order
+-	Dispatch an Order
+-	Send an Email 
+
+
+### Code Snippet for Processing an Orders using Future and Callable
+
+-	Below code is not scalable 
+-	Thread will gets blocked for each future.get() call
+
+
+	Code Snippet:
+	
+		public void processOrders() {
+			
+			try {
+		
+				Future<Order> orderFuture = threadPool.submit(fetchOrder());
+				Order order = orderFuture.get(); // Blocking Operation
+				
+				Future<Order> enrichFuture = threadPool.submit(enrichOrder(order));
+				Order enrichedOrder =  enrichFuture.get();
+				
+				Future<Order> paymentFuture = threadPool.submit(performPayment(enrichOrder));
+				order = paymentFuture.get();// 
+				
+				Future<Order> future = threadPool(dispatchTask(order));
+				order = future.get();
+				
+				Future<Order> future = threadPool(sendEmail(order));
+				order = future.get();
+			} catch(InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}	
+		}
+
+### Code Snippet for Processing an Orders using Completable Future
+
+-	CompletableFuture is a class from java.util.concurrent package
+-	CompletableFuture is used perform blocking operations in a most efficient way
+-	CompletableFuture takes a callback method ... performs operations on the callback methods
+- 	CompletableFuture class provides a static method called supplyAsync ... for which we provide a task or method 
+-	In CompletableFuture class we can chain the dependent tasks ... like an Algorithm
+
+
+	Code Snippet:
+	
+		for(int i =0; i<=100_00; i++) {
+			
+			CompletableFuture.supplyAysnc(() -> fetchOrder())
+				.thenApply(order -> enrichOrder(order))
+				.thenApply(o -> performPayment(o))
+				.thenApply(order -> dispatch(order))
+				.thenAccept(order -> sendEmail(order));
+		}
+
+
+-	thenApply() will be executed same Thread
+-	thenApplyAsync() method is used to supply other Thread pool to execute the task
+-	supplyAsync() method will have a overloaded methods	that will take other ThreadPool 
+
+
+	Code Snippet thenSupplyAsync:
+		
+		ExecutorService cpuBound = Executors.newFixedThreadPool(5);
+		ExecutorService ioBound = Executors.newCachedThreadPool();
+		
+		for(int i =0; i<=100_00; i++) {
+			
+			CompletableFuture.supplyAysnc(() -> fetchOrder(), ioBound)
+				.thenApplyAsync(order -> enrichOrder(order), cpuBound)
+				.thenApplyAsync(o -> performPayment(o), ioBound)
+				.thenApplyAsync(order -> dispatch(order))
+				.thenAccept(order -> sendEmail(order));
+		}
+
+-	For CompletableFuture doesn't need any ThreadPool to submit task 
+-	All tasks scheduling will be managed Automatically by JVM
+-	CompletableFuture by default internally uses Fork Join Pool to manage the task
+
+
+		for(int i =0; i<=100_00; i++) {
+			
+			CompletableFuture.supplyAysnc(() -> fetchOrder(), ioBound)
+				.thenApplyAsync(order -> enrichOrder(order), cpuBound)
+				.thenApplyAsync(o -> performPayment(o), ioBound)
+				.exceptionally(e -> new FailOrder())
+				.thenApplyAsync(order -> dispatch(order))
+				.thenAccept(order -> sendEmail(order));
+		}
+		
+
+-	exceptionally)() methods is used to handle any exception in the CompletableFuture operations		
+	
 ---------------------------------------------------------
 ##	DeadLocks
 
@@ -2468,44 +2576,3 @@ Locks Taking More Time 		Thread Starvation 			      Improves CPU utilization
 		
 		
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
