@@ -47,20 +47,23 @@
 -	Executors has 4 static methods to get the pool of threads
 -	Executors will return ExecutorService that is used to execute or submit the task to Blocking queue
 -	Instead of creating a thread, now a task is submitted to ExecutorService
+
+
+
 		
 	### Thread Pool Executor
 	
--	Thread Pool Executor internally uses Blocking Queue
--	All the task that are submitted to ExecutorService are stored in a Blocking Queue
--	All Threads within Thread Pool Executor will perform 2 steps
-	
-	1.	Fetch next Tasks from Queue
-	2.	Execute the Tasks
+		-	Thread Pool Executor internally uses Blocking Queue
+		-	All the task that are submitted to ExecutorService are stored in a Blocking Queue
+		-	All Threads within Thread Pool Executor will perform 2 steps
+			
+			1.	Fetch next Tasks from Queue
+			2.	Execute the Tasks
 
--	Since all the threads with in Thread Pool Executor pick up tasks at same time - Concurrently
-	
-	-	Queue should be able to handle Concurrent Operations	
-	- 	Thread Pool Executor uses Blocking Queue which is Thread Safe	
+		-	Since all the threads with in Thread Pool Executor pick up tasks at same time - Concurrently
+			
+			-	Queue should be able to handle Concurrent Operations	
+			- 	Thread Pool Executor uses Blocking Queue which is Thread Safe	
 
 		
 		
