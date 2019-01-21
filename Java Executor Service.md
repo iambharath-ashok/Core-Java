@@ -285,13 +285,95 @@
 	
 ## 3. Callable and Future
 	
+-	Callable Interface returns a value from Thread
+-	Callable Task should override call method and provide implementation
+-	With combination of Callable and Future ... we can submit a Task and perform some operations
+-	And call future.get() method to get a value after some time
+-	Future is like a container or place holder ... once value is available ... result will be added to Future container ... future.get() method call will returns value from future placeholder
+-	future.get() overloaded method provides TimeOut Value ... that maximum amount of time that Thread is Waiting for Task complete the operations
+-	future.get(5, TimeUnit.SECONDS)
+-	Once TimeOut or value in Future is not available with value ... then TimeOutException will be Thrown		
+	
+-	future.cancel(false) method is used to cancel the Tasks
+-	future.isCancelled() returns true or false ... whether task is canceled or not 
+-	future.isDone() ---> Return true if task is completed
+	
+-------------------------------------------------------------
+
+## 4. Constructors and LifeCycle Methods
+
+
+-	Advanced concepts in Executors
+
+
+	### Pool Size Changes
+	
+	-	Thread Pool can be created by using factory methods provided by Executor Service
+	-	Thread Pool can also created by customizing it ... by calling constructors directly
+	-	Thread Pool will take below things as Parameters
+	
+		-	corePoolSize 
+			-	Type: int
+			-	Minimum/Base size of the Pool
+			
+		-	maxPoolSize 
+			-	Type: int
+			- Maximum Size of the Pool
+			
+		-	keepAliveTime + Unit 
+			-	Type: long
+			-	Time to keep an idle Thread Alive(After which it is killed)
+		
+		-	Work Queue
+			-	Type: Blocking Queue
+			-	Queue to store tasks from which Threads will fetch them
+			
+		-	Thread Factory
+			-	Type: Thread Factory
+			-	Factory to use to create new Threads
+			
+		-	Handler 
+			-	Type: RejectedExecutionHandler
+			-	Callback to use when tasks submitted are rejected
+	
+	### Queue Types
+	
+	-	LinkedBlockingQueue
+		-	FixedThreahPool and SingleThreadExecutor uses LinkedBlockingQueue
+		-	LinkedBlockingQueue don't have size constraints
+		-	Number of Threads is Limited but Number Tasks can be unlimited
+		-	Any number of Tasks can be stored in LinkedBlockingQueue
+		
+	-	Synchronous Queue
+		-	CachedThreadPool uses Synchronous Queue
+		-	Threads are unbounded ... no limits on Number of Threads
+		-	No need to store Task on Queue
+		
+	- 	Delayed Work Queue
+		-	ScheduledThreadPool uses Delayed Work Queue
+		-	Special Type of Queue 
+		-	Delayed Queue stores the Tasks based on their execution time
+		-	Delayed Queue return Tasks based on Scheduled Time
+		
+	-	Array Blocking Queue
+		-	ArrayBlocking Queue is limited size
+		-	If Queue gets full ... new Threads will created
 	
 	
+	###	Life Cycle Methods
 	
-	
-	
-	
-	
+	-	threadPool.shutdown()
+		-	Initiate Termination
+		-	Will Throw RejectedExecutionHandler if Tries to add new Task to ThreadPool
+		
+	-	threadPool.isShutdown()
+		-  Returns true or false based whether threadPool is initiated termination or not	
+		
+	-	threadPool.isTerminated()
+		-	Returns true if all Task are completed including Queued ones
+		
+	-	threadPool.awaitTermination(10, TimeUnit.SECONDS)
+		-	Block until all Tasks are completed 
 	
 	
 	
