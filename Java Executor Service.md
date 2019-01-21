@@ -191,95 +191,95 @@
 	
 ## 2. Types of Thread Pools
 
-	###	1. Fixed Thread Pool
-	
-	### 2. Cached Thread Pool
-	
-	### 3. Scheduled Thread Pool
-	
-	### 4. Single Threaded Executor
-	
-	
-	
-	###	1. Fixed Thread Pool
-	
-	-	Has Fixed Number of Threads
-	-	N number of Tasks can be submitted to Threads
-	- 	All Tasks will be stored in Queue called Blocking Queue
-	-	Queue should be Thread Safe ... 
-	-	Thread Pool will fetch tasks from queue and execute on Thread
-	
-	###	2. Cached Thread Pool
-	
-	-	Doesn't have Fixed Number of Threads
-	-	Doesn't have queue that holds the Number of Tasks
-	-	Queue used in Cached Thread Pool is Synchronous Queue ... which can hold only one Item or Task at a Time
-	-	When task is submitted ... Cached Thread Pool will search for if any IDLE Threads
-	
-		-	If no IDLE Threads found it will create a new Thread and assign Task to that Thread
-		
-	-	Life Cycle: 	Cached Thread Pool has ability to create 1000 Threads to meet demands
-	-	Cached Thread Pool also has ability to Kill Threads once no Further Tasks are available
-	-	If Thread is idle for more 60 Seconds then ... Thread will be killed
-	
-	
-	###	3. Scheduled Thread Pool
-	
-	-	Schedule Thread Pool is for Tasks that should after certain amount of delay
-	-	Life Cycle: More Threads are created if Required
-	-	Delay Queue is used to store the Tasks
-	
-		#### Different types of Scheduling
-	
-		### 1. schedule() 
-			
-		-	Schedule a Task to run after certain delay ... i.e 10 Seconds
+###	1. Fixed Thread Pool
 
-		### 2. scheduleAtFixedRate()
-			
-		-	Perform some Task every 10 Seconds
-		-	Tasks will be stored in Delay Queue
-		-	Tasks will be stored in Queue according to their Delay Period
-		-	10 Seconds tasks will at front and 10 Minutes Task will be next to 10 Second Delay Task
-		
-		### 3. scheduleAtFixedDelay()
-		
-		-	Will run after some fixed delay from completion of task 
-		-	Fixed deley is 5 Second and Task will run for 15 Seconds ... then Task will Schedule to run after 5 Seconds from completion of Task
-		
-		#### Code Snippet of ScheduledThreadPool
-		
-		
-			Code Snippet: 
-			
-				public void main(String ... args) {
-				
-					ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
-					
-					
-					// Tasks to run after 10 Seconds Delay
-					scheduledThreadPool.schedule(new Task(), 10, TimeUnit.SECONDS);
-					
-					// Tasks to run repeatedly after 10 Seconds with initial delay of 10 Seconds
-					scheduledThreadPool.scheduleAtFixedRate(new Task(), initialDelay: 10, period: 10, TimeUnit.SECONDS);
-					
-					
-					// Task to run repeatedly after 10 Seconds after previous Task Completion
-					scheduledThreadPool.scheduleAtFixedDelay(new Task(), initialDelay: 10, delay: 10, TimeUnit.SECONDS);
-				
-				
-				}
-			
-	###	4. 	Single Threaded Executor
+### 2. Cached Thread Pool
 
-	-	Size of the Pool will be only one 
-	-	Life Cycle: Only one Thread will fetch Task from Blocking Queue and Executes it
-	-	If Thread got killed due any exception ... then Thread Pool will recreate a new Thread
-	-	Thread Pool will make sure that at least 1 Thread will be executing tasks at a time
-	-	There will be only one Thread
-	-	Since only 1 Thread ... only 1 Task will executed at a time
-	-	This Thread Pool type will used to make sure that Task1, Task2, Task3 ... be executed in sequentially
+### 3. Scheduled Thread Pool
+
+### 4. Single Threaded Executor
+
 	
+	
+###	1. Fixed Thread Pool
+
+-	Has Fixed Number of Threads
+-	N number of Tasks can be submitted to Threads
+- 	All Tasks will be stored in Queue called Blocking Queue
+-	Queue should be Thread Safe ... 
+-	Thread Pool will fetch tasks from queue and execute on Thread
+
+###	2. Cached Thread Pool
+
+-	Doesn't have Fixed Number of Threads
+-	Doesn't have queue that holds the Number of Tasks
+-	Queue used in Cached Thread Pool is Synchronous Queue ... which can hold only one Item or Task at a Time
+-	When task is submitted ... Cached Thread Pool will search for if any IDLE Threads
+
+	-	If no IDLE Threads found it will create a new Thread and assign Task to that Thread
+	
+-	Life Cycle: 	Cached Thread Pool has ability to create 1000 Threads to meet demands
+-	Cached Thread Pool also has ability to Kill Threads once no Further Tasks are available
+-	If Thread is idle for more 60 Seconds then ... Thread will be killed
+
+
+###	3. Scheduled Thread Pool
+
+-	Schedule Thread Pool is for Tasks that should after certain amount of delay
+-	Life Cycle: More Threads are created if Required
+-	Delay Queue is used to store the Tasks
+
+	#### Different types of Scheduling
+
+	### 1. schedule() 
+		
+	-	Schedule a Task to run after certain delay ... i.e 10 Seconds
+
+	### 2. scheduleAtFixedRate()
+		
+	-	Perform some Task every 10 Seconds
+	-	Tasks will be stored in Delay Queue
+	-	Tasks will be stored in Queue according to their Delay Period
+	-	10 Seconds tasks will at front and 10 Minutes Task will be next to 10 Second Delay Task
+	
+	### 3. scheduleAtFixedDelay()
+	
+	-	Will run after some fixed delay from completion of task 
+	-	Fixed deley is 5 Second and Task will run for 15 Seconds ... then Task will Schedule to run after 5 Seconds from completion of Task
+	
+	#### Code Snippet of ScheduledThreadPool
+	
+	
+		Code Snippet: 
+		
+			public void main(String ... args) {
+			
+				ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
+				
+				
+				// Tasks to run after 10 Seconds Delay
+				scheduledThreadPool.schedule(new Task(), 10, TimeUnit.SECONDS);
+				
+				// Tasks to run repeatedly after 10 Seconds with initial delay of 10 Seconds
+				scheduledThreadPool.scheduleAtFixedRate(new Task(), initialDelay: 10, period: 10, TimeUnit.SECONDS);
+				
+				
+				// Task to run repeatedly after 10 Seconds after previous Task Completion
+				scheduledThreadPool.scheduleAtFixedDelay(new Task(), initialDelay: 10, delay: 10, TimeUnit.SECONDS);
+			
+			
+			}
+		
+###	4. 	Single Threaded Executor
+
+-	Size of the Pool will be only one 
+-	Life Cycle: Only one Thread will fetch Task from Blocking Queue and Executes it
+-	If Thread got killed due any exception ... then Thread Pool will recreate a new Thread
+-	Thread Pool will make sure that at least 1 Thread will be executing tasks at a time
+-	There will be only one Thread
+-	Since only 1 Thread ... only 1 Task will executed at a time
+-	This Thread Pool type will used to make sure that Task1, Task2, Task3 ... be executed in sequentially
+
 	
 -------------------------------------------------------------	
 	
