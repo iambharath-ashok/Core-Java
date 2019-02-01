@@ -5,16 +5,16 @@
 # How HashMap works in Java
 
 ##  Associative Data Structure:
-	-	Map is a Associative Array Data Structure: Key1: -> Value1, Key2: -> Value2
+-	Map is a Associative Array Data Structure: Key1: -> Value1, Key2: -> Value2
 	
 	
 ##	Hashing:
-	-	Transformation of String representation data to shortened form of fixed data with Integer Value
-	-	Shortened Integer Value helps in indexing and faster searches
+-	Transformation of String representation data to shortened form of fixed data with Integer Value
+-	Shortened Integer Value helps in indexing and faster searches
 
 ## public int hashcode():
 
-	-	Every Java will have hashCode() method that returns the hashcode value for an invoked instance
+-	Every Java will have hashCode() method that returns the hashcode value for an invoked instance
 	
 	
 ## High Level Implmentation of HashMap:
