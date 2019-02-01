@@ -2,6 +2,82 @@
 
 # Java Collections 
 
+# How HashMap works in Java
+
+##  Associative Data Structure:
+	-	Map is a Associative Array Data Structure: Key1: -> Value1, Key2: -> Value2
+	
+	
+##	Hashing:
+	-	Transformation of String representation data to shortened form of fixed data with Integer Value
+	-	Shortened Integer Value helps in indexing and faster searches
+
+## public int hashcode():
+
+	-	Every Java will have hashCode() method that returns the hashcode value for an invoked instance
+	
+	
+## High Level Implmentation of HashMap:
+
+-	HashMap class implements clonable and serializable and extends AbastractMap
+
+
+## HashMap Low Level Implementation:
+
+-	HashMap has a Table or Array of Nodes that in-turn will have set of LinkedList
+-	Each index in table is called bucket which basically a Node which in turn is a List of LinkedList
+		 			
+-	Node:
+	-	Node itself is a LinkedList
+	-	A Node has key, hashcode, value, pointer to next Node
+	
+		Node<K,V>:
+		
+			int hash;
+			K Key;
+			V Value;
+			Node<k, V> next;//pointer to next Node<K,V>
+
+### Size of HashMap Table
+
+-	By default the size of the HashMap table is 16 range from 0 to 15
+
+### put(K k, V v)
+
+	Code Snippet:
+		
+		put(K k, V v) {
+			
+			hash(K)
+			
+			index = hash & n-1
+		
+		}
+
+### get(K v)
+
+
+	Code Snippet:
+	
+		get(K k) {
+			hash(k)
+			
+			index = hash % n-1
+			
+			equals
+		}
+-	HashMap allows Nulls as keys and 
+-	HashMap with Null key will always have hashcode value of 0		
+-	HashMap with Null key will always go to 0th bucket of HashMap
+
+## 	Java 8 Changes for HashMap
+
+-	When we have lot of unequal key with same which gives same index - all the keys will go to same bucket
+-	Java 8, introduced a TREEIFY_THRESHOLD, when number of items exceeds Threshold LinkedList will be converted to Balanced Tree
+-	Balanced Tree is better performance than LinkedList i.e O(n) vs O(log n)
+-	In Balanced Tree, smaller hashcode will go to left and higher hashcode will be moved to right part of the tree
+-	Performance of Balanced Tree depends on implementation of hashcode and Comparable result for the keys
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Types of Maps in Java 
 
